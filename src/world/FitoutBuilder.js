@@ -1,0 +1,257 @@
+import * as THREE from 'three';
+
+export class FitoutBuilder {
+  constructor(materialManager) {
+    this.materials = materialManager;
+    this.rootGroup = new THREE.Group();
+    this.rootGroup.name = 'FitoutRoot';
+
+    // Category groups
+    this.groups = {
+      furniture: new THREE.Group(),
+      doors: new THREE.Group(),
+      windows: new THREE.Group(),
+      gates: new THREE.Group(),
+      lighting: new THREE.Group(),
+      electrical: new THREE.Group(),
+      vehicles: new THREE.Group(),
+      garden: new THREE.Group(),
+      fans: new THREE.Group()
+    };
+
+    // Label and add groups
+    for (const [key, grp] of Object.entries(this.groups)) {
+      grp.name = `Fitout_${key}`;
+      this.rootGroup.add(grp);
+    }
+
+    // Fans tracking for rotation animation
+    this.fans = [];
+
+    // Point lights tracking
+    this.pointLights = [];
+
+    this.furnitureVisible = true;
+  }
+
+  buildFitout(fitoutData, fansData = [], lightsData = []) {
+    // 1. Build box-based fitout items
+    fitoutData.forEach(item => {
+      const mesh = this.createFitoutMesh(item);
+      const cat = item.category || 'furniture';
+
+      if (this.groups[cat]) {
+        this.groups[cat].add(mesh);
+      } else {
+        this.groups.furniture.add(mesh);
+      }
+    });
+
+    // 2. Build ceiling fans (detailed 3D assemblies)
+    fansData.forEach(fanSpec => {
+      const fanObj = this.createCeilingFan(fanSpec);
+      this.groups.fans.add(fanObj.root);
+      this.fans.push(fanObj);
+    });
+
+    // 3. Build ceiling lights (LED panels + point lights)
+    lightsData.forEach(lightSpec => {
+      const lightObj = this.createCeilingLight(lightSpec);
+      this.groups.lighting.add(lightObj.mesh);
+      if (lightObj.pointLight) {
+        this.groups.lighting.add(lightObj.pointLight);
+        this.pointLights.push(lightObj.pointLight);
+      }
+    });
+
+    return this.rootGroup;
+  }
+
+  createFitoutMesh(item) {
+    let [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
+
+    // For windows/ventilators, expand slightly on the wall-normal axis to prevent z-fighting
+    if (item.type === 'window' || item.type === 'ventilator') {
+      const dx = xmax - xmin;
+      const dy = ymax - ymin;
+      if (dx < dy) {
+        xmin -= 0.02;
+        xmax += 0.02;
+      } else {
+        ymin -= 0.02;
+        ymax += 0.02;
+      }
+    }
+
+    const sizeX = xmax - xmin;
+    const sizeY = zmax - zmin; // Spec Z -> Three.js Y
+    const sizeZ = ymax - ymin; // Spec Y -> Three.js Z
+
+    const geo = new THREE.BoxGeometry(sizeX, sizeY, sizeZ);
+    const mat = this.materials.get(item.material);
+    const mesh = new THREE.Mesh(geo, mat);
+
+    const posX = (xmin + xmax) / 2;
+    const posY = (zmin + zmax) / 2;
+    const posZ = - (ymin + ymax) / 2;
+
+    mesh.position.set(posX, posY, posZ);
+    mesh.userData = item;
+
+    // Window special styling: add an aluminium frame border
+    if (item.type === 'window' || item.type === 'ventilator') {
+      const frameGeo = new THREE.EdgesGeometry(geo);
+      const frameMat = new THREE.LineBasicMaterial({
+        color: 0x9a9da0,
+        linewidth: 2,
+        transparent: true,
+        opacity: 0.8
+      });
+      const frame = new THREE.LineSegments(frameGeo, frameMat);
+      mesh.add(frame);
+    } else if (item.category === 'furniture' || item.category === 'doors' || item.category === 'gates') {
+      // Subdued architectural edge for clean delineation
+      const edgeGeo = new THREE.EdgesGeometry(geo);
+      const edgeMat = this.materials.getEdgeMaterial();
+      const edge = new THREE.LineSegments(edgeGeo, edgeMat);
+      mesh.add(edge);
+    }
+
+    // Cast shadows for opaque furniture (exclude glass & lights)
+    if (item.material !== 'M-GLASS' && item.category !== 'lighting' && item.category !== 'electrical') {
+      mesh.receiveShadow = true;
+      if (item.category === 'furniture' || item.category === 'doors' || item.category === 'vehicles') {
+        mesh.castShadow = true;
+      }
+    }
+
+    return mesh;
+  }
+
+  createCeilingFan(spec) {
+    const root = new THREE.Group();
+    root.name = `Fan_${spec.id}`;
+
+    const chromeMat = this.materials.get('M-CHROME');
+    const bladeMat = this.materials.get('M-WOOD-DARK');
+
+    // 1. Slab Canopy (cylinder at slab underside, Z = 11.25 to 11.50)
+    const canopyGeo = new THREE.CylinderGeometry(0.25, 0.25, 0.25, 16);
+    const canopy = new THREE.Mesh(canopyGeo, chromeMat);
+    canopy.position.set(0, 11.375, 0);
+    root.add(canopy);
+
+    // 2. Down-rod (cylinder Z = 10.75 to 11.25)
+    const rodGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.50, 12);
+    const rod = new THREE.Mesh(rodGeo, chromeMat);
+    rod.position.set(0, 11.000, 0);
+    root.add(rod);
+
+    // 3. Central Hub (cylinder Z = 10.60 to 10.75)
+    const hubGeo = new THREE.CylinderGeometry(0.30, 0.30, 0.15, 20);
+    const hub = new THREE.Mesh(hubGeo, chromeMat);
+    hub.position.set(0, 10.675, 0);
+    root.add(hub);
+
+    // 4. Rotating Blade Assembly (3 blades, 1200mm / 4ft sweep, at Z = 10.62)
+    const bladeAssembly = new THREE.Group();
+    bladeAssembly.position.set(0, 10.625, 0);
+
+    const bladeLength = 1.67; // from radius 0.30 to 1.97
+    const bladeWidth = 0.40;
+    const bladeThickness = 0.03;
+    const bladeGeo = new THREE.BoxGeometry(bladeLength, bladeThickness, bladeWidth);
+
+    for (let i = 0; i < 3; i++) {
+      const angle = (i * 2 * Math.PI) / 3;
+      const bladeMesh = new THREE.Mesh(bladeGeo, bladeMat);
+
+      // Center of blade is at r = 0.30 + bladeLength/2 = 1.135
+      const r = 0.30 + bladeLength / 2;
+      bladeMesh.position.set(r * Math.cos(angle), 0, r * Math.sin(angle));
+      bladeMesh.rotation.y = -angle; // align length radially
+      bladeMesh.castShadow = true;
+      bladeAssembly.add(bladeMesh);
+    }
+
+    root.add(bladeAssembly);
+
+    // Position whole fan at (spec X, 0, -spec Y)
+    root.position.set(spec.cx, 0, -spec.cy_spec);
+
+    return {
+      id: spec.id,
+      root: root,
+      bladeGroup: bladeAssembly
+    };
+  }
+
+  createCeilingLight(spec) {
+    const { cx, cy_spec, sizeX, sizeY, id } = spec;
+
+    // LED Panel Box: thickness 0.06 ft from Z = 11.44 to 11.50
+    const panelHeight = 0.06;
+    const geo = new THREE.BoxGeometry(sizeX, panelHeight, sizeY);
+    const mat = this.materials.get('M-LIGHT-PANEL');
+    const mesh = new THREE.Mesh(geo, mat);
+
+    const posY = 11.47; // midpoint of 11.44 and 11.50
+    mesh.position.set(cx, posY, -cy_spec);
+    mesh.name = `LightPanel_${id}`;
+
+    // Frame outline around panel
+    const edgeGeo = new THREE.EdgesGeometry(geo);
+    const edgeMat = new THREE.LineBasicMaterial({ color: 0xcccccc });
+    mesh.add(new THREE.LineSegments(edgeGeo, edgeMat));
+
+    // Indoor warm point light underneath each panel
+    const pointLight = new THREE.PointLight(0xfff3d4, 0.45, 14, 1.2);
+    pointLight.position.set(cx, 11.2, -cy_spec);
+    pointLight.name = `PointLight_${id}`;
+
+    return { mesh, pointLight };
+  }
+
+  update(delta) {
+    // Rotate ceiling fan blades
+    if (this.groups.fans.visible) {
+      const spinSpeed = 3.2; // radians/sec
+      this.fans.forEach(fan => {
+        fan.bladeGroup.rotation.y += delta * spinSpeed;
+      });
+    }
+  }
+
+  setFurnitureVisibility(visible) {
+    this.furnitureVisible = visible;
+    this.groups.furniture.visible = visible;
+    this.groups.vehicles.visible = visible;
+    this.groups.garden.visible = visible;
+    this.groups.fans.visible = visible;
+  }
+
+  toggleFurniture() {
+    this.setFurnitureVisibility(!this.furnitureVisible);
+    return this.furnitureVisible;
+  }
+
+  setDoorsVisibility(visible) {
+    this.groups.doors.visible = visible;
+  }
+
+  setWindowsVisibility(visible) {
+    this.groups.windows.visible = visible;
+  }
+
+  setGatesVisibility(visible) {
+    this.groups.gates.visible = visible;
+  }
+
+  setLightingVisibility(visible) {
+    this.groups.lighting.visible = visible;
+  }
+
+  getRoot() {
+    return this.rootGroup;
+  }
+}

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Indian Residential House 3D Simulation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles/main.css" />
+</head>
+<body>
+  <!-- 3D Canvas Mount Point -->
+  <div id="canvas-container"></div>
+
+  <!-- FPS Aim Crosshair -->
+  <div id="crosshair"></div>
+
+  <!-- Top-Left Mini HUD Card -->
+  <header id="hud-top-left" class="glass-panel">
+    <div class="hud-brand">
+      <div class="brand-badge">3D SIM</div>
+      <div class="brand-text">
+        <h1 class="brand-title">INDIAN HOUSE 3D</h1>
+        <div class="brand-meta">
+          <span class="floor-badge" id="hud-floor">Ground Floor</span>
+          <span class="hud-badge fps" id="hud-mode-badge">First-Person Walk</span>
+        </div>
+      </div>
+    </div>
+    <div class="hud-room-display">
+      <div class="room-label-sub">CURRENT LOCATION</div>
+      <div class="room-title" id="hud-room">Gate Landing</div>
+    </div>
+  </header>
+
+  <!-- Top-Right Minimap Canvas Widget -->
+  <div id="minimap-widget" class="glass-panel">
+    <div class="minimap-header">
+      <span class="minimap-title">FLOOR PLAN</span>
+      <span class="minimap-indicator">LIVE</span>
+    </div>
+    <canvas id="minimap-canvas" width="150" height="120"></canvas>
+  </div>
+
+  <!-- Collapsible Right Sidebar -->
+  <aside id="sidebar" class="glass-panel">
+    <!-- Collapsible Toggle Tab on Edge -->
+    <button id="sidebar-toggle" class="sidebar-tab-btn" title="Toggle Controls Sidebar">☰</button>
+
+    <div class="sidebar-content">
+      <div class="sidebar-header">
+        <span class="sidebar-title">House Controls</span>
+      </div>
+
+      <!-- Section: Layers -->
+      <div class="sidebar-section">
+        <div class="section-title">🏠 LAYERS</div>
+        <div class="button-grid">
+          <button class="btn btn-control active" id="btn-toggle-roof">🏠 Roof: Visible (C)</button>
+          <button class="btn btn-control active" id="btn-toggle-labels">🏷️ Labels: ON (L)</button>
+          <button class="btn btn-control active" id="btn-toggle-furniture">🛋️ Furniture: ON (F)</button>
+        </div>
+      </div>
+
+      <!-- Section: Floor View (Dollhouse/Overview) -->
+      <div class="sidebar-section">
+        <div class="section-title">🏢 FLOOR LEVEL VIEW</div>
+        <div class="button-grid">
+          <button class="btn btn-control active" id="btn-floor-all">🏢 Both Floors</button>
+          <button class="btn btn-control" id="btn-floor-gf">🏠 Ground Floor</button>
+          <button class="btn btn-control" id="btn-floor-ff">🏢 First Floor</button>
+        </div>
+      </div>
+
+      <!-- Section: Navigation -->
+      <div class="sidebar-section">
+        <div class="section-title">🧭 NAVIGATION</div>
+        <div class="button-grid">
+          <button class="btn btn-control primary" id="btn-toggle-view">🔄 Dollhouse Orbit (V)</button>
+          <button class="btn btn-control" id="btn-reset">↺ Reset Position (R)</button>
+        </div>
+      </div>
+
+      <!-- Section: Quick Teleport Buttons -->
+      <div class="sidebar-section">
+        <div class="section-title">🚪 ROOM TELEPORT</div>
+        <div id="teleport-buttons" class="teleport-grid">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+
+      <!-- Section: Controls Reference -->
+      <div class="sidebar-section">
+        <div class="section-title">⌨️ KEYBOARD SHORTCUTS</div>
+        <div class="controls-legend">
+          <div class="legend-row"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><span>Move / Strafe</span></div>
+          <div class="legend-row"><kbd>Shift</kbd><span>Sprint</span></div>
+          <div class="legend-row"><kbd>Mouse</kbd><span>Look Around</span></div>
+          <div class="legend-row"><kbd>V</kbd><span>Toggle Orbit / FP</span></div>
+          <div class="legend-row"><kbd>C</kbd><span>Toggle Roof</span></div>
+          <div class="legend-row"><kbd>L</kbd><span>Toggle Labels</span></div>
+          <div class="legend-row"><kbd>F</kbd><span>Toggle Furniture</span></div>
+          <div class="legend-row"><kbd>R</kbd><span>Reset Spawn</span></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Bottom Status Bar -->
+  <footer id="bottom-status-bar" class="glass-panel">
+    <div class="status-col status-room" id="status-room">📍 Gate Landing</div>
+    <div class="status-col status-coords" id="status-coords">X: 1.6' | Y: 3.8'</div>
+    <div class="status-col status-elev" id="status-elev">Elev: 0.0'</div>
+    <div class="status-col status-fps" id="status-fps">60 FPS</div>
+  </footer>
+
+  <!-- Click-to-Enter Overlay Blocker -->
+  <div id="blocker">
+    <div id="overlay-dialog" class="glass-panel">
+      <div class="dialog-decor">
+        <div class="pulse-ring"></div>
+        <div class="arch-badge">ARCHITECTURAL SIMULATION</div>
+      </div>
+      <h2 class="dialog-title">INDIAN HOUSE 3D</h2>
+      <p class="dialog-subtitle">
+        Ground Floor Exact 1:1 Architectural Walkthrough & Interior Fitout
+      </p>
+
+      <div class="features-summary">
+        <div class="feature-item">
+          <span class="feature-icon">📐</span>
+          <div>
+            <strong>1:1 Dimensional Precision</strong>
+            <p>Built directly from architectural CAD specifications in feet</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🛋️</span>
+          <div>
+            <strong>Complete Interior Fitout</strong>
+            <p>Teak doors, sliding windows, kitchen granite counters, furniture & fans</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🪜</span>
+          <div>
+            <strong>Real Elevation & Stairs</strong>
+            <p>1.5' plinth, black granite risers, sloped garage ramp & stair flight to slab</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls-hint">
+        <span>Use <strong>WASD</strong> to walk, <strong>Mouse</strong> to look, <strong>V</strong> for dollhouse view</span>
+      </div>
+
+      <button id="btn-start" class="btn btn-enter">
+        <span class="btn-text">CLICK TO EXPLORE</span>
+        <span class="btn-arrow">→</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Screen with Progress Bar -->
+  <div id="loading-screen">
+    <div class="loading-content">
+      <div class="loading-brand">HOUSE 3D SIMULATION</div>
+      <div class="loading-sub">Generating High-Fidelity Geometry & PBR Textures...</div>
+      <div class="progress-track">
+        <div id="loading-progress-bar" class="progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Bootstrap -->
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

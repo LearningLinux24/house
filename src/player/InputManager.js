@@ -1,0 +1,106 @@
+export class InputManager {
+  constructor() {
+    this.keys = {
+      forward: false,
+      backward: false,
+      left: false,
+      right: false,
+      sprint: false
+    };
+
+    this.actionListeners = new Map();
+    this.init();
+  }
+
+  init() {
+    window.addEventListener('keydown', (e) => this.onKeyDown(e));
+    window.addEventListener('keyup', (e) => this.onKeyUp(e));
+  }
+
+  onKeyDown(e) {
+    // Prevent default scroll on arrow keys / space
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) {
+      e.preventDefault();
+    }
+
+    switch (e.code) {
+      // Movement
+      case 'KeyW':
+      case 'ArrowUp':
+        this.keys.forward = true;
+        break;
+      case 'KeyS':
+      case 'ArrowDown':
+        this.keys.backward = true;
+        break;
+      case 'KeyA':
+      case 'ArrowLeft':
+        this.keys.left = true;
+        break;
+      case 'KeyD':
+      case 'ArrowRight':
+        this.keys.right = true;
+        break;
+      case 'ShiftLeft':
+      case 'ShiftRight':
+        this.keys.sprint = true;
+        break;
+
+      // Hotkey Actions
+      case 'KeyV':
+        this.emit('toggleView');
+        break;
+      case 'KeyC':
+        this.emit('toggleRoof');
+        break;
+      case 'KeyL':
+        this.emit('toggleLabels');
+        break;
+      case 'KeyF':
+        this.emit('toggleFurniture');
+        break;
+      case 'KeyR':
+        this.emit('resetPlayer');
+        break;
+    }
+  }
+
+  onKeyUp(e) {
+    switch (e.code) {
+      case 'KeyW':
+      case 'ArrowUp':
+        this.keys.forward = false;
+        break;
+      case 'KeyS':
+      case 'ArrowDown':
+        this.keys.backward = false;
+        break;
+      case 'KeyA':
+      case 'ArrowLeft':
+        this.keys.left = false;
+        break;
+      case 'KeyD':
+      case 'ArrowRight':
+        this.keys.right = false;
+        break;
+      case 'ShiftLeft':
+      case 'ShiftRight':
+        this.keys.sprint = false;
+        break;
+    }
+  }
+
+  on(action, callback) {
+    if (!this.actionListeners.has(action)) {
+      this.actionListeners.set(action, []);
+    }
+    this.actionListeners.get(action).push(callback);
+  }
+
+  emit(action, data) {
+    const list = this.actionListeners.get(action);
+    if (list) {
+      list.forEach(cb => cb(data));
+    }
+  }
+}
