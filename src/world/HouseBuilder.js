@@ -11,6 +11,7 @@ export class HouseBuilder {
     this.slabMeshes = [];
     this.topRoofMeshes = [];
     this.midSlabMeshes = [];
+    this.terraceMeshes = [];
     this.wallMeshes = [];
     this.currentFloorFilter = 'all';
   }
@@ -26,6 +27,10 @@ export class HouseBuilder {
 
       const mesh = this.createBoxMesh(item);
       floorGroup.add(mesh);
+
+      if (item.id && item.id.startsWith('TER-')) {
+        this.terraceMeshes.push(mesh);
+      }
 
       // Track roof/slab meshes for smart multi-floor visibility
       if (item.type === 'slab') {
@@ -185,8 +190,11 @@ export class HouseBuilder {
     const isFirstFloorActive = ffGroup ? ffGroup.visible : false;
 
     if (isFirstFloorActive) {
-      // Toggle top roof slab (RF1-RF4)
+      // Toggle top roof slab (RF1-RF4) & terrace parapet walls
       this.topRoofMeshes.forEach(mesh => {
+        mesh.visible = visible;
+      });
+      this.terraceMeshes.forEach(mesh => {
         mesh.visible = visible;
       });
       // Keep intermediate slab visible as the floor of the 1st floor
@@ -221,11 +229,20 @@ export class HouseBuilder {
       this.topRoofMeshes.forEach(mesh => {
         mesh.visible = false; // Open look into first floor rooms
       });
+      this.terraceMeshes.forEach(mesh => {
+        mesh.visible = false;
+      });
     } else {
       // 'all'
       if (gfGroup) gfGroup.visible = true;
       if (ffGroup) ffGroup.visible = true;
       this.midSlabMeshes.forEach(mesh => {
+        mesh.visible = true;
+      });
+      this.topRoofMeshes.forEach(mesh => {
+        mesh.visible = true;
+      });
+      this.terraceMeshes.forEach(mesh => {
         mesh.visible = true;
       });
     }

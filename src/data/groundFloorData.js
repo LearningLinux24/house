@@ -82,13 +82,6 @@ export const GROUND_FLOOR_DATA = {
     { id: 'W-INT-11L', box: [38.750, 41.250, 18.875, 19.250, 8.500, 11.500], type: 'lintel' },
     { id: 'W-INT-12L', box: [41.250, 41.625, 15.375, 18.875, 8.500, 11.500], type: 'lintel' },
 
-    // O5: Duct Walls (replacing base shaft markers)
-    { id: 'DT-S', box: [27.625, 32.375, 19.125, 19.500, 1.500, 12.000], type: 'duct' },
-    { id: 'DT-N', box: [27.625, 32.375, 22.500, 22.875, 1.500, 12.000], type: 'duct' },
-    { id: 'DT-W', box: [27.625, 28.000, 19.500, 22.500, 1.500, 12.000], type: 'duct' },
-    { id: 'DT-E', box: [32.000, 32.375, 19.500, 22.500, 1.500, 12.000], type: 'duct' },
-    { id: 'DT-CAP', box: [28.000, 32.000, 19.500, 22.500, 11.900, 12.000], type: 'duct_cap' },
-
     // 7. Stair Treads (12 solid treads climbing to Z_UPPER = 12.0)
     { id: 'T01', box: [30.125, 33.875, 4.000, 4.770, 1.500, 2.308], type: 'tread' },
     { id: 'T02', box: [30.125, 33.875, 4.770, 5.540, 1.500, 3.115], type: 'tread' },

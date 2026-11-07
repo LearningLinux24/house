@@ -279,11 +279,11 @@ Living nook in the north-east corner (sofa faces the TV on the east wall), dinin
 
 | ID | Item | Box | Material |
 | :--- | :--- | :--- | :--- |
-| LOB-01 | Two-seat sofa seat base, faces east 2.75 x 4.2 ft | `[16.250, 19.000, 19.000, 23.200, 1.500, 2.000]` | M-FABRIC-GREY |
-| LOB-02 | Sofa seat cushions | `[16.950, 19.000, 19.500, 22.700, 2.000, 2.500]` | M-FABRIC-GREY |
-| LOB-03 | Sofa back | `[16.250, 17.000, 19.000, 23.200, 2.000, 3.300]` | M-FABRIC-GREY |
-| LOB-04 | Sofa arm, south | `[16.950, 19.000, 19.000, 19.500, 2.000, 2.700]` | M-FABRIC-GREY |
-| LOB-05 | Sofa arm, north | `[16.950, 19.000, 22.700, 23.200, 2.000, 2.700]` | M-FABRIC-GREY |
+| LOB-01 | Two-seat sofa seat base, faces east 2.75 x 4.2 ft | `[16.250, 19.000, 19.000, 23.200, 1.500, 2.100]` | M-FABRIC-GREY |
+| LOB-02 | Sofa seat cushions | `[16.950, 19.000, 19.500, 22.700, 2.100, 3.000]` | M-FABRIC-GREY |
+| LOB-03 | Sofa back | `[16.250, 17.000, 19.000, 23.200, 2.100, 4.300]` | M-FABRIC-GREY |
+| LOB-04 | Sofa arm, south | `[16.950, 19.000, 19.000, 19.500, 2.100, 3.600]` | M-FABRIC-GREY |
+| LOB-05 | Sofa arm, north | `[16.950, 19.000, 22.700, 23.200, 2.100, 3.600]` | M-FABRIC-GREY |
 | LOB-06 | Centre table 2.0 x 2.0 x 1.3 ft | `[20.500, 22.500, 20.200, 22.200, 1.500, 2.800]` | M-WOOD-DARK |
 | LOB-07 | TV unit 1.25 x 4.0 x 1.3 ft against east wall | `[24.750, 26.000, 19.100, 23.100, 1.500, 2.800]` | M-LAMINATE-WALNUT |
 | LOB-08 | 55-inch TV, wall mounted (4.0 x 2.3 ft panel) | `[25.850, 26.000, 19.150, 23.050, 3.850, 6.150]` | M-GLASS-BLACK |
@@ -299,11 +299,11 @@ Living nook in the north-east corner (sofa faces the TV on the east wall), dinin
 
 ### 8.6 Storeroom (Z13)
 
-Steel racks 4.0 ft high on the north and east walls only. The door swing stays clear.
+Steel racks 5.5 ft high on the north and east walls only (their tops stay level with the VT-3 ventilator sill, Z = 7.0). The door swing stays clear.
 
 | ID | Item | Box | Material |
 | :--- | :--- | :--- | :--- |
-| STO-01 | Steel rack along north wall 7.25 x 1.5 ft, 4.0 ft high | `[42.000, 49.250, 21.750, 23.250, 1.500, 7.000]` | M-STEEL-GREY |
+| STO-01 | Steel rack along north wall 7.25 x 1.5 ft, 5.5 ft high | `[42.000, 49.250, 21.750, 23.250, 1.500, 7.000]` | M-STEEL-GREY |
 | STO-02 | Steel rack along east wall 1.5 x 6.375 ft | `[47.750, 49.250, 15.375, 21.750, 1.500, 7.000]` | M-STEEL-GREY |
 
 ### 8.7 Porch (Z3)
@@ -488,4 +488,3 @@ These cannot be answered from a ground-floor plan, and this file does not guess 
 2. **The south wall's east end** (X = 26 or 36.5, section 5.1 of the base file).
 3. **Window positions.** They are the standard choice, not read from the plan, so they must be checked against the owner's wishes.
 4. **Furniture.** Typical but not specific; it is a layout, not a record of what is there.
-

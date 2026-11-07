@@ -12,16 +12,83 @@
  */
 
 // ─────────────────────────────────────────────────────────────────────────────
-// DUCT / SHAFT WALLS & CAP (OF3)
+// OPEN SHAFT / COURTYARD GRILLS (Floor & Ceiling Walkable Gratings)
+// Walkable stainless steel gratings with open gaps between bars:
+// - Looking down from 1F: ground floor is visible below without falling
+// - Looking up from 1F: upper terrace and open sky are visible
+// - On terrace: walkable surface at Z = 22.50
 // ─────────────────────────────────────────────────────────────────────────────
 
-const DUCT_WALLS = [
-  { id: 'DT-F-S',   name: 'Duct wall south',  category: 'furniture', type: 'duct', box: [27.625, 32.375, 19.125, 19.500, 12.000, 22.500], material: 'M-PAINT-INT' },
-  { id: 'DT-F-N',   name: 'Duct wall north',  category: 'furniture', type: 'duct', box: [27.625, 32.375, 22.500, 22.875, 12.000, 22.500], material: 'M-PAINT-INT' },
-  { id: 'DT-F-W',   name: 'Duct wall west',   category: 'furniture', type: 'duct', box: [27.625, 28.000, 19.500, 22.500, 12.000, 22.500], material: 'M-PAINT-INT' },
-  { id: 'DT-F-E',   name: 'Duct wall east',   category: 'furniture', type: 'duct', box: [32.000, 32.375, 19.500, 22.500, 12.000, 22.500], material: 'M-PAINT-INT' },
-  { id: 'DT-F-CAP', name: 'Duct jali cap',    category: 'furniture', type: 'duct', box: [28.000, 32.000, 19.500, 22.500, 22.400, 22.500], material: 'M-STEEL-SS' },
-];
+function createShaftGrills() {
+  const grills = [];
+  const xmin = 27.625, xmax = 32.375;
+  const ymin = 19.125, ymax = 22.875;
+  const frameThickness = 0.08;
+
+  // 1. FIRST FLOOR FLOOR GRILL (Walkable grating at Z = 11.94 to 12.00)
+  grills.push(
+    { id: 'GR-FL-S', name: 'Floor grill frame south', category: 'furniture', type: 'railing', box: [xmin, xmax, ymin, ymin + frameThickness, 11.940, 12.000], material: 'M-STEEL-SS' },
+    { id: 'GR-FL-N', name: 'Floor grill frame north', category: 'furniture', type: 'railing', box: [xmin, xmax, ymax - frameThickness, ymax, 11.940, 12.000], material: 'M-STEEL-SS' },
+    { id: 'GR-FL-W', name: 'Floor grill frame west',  category: 'furniture', type: 'railing', box: [xmin, xmin + frameThickness, ymin, ymax, 11.940, 12.000], material: 'M-STEEL-SS' },
+    { id: 'GR-FL-E', name: 'Floor grill frame east',  category: 'furniture', type: 'railing', box: [xmax - frameThickness, xmax, ymin, ymax, 11.940, 12.000], material: 'M-STEEL-SS' }
+  );
+  for (let y = ymin + 0.35; y <= ymax - 0.20; y += 0.35) {
+    const ry = Math.round(y * 1000) / 1000;
+    grills.push({
+      id: `GR-FL-X-${ry}`,
+      name: 'Floor grill longitudinal bar',
+      category: 'furniture',
+      type: 'railing',
+      box: [xmin + frameThickness, xmax - frameThickness, ry - 0.018, ry + 0.018, 11.950, 12.000],
+      material: 'M-STEEL-SS'
+    });
+  }
+  for (let x = xmin + 0.40; x <= xmax - 0.25; x += 0.40) {
+    const rx = Math.round(x * 1000) / 1000;
+    grills.push({
+      id: `GR-FL-Y-${rx}`,
+      name: 'Floor grill cross bar',
+      category: 'furniture',
+      type: 'railing',
+      box: [rx - 0.018, rx + 0.018, ymin + frameThickness, ymax - frameThickness, 11.940, 11.985],
+      material: 'M-STEEL-SS'
+    });
+  }
+
+  // 2. CEILING / TERRACE FLOOR GRILL (Walkable grating at Z = 22.44 to 22.50)
+  grills.push(
+    { id: 'GR-CL-S', name: 'Ceiling grill frame south', category: 'furniture', type: 'railing', box: [xmin, xmax, ymin, ymin + frameThickness, 22.440, 22.500], material: 'M-STEEL-SS' },
+    { id: 'GR-CL-N', name: 'Ceiling grill frame north', category: 'furniture', type: 'railing', box: [xmin, xmax, ymax - frameThickness, ymax, 22.440, 22.500], material: 'M-STEEL-SS' },
+    { id: 'GR-CL-W', name: 'Ceiling grill frame west',  category: 'furniture', type: 'railing', box: [xmin, xmin + frameThickness, ymin, ymax, 22.440, 22.500], material: 'M-STEEL-SS' },
+    { id: 'GR-CL-E', name: 'Ceiling grill frame east',  category: 'furniture', type: 'railing', box: [xmax - frameThickness, xmax, ymin, ymax, 22.440, 22.500], material: 'M-STEEL-SS' }
+  );
+  for (let y = ymin + 0.35; y <= ymax - 0.20; y += 0.35) {
+    const ry = Math.round(y * 1000) / 1000;
+    grills.push({
+      id: `GR-CL-X-${ry}`,
+      name: 'Ceiling grill longitudinal bar',
+      category: 'furniture',
+      type: 'railing',
+      box: [xmin + frameThickness, xmax - frameThickness, ry - 0.018, ry + 0.018, 22.450, 22.500],
+      material: 'M-STEEL-SS'
+    });
+  }
+  for (let x = xmin + 0.40; x <= xmax - 0.25; x += 0.40) {
+    const rx = Math.round(x * 1000) / 1000;
+    grills.push({
+      id: `GR-CL-Y-${rx}`,
+      name: 'Ceiling grill cross bar',
+      category: 'furniture',
+      type: 'railing',
+      box: [rx - 0.018, rx + 0.018, ymin + frameThickness, ymax - frameThickness, 22.440, 22.485],
+      material: 'M-STEEL-SS'
+    });
+  }
+
+  return grills;
+}
+
+const SHAFT_GRILLS = createShaftGrills();
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SECTION 4 – WINDOWS & VENTILATORS
@@ -337,7 +404,7 @@ const ELECTRICAL = [
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const FIRST_FLOOR_FITOUT = [
-  ...DUCT_WALLS,
+  ...SHAFT_GRILLS,
   ...WINDOWS,
   ...DOORS,
   ...RAILINGS,
