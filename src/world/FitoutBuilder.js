@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { WORLD_SCALE } from '../config/constants.js';
 
 export class FitoutBuilder {
   constructor(materialManager) {
@@ -69,17 +70,18 @@ export class FitoutBuilder {
 
   createFitoutMesh(item) {
     let [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
+    const s = WORLD_SCALE;
 
     // For windows/ventilators, expand slightly on the wall-normal axis to prevent z-fighting
     if (item.type === 'window' || item.type === 'ventilator') {
       const dx = xmax - xmin;
       const dy = ymax - ymin;
       if (dx < dy) {
-        xmin -= 0.02;
-        xmax += 0.02;
+        xmin -= 0.02 * s;
+        xmax += 0.02 * s;
       } else {
-        ymin -= 0.02;
-        ymax += 0.02;
+        ymin -= 0.02 * s;
+        ymax += 0.02 * s;
       }
     }
 
@@ -129,6 +131,7 @@ export class FitoutBuilder {
   }
 
   createCeilingFan(spec) {
+    const s = WORLD_SCALE;
     const root = new THREE.Group();
     root.name = `Fan_${spec.id}`;
 
@@ -157,7 +160,7 @@ export class FitoutBuilder {
     const bladeAssembly = new THREE.Group();
     bladeAssembly.position.set(0, 10.625, 0);
 
-    const bladeLength = 1.67; // from radius 0.30 to 1.97
+    const bladeLength = 1.67;
     const bladeWidth = 0.40;
     const bladeThickness = 0.03;
     const bladeGeo = new THREE.BoxGeometry(bladeLength, bladeThickness, bladeWidth);
@@ -166,7 +169,6 @@ export class FitoutBuilder {
       const angle = (i * 2 * Math.PI) / 3;
       const bladeMesh = new THREE.Mesh(bladeGeo, bladeMat);
 
-      // Center of blade is at r = 0.30 + bladeLength/2 = 1.135
       const r = 0.30 + bladeLength / 2;
       bladeMesh.position.set(r * Math.cos(angle), 0, r * Math.sin(angle));
       bladeMesh.rotation.y = -angle; // align length radially
@@ -176,7 +178,10 @@ export class FitoutBuilder {
 
     root.add(bladeAssembly);
 
-    // Position whole fan at (spec X, 0, -spec Y)
+    // Uniformly scale the entire assembly to match WORLD_SCALE
+    root.scale.set(s, s, s);
+
+    // Position whole fan at (spec X, 0, -spec Y) — spec.cx & cy_spec are already scaled
     root.position.set(spec.cx, 0, -spec.cy_spec);
 
     return {
@@ -188,14 +193,15 @@ export class FitoutBuilder {
 
   createCeilingLight(spec) {
     const { cx, cy_spec, sizeX, sizeY, id } = spec;
+    const s = WORLD_SCALE;
 
     // LED Panel Box: thickness 0.06 ft from Z = 11.44 to 11.50
-    const panelHeight = 0.06;
+    const panelHeight = 0.06 * s;
     const geo = new THREE.BoxGeometry(sizeX, panelHeight, sizeY);
     const mat = this.materials.get('M-LIGHT-PANEL');
     const mesh = new THREE.Mesh(geo, mat);
 
-    const posY = 11.47; // midpoint of 11.44 and 11.50
+    const posY = 11.47 * s;
     mesh.position.set(cx, posY, -cy_spec);
     mesh.name = `LightPanel_${id}`;
 
@@ -205,8 +211,8 @@ export class FitoutBuilder {
     mesh.add(new THREE.LineSegments(edgeGeo, edgeMat));
 
     // Indoor warm point light underneath each panel
-    const pointLight = new THREE.PointLight(0xfff3d4, 0.45, 14, 1.2);
-    pointLight.position.set(cx, 11.2, -cy_spec);
+    const pointLight = new THREE.PointLight(0xfff3d4, 0.45, 16 * s, 1.2);
+    pointLight.position.set(cx, 11.2 * s, -cy_spec);
     pointLight.name = `PointLight_${id}`;
 
     return { mesh, pointLight };

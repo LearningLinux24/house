@@ -247,6 +247,48 @@ export const GROUND_FLOOR_FITOUT = [
     material: 'M-DOOR-TEAK'
   },
 
+  // D6: Central Lobby East Door / Gate (Facing towards garage & hallway)
+  {
+    id: 'D6-FJ1',
+    name: 'Lobby East Door Jamb South',
+    category: 'doors',
+    type: 'door_frame',
+    box: [26.000, 26.375, 15.000, 15.170, 1.500, 8.330],
+    material: 'M-FRAME-WOOD'
+  },
+  {
+    id: 'D6-FJ2',
+    name: 'Lobby East Door Jamb North',
+    category: 'doors',
+    type: 'door_frame',
+    box: [26.000, 26.375, 18.705, 18.875, 1.500, 8.330],
+    material: 'M-FRAME-WOOD'
+  },
+  {
+    id: 'D6-FH',
+    name: 'Lobby East Door Frame Head',
+    category: 'doors',
+    type: 'door_frame',
+    box: [26.000, 26.375, 15.000, 18.875, 8.330, 8.500],
+    material: 'M-FRAME-WOOD'
+  },
+  {
+    id: 'D6-LEAF',
+    name: 'Lobby East Door Leaf (Open)',
+    category: 'doors',
+    type: 'door_leaf',
+    box: [25.860, 25.980, 18.875, 22.400, 1.540, 8.310],
+    material: 'M-DOOR-TEAK'
+  },
+  {
+    id: 'D6-HANDLE',
+    name: 'Lobby East Door Handle',
+    category: 'doors',
+    type: 'handle',
+    box: [25.750, 25.860, 22.000, 22.200, 4.300, 4.700],
+    material: 'M-STEEL-SS'
+  },
+
   // ==========================================
   // 3. BOUNDARY GATES (Category: 'gates')
   // ==========================================

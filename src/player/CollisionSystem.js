@@ -3,15 +3,18 @@
  * Evaluates exact floor elevations across plinths, stairs, garage ramps, and steps.
  * Resolves horizontal wall circle-to-AABB collisions with smooth sliding physics.
  *
- * Supports ground floor (Z_F0 = 1.50) and first floor (Z_F1 = 12.00).
+ * Supports ground floor (Z_F0 = 1.50 * s) and first floor (Z_F1 = 12.00 * s).
  * The player's current feetElevation is used to disambiguate which floor
  * they are on when both floors share the same X/Y footprint.
  */
 
+import { WORLD_SCALE } from '../config/constants.js';
+
 export class CollisionSystem {
-  constructor(zones, colliders) {
+  constructor(zones, colliders, scale = WORLD_SCALE) {
     this.zones = zones;
     this.colliders = colliders;
+    this.scale = scale;
   }
 
   /**
@@ -21,77 +24,96 @@ export class CollisionSystem {
    * @param {number} [currentElev=0] - player's current feet elevation, used for multi-floor disambiguation
    */
   getFloorElevation(x, z, currentElev = 0) {
-    const xs = x;         // spec X
-    const ys = -z;        // spec Y
+    const s = this.scale;
+    const xs = x / s;         // canonical spec X
+    const ys = -z / s;        // canonical spec Y
+    const unscaledElev = currentElev / s;
 
     // 0. Outside plot boundary — street level
     if (xs < -0.75 || xs > 50.0 || ys < -0.75 || ys > 24.0) {
       return 0.00;
     }
 
-    // ── FIRST FLOOR ZONES (player is at or above Z ≈ 11.5) ──────────────
-    if (currentElev >= 11.0) {
-
-      // Upper staircase lane A (ascending south, X=26.375–29.625)
-      // 13 treads, riser=0.750, run=0.770, top of tread 1 starts at Y=14.01
-      if (xs >= 26.375 && xs <= 29.625 && ys >= 4.0 && ys <= 14.01) {
-        // k = tread number (1 at top, 13 at bottom near Y=4.0)
-        const k = Math.min(13, Math.max(1, Math.ceil((14.01 - ys) / 0.770)));
-        return 12.0 + 0.75 * k;
-      }
-
-      // Terrace level — above the topmost upper tread
-      if (xs >= 26.375 && xs <= 29.625 && ys >= 0.0 && ys < 4.0) {
-        return 22.50;
-      }
-
-      // First-floor slab — the entire footprint at Z = 12.00
-      // Stairwell void (lane B: X=30.125–33.875, Y=7.0–13.25) is an open hole;
-      // player cannot stand there — return a very low value so they fall back.
-      if (xs >= 30.125 && xs <= 33.875 && ys >= 7.0 && ys <= 13.25) {
-        return -99; // void — no floor here on the first floor
-      }
-
-      return 12.00; // everywhere else on the first floor
-    }
-
-    // ── GROUND FLOOR ZONES ───────────────────────────────────────────────
-
-    // Ground stair flight lane B (X=30.125–33.875, ascending north)
-    // 12 treads, riser=0.8077, run=0.770
+    // ── STAIR FLIGHT LANE B (Ground Floor <-> First Floor) ───────────────
+    // Connects Ground Floor (Z = 1.50) to First Floor (Z = 12.00)
+    // Seamless in both ascending (south to north) and descending (north to south)
     if (xs >= 30.125 && xs <= 33.875) {
+      // Arrival landing at top of ground flight (First Floor slab level)
+      if (ys >= 13.24 && ys <= 15.0) {
+        if (unscaledElev >= 6.5) {
+          return 12.00 * s; // First Floor landing
+        }
+        return 1.50 * s;    // Ground Floor under landing slab
+      }
+
+      // The 12 stair treads climbing from 1.50 to 12.00
       if (ys >= 4.0 && ys <= 13.24) {
         const treadIndex = Math.min(12, Math.max(1, Math.floor((ys - 4.0) / 0.770) + 1));
-        return 1.50 + 0.8077 * treadIndex;
-      } else if (ys > 13.24 && ys <= 15.0) {
-        return 12.00; // Landing at the top of the ground flight → first floor
+        return (1.50 + 0.8077 * treadIndex) * s;
       }
+
+      // South of flight foot (ys < 4.0):
+      // If player is on first floor slab above: 12.00
+      // Otherwise ground floor hallway: 1.50
+      if (unscaledElev >= 6.5) {
+        return 12.00 * s;
+      }
+      return 1.50 * s;
     }
+
+    // ── UPPER FLOORS (First Floor & Terrace: unscaledElev >= 6.5) ────────
+    if (unscaledElev >= 6.5) {
+      // Upper flight Lane A (X = 26.375 to 29.625) climbing south to Terrace
+      if (xs >= 26.375 && xs <= 29.625) {
+        if (ys >= 0.0 && ys < 4.0) {
+          return 22.50 * s; // Terrace roof level
+        }
+        if (ys >= 4.0 && ys <= 14.01) {
+          const k = Math.min(13, Math.max(1, Math.ceil((14.01 - ys) / 0.770)));
+          return (12.00 + 0.75 * k) * s;
+        }
+        // North of upper stair foot: First floor plate
+        return 12.00 * s;
+      }
+
+      // Terrace level for terrace players
+      if (unscaledElev >= 18.0) {
+        return 22.50 * s;
+      }
+
+      // Everywhere across First Floor plate
+      return 12.00 * s;
+    }
+
+    // ── GROUND FLOOR (unscaledElev < 6.5) ────────────────────────────────
+    // NOTE: On Ground Floor, Lane A (xs = 26.375 to 29.625) is Zone Z9A
+    // (Stairs Bay West Passage) and South Hallway at Z = 1.50 * s.
+    // It is NEVER treated as upper terrace stairs!
 
     // Garage threshold two steps (Override O4: X=34.25–41.25, Y=14.0–15.0)
     if (xs >= 34.25 && xs <= 41.25 && ys >= 14.0 && ys <= 15.0) {
-      return 1.00;
+      return 1.00 * s;
     }
 
     // Garage floor (sloped wedge, Z = Y/30, range 0.00–0.50)
     if (xs >= 34.25 && xs <= 49.25 && ys >= 0.0 && ys <= 15.0) {
-      return (ys / 15.0) * 0.50;
+      return ((ys / 15.0) * 0.50) * s;
     }
 
     // Entrance steps (ground spec 7.1)
     if (ys >= 0.0 && ys <= 7.5) {
       if (xs >= 3.25  && xs < 3.75)   return 0.00;
-      if (xs >= 3.75  && xs < 4.55)   return 0.50;
-      if (xs >= 4.55  && xs < 5.35)   return 1.00;
-      if (xs >= 5.35  && xs <= 6.15)  return 1.50;
-      if (xs >  6.15  && xs <= 13.625) return 1.50;
+      if (xs >= 3.75  && xs < 4.55)   return 0.50 * s;
+      if (xs >= 4.55  && xs < 5.35)   return 1.00 * s;
+      if (xs >= 5.35  && xs <= 6.15)  return 1.50 * s;
+      if (xs >  6.15  && xs <= 13.625) return 1.50 * s;
     }
 
     // Ground-floor plinth raised floors (+1.50)
-    if (xs >= 3.25   && xs <= 34.25  && ys >= 7.5  && ys <= 23.25) return 1.50;
-    if (xs >= 13.625 && xs <= 34.25  && ys >= 0.0  && ys <= 7.5)   return 1.50;
-    if (xs >= 6.15   && xs <= 13.625 && ys >= 0.0  && ys <= 7.5)   return 1.50;
-    if (xs >= 34.25  && xs <= 49.25  && ys >= 15.0 && ys <= 23.25) return 1.50;
+    if (xs >= 3.25   && xs <= 34.25  && ys >= 7.5  && ys <= 23.25) return 1.50 * s;
+    if (xs >= 13.625 && xs <= 34.25  && ys >= 0.0  && ys <= 7.5)   return 1.50 * s;
+    if (xs >= 6.15   && xs <= 13.625 && ys >= 0.0  && ys <= 7.5)   return 1.50 * s;
+    if (xs >= 34.25  && xs <= 49.25  && ys >= 15.0 && ys <= 23.25) return 1.50 * s;
 
     // Gate landing & garden / street
     return 0.00;
@@ -103,12 +125,13 @@ export class CollisionSystem {
   resolveWallCollisions(px, pz, radius, playerElev) {
     let resolvedX = px;
     let resolvedZ = pz;
+    const s = this.scale;
 
     for (const item of this.colliders) {
       const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
 
       // Skip boxes that don't vertically intersect the player torso
-      if (zmax <= playerElev + 0.3 || zmin >= playerElev + 5.0) {
+      if (zmax <= playerElev + 0.3 * s || zmin >= playerElev + 5.0 * s) {
         continue;
       }
 
@@ -154,7 +177,7 @@ export class CollisionSystem {
   getZoneAt(x, z, playerElev = 0) {
     const xs = x;
     const ys = -z;
-    const isFirstFloor = playerElev >= 11.0;
+    const isFirstFloor = playerElev >= 6.5 * this.scale;
 
     for (const zone of this.zones) {
       const isZoneF1 = zone.id.startsWith('F');

@@ -1,3 +1,5 @@
+import { WORLD_SCALE } from '../config/constants.js';
+
 export class UIManager {
   constructor(options = {}) {
     this.options = options;
@@ -188,19 +190,25 @@ export class UIManager {
   }
 
   updateHUD(roomName, x, y_spec, elev, fps = 60) {
+    const s = WORLD_SCALE;
     if (this.elements.hudRoom) this.elements.hudRoom.textContent = roomName;
     if (this.elements.hudFloor) {
-      if (elev >= 22.0) {
+      if (elev >= 22.0 * s) {
         this.elements.hudFloor.textContent = 'Terrace Level';
-      } else if (elev >= 11.5) {
+      } else if (elev >= 11.5 * s) {
         this.elements.hudFloor.textContent = 'First Floor';
       } else {
         this.elements.hudFloor.textContent = 'Ground Floor';
       }
     }
+    // Normalise to architectural plan coordinates (feet)
+    const normX = x / s;
+    const normY = y_spec / s;
+    const normElev = elev / s;
+
     if (this.elements.bottomStatusRoom) this.elements.bottomStatusRoom.textContent = `📍 ${roomName}`;
-    if (this.elements.bottomStatusCoords) this.elements.bottomStatusCoords.textContent = `X: ${x.toFixed(1)}' | Y: ${y_spec.toFixed(1)}'`;
-    if (this.elements.bottomStatusElev) this.elements.bottomStatusElev.textContent = `Elev: ${elev.toFixed(1)}'`;
+    if (this.elements.bottomStatusCoords) this.elements.bottomStatusCoords.textContent = `X: ${normX.toFixed(1)}' | Y: ${normY.toFixed(1)}'`;
+    if (this.elements.bottomStatusElev) this.elements.bottomStatusElev.textContent = `Elev: ${normElev.toFixed(1)}'`;
     if (this.elements.bottomStatusFps) this.elements.bottomStatusFps.textContent = `${Math.round(fps)} FPS`;
   }
 
@@ -209,8 +217,9 @@ export class UIManager {
     const ctx = this.minimapCtx;
     const width = 150;
     const height = 120;
+    const s = WORLD_SCALE;
 
-    const isFirstFloor = playerElev >= 11.0;
+    const isFirstFloor = playerElev >= 11.0 * s;
     const minimapTitle = document.querySelector('.minimap-title');
     if (minimapTitle) {
       minimapTitle.textContent = isFirstFloor ? '1F PLAN' : 'GF PLAN';
@@ -218,9 +227,9 @@ export class UIManager {
 
     ctx.clearRect(0, 0, width, height);
 
-    // Plot: X: -0.75 to 50.0 (span 50.75), Y: -0.75 to 24.0 (span 24.75)
-    const scaleX = width / 50.75;
-    const scaleY = height / 24.75;
+    // Plot: X: -0.75*s to 50.0*s (span 50.75*s), Y: -0.75*s to 24.0*s (span 24.75*s)
+    const scaleX = width / (50.75 * s);
+    const scaleY = height / (24.75 * s);
 
     // Dark sleek background
     ctx.fillStyle = '#0a0d14';
@@ -243,8 +252,8 @@ export class UIManager {
       if (isFirstFloor !== isZoneF1) return;
 
       const [xmin, xmax, ymin, ymax] = r.bounds;
-      const rx = (xmin + 0.75) * scaleX;
-      const ry = (24.0 - ymax) * scaleY;
+      const rx = (xmin + 0.75 * s) * scaleX;
+      const ry = (24.0 * s - ymax) * scaleY;
       const rw = (xmax - xmin) * scaleX;
       const rh = (ymax - ymin) * scaleY;
 
@@ -268,8 +277,8 @@ export class UIManager {
     ctx.strokeRect(0, 0, width, height);
 
     // Player position
-    const px = (playerX + 0.75) * scaleX;
-    const py = (24.0 - playerY_spec) * scaleY;
+    const px = (playerX + 0.75 * s) * scaleX;
+    const py = (24.0 * s - playerY_spec) * scaleY;
 
     // Viewing direction indicator cone
     ctx.save();

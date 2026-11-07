@@ -63,7 +63,7 @@ house/
 └── src/
     ├── main.js                  # Application entry point bootstrapping Engine
     ├── config/
-    │   ├── constants.js         # Player physics parameters (eye height, speed, radius)
+    │   ├── constants.js         # Global WORLD_SCALE multiplier & player physics configuration
     │   └── palette.js           # Full PBR architectural materials palette
     ├── data/
     │   ├── groundFloorData.js   # Ground floor CAD structure (walls, plinth, stairs, slab)

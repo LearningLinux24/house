@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { WORLD_SCALE } from '../config/constants.js';
 
 export class RoomLabelsManager {
   constructor() {
@@ -64,7 +65,7 @@ export class RoomLabelsManager {
       depthTest: false
     });
     const sprite = new THREE.Sprite(spriteMat);
-    sprite.scale.set(6.5, 3.25, 1);
+    sprite.scale.set(6.5 * WORLD_SCALE, 3.25 * WORLD_SCALE, 1);
     return sprite;
   }
 

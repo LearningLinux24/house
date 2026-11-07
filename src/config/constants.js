@@ -3,33 +3,42 @@
  * Source: Ground Floor Specification (Section 2 & 13)
  */
 
+/**
+ * Global Map Scale Factor:
+ * Scales length, width, and height in equal proportion to eliminate
+ * claustrophobia while strictly preserving all CAD aspect ratios.
+ * 1.0 = strict CAD feet
+ * 1.35 = spacious, comfortable architectural walkthrough
+ */
+export const WORLD_SCALE = 1.35;
+
 export const GLOBAL_PARAMS = {
-  T_INT: 0.375,         // Interior wall thickness: 4.5"
-  T_EXT: 0.750,         // Exterior wall thickness: 9.0"
-  Z_STREET: 0.00,       // Street level datum
-  Z_PLINTH: 1.50,       // Raised plinth floor level
-  Z_CEIL: 11.50,        // Underside of slab (10' clear height)
-  T_SLAB: 0.50,         // Slab thickness
-  Z_UPPER: 12.00,       // Top of first floor slab (arrival of stairs)
-  H_DOOR: 7.00,         // Clear head height of interior doors (Z = 8.5 on plinth)
+  T_INT: 0.375 * WORLD_SCALE,         // Interior wall thickness: 4.5"
+  T_EXT: 0.750 * WORLD_SCALE,         // Exterior wall thickness: 9.0"
+  Z_STREET: 0.00,                     // Street level datum
+  Z_PLINTH: 1.50 * WORLD_SCALE,       // Raised plinth floor level
+  Z_CEIL: 11.50 * WORLD_SCALE,        // Underside of slab
+  T_SLAB: 0.50 * WORLD_SCALE,         // Slab thickness
+  Z_UPPER: 12.00 * WORLD_SCALE,       // Top of first floor slab
+  H_DOOR: 7.00 * WORLD_SCALE,         // Clear head height of interior doors
   PLOT_BOUNDS: {
-    X_MIN: -0.75,
-    X_MAX: 50.00,
-    Y_MIN: -0.75,
-    Y_MAX: 24.00,
-    Z_MIN: -0.50,
-    Z_MAX: 12.00
+    X_MIN: -0.75 * WORLD_SCALE,
+    X_MAX: 50.00 * WORLD_SCALE,
+    Y_MIN: -0.75 * WORLD_SCALE,
+    Y_MAX: 24.00 * WORLD_SCALE,
+    Z_MIN: -0.50 * WORLD_SCALE,
+    Z_MAX: 22.50 * WORLD_SCALE
   }
 };
 
 export const PLAYER_CONFIG = {
-  radius: 0.8,              // Clearance radius in feet
-  height: 5.8,              // Total human height in feet
-  eyeHeight: 5.3,           // Camera offset from feet in feet
-  speed: 8.5,               // Walk speed in ft/sec
-  sprintMultiplier: 1.7,    // Sprint multiplier
-  stepMaxHeight: 1.1,       // Maximum step height human can climb (e.g. risers)
-  groundSnapSpeed: 15.0     // Smoothing factor for floor elevation
+  radius: 0.5,                           // Collision cylinder radius (1.0 ft diameter, realistic human profile)
+  height: 5.8,                           // Total human height in feet (5'10")
+  eyeHeight: 5.3,                        // Camera offset from feet
+  speed: 10.5,                           // Walk speed in ft/sec (comfortable pace for scaled space)
+  sprintMultiplier: 1.75,                // Sprint multiplier
+  stepMaxHeight: 1.40 * WORLD_SCALE,     // Maximum step height human can climb (comfortable riser climbing)
+  groundSnapSpeed: 22.0                  // Smoothing factor for floor elevation
 };
 
 /**

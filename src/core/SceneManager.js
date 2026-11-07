@@ -7,9 +7,9 @@ export class SceneManager {
     // 1. Scene
     this.scene = new THREE.Scene();
 
-    // 2. Camera
+    // 2. Camera: 78° vertical FOV gives spacious, comfortable interior walkthrough
     this.camera = new THREE.PerspectiveCamera(
-      70,
+      78,
       window.innerWidth / window.innerHeight,
       0.1,
       1000

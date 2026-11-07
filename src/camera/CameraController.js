@@ -1,11 +1,13 @@
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { WORLD_SCALE } from '../config/constants.js';
 
 export class CameraController {
   constructor(camera, domElement) {
     this.camera = camera;
     this.domElement = domElement;
+    const s = WORLD_SCALE;
 
     this.isOrbitMode = false;
     this.modeChangeListeners = [];
@@ -17,14 +19,14 @@ export class CameraController {
     this.orbitControls = new OrbitControls(this.camera, this.domElement);
     this.orbitControls.enableDamping = true;
     this.orbitControls.dampingFactor = 0.06;
-    this.orbitControls.minDistance = 5;
-    this.orbitControls.maxDistance = 140;
+    this.orbitControls.minDistance = 5 * s;
+    this.orbitControls.maxDistance = 160 * s;
 
     // Allow polar angle to be 0 (looking straight down from above)
     this.orbitControls.minPolarAngle = 0;
     this.orbitControls.maxPolarAngle = Math.PI / 2 - 0.02;
 
-    this.orbitControls.target.set(25, 10, -12); // Center of 2-storey house plot
+    this.orbitControls.target.set(25 * s, 10 * s, -12 * s); // Center of 2-storey house plot
     this.orbitControls.enabled = false;
   }
 
@@ -34,14 +36,15 @@ export class CameraController {
 
   setMode(orbitMode, player) {
     this.isOrbitMode = orbitMode;
+    const s = WORLD_SCALE;
 
     if (this.isOrbitMode) {
       this.fpControls.unlock();
       this.orbitControls.enabled = true;
 
       // Position camera high above plot for dollhouse / bird's-eye architectural view
-      this.camera.position.set(25, 60, 24);
-      this.orbitControls.target.set(25, 10, -12);
+      this.camera.position.set(25 * s, 60 * s, 24 * s);
+      this.orbitControls.target.set(25 * s, 10 * s, -12 * s);
       this.orbitControls.update();
     } else {
       this.orbitControls.enabled = false;
@@ -49,7 +52,7 @@ export class CameraController {
       // Restore camera to player's eye position
       if (player) {
         this.camera.position.copy(player.position);
-        this.camera.lookAt(player.position.x + 6, player.position.y, player.position.z);
+        this.camera.lookAt(player.position.x + 6 * s, player.position.y, player.position.z);
       }
       this.fpControls.lock();
     }
