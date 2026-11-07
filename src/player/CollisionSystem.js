@@ -105,9 +105,9 @@ export class CollisionSystem {
       return 1.00 * s;
     }
 
-    // Garage floor (sloped wedge, Z = Y/30, range 0.00–0.50)
+    // Garage floor (flat ground level, Z = 0.00)
     if (xs >= 34.25 && xs <= 49.25 && ys >= 0.0 && ys <= 15.0) {
-      return ((ys / 15.0) * 0.50) * s;
+      return 0.00;
     }
 
     // Entrance steps (ground spec 7.1)

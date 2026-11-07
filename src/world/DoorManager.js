@@ -99,6 +99,18 @@ export const DOOR_SPECS = [
     openAngle: -Math.PI / 2  // Swings west into Kitchen along north wall
   },
   {
+    id: 'DF3',
+    name: 'Kitchen Balcony Door',
+    floor: 'first_floor',
+    material: 'M-ALU-FRAME',
+    isGlazed: true,
+    box: [11.170, 13.455, 4.140, 4.255, 12.040, 18.810],
+    axis: 'X',
+    hinge: [11.170, 4.198], // West edge
+    dir: '+X',
+    openAngle: Math.PI / 2   // Swings north into Kitchen along west wall
+  },
+  {
     id: 'DF4',
     name: 'Bathroom 1 Door',
     floor: 'first_floor',
@@ -141,6 +153,75 @@ export const DOOR_SPECS = [
     hinge: [40.062, 8.810], // North edge
     dir: '-Y',
     openAngle: Math.PI / 2   // Swings east into Mandir along north wall
+  },
+  {
+    id: 'DF8',
+    name: 'Master Bedroom Balcony Door',
+    floor: 'first_floor',
+    material: 'M-ALU-FRAME',
+    isGlazed: true,
+    box: [0.670, 3.080, 11.515, 11.630, 12.040, 18.810],
+    axis: 'X',
+    hinge: [3.080, 11.572], // East edge
+    dir: '-X',
+    openAngle: -Math.PI / 2  // Swings north into Master Bedroom along east wall
+  },
+
+  // ── EXTERIOR BOUNDARY GATES (HIGH REALISM) ──────────────────────────────
+  // Main Pedestrian Entrance Gate (Dual Leaves)
+  {
+    id: 'G1-L1',
+    pairId: 'G1',
+    name: 'Main Entrance Gate',
+    floor: 'ground_floor',
+    material: 'M-GATE-MS',
+    isGate: true,
+    box: [-0.435, -0.315, 0.020, 3.730, 0.150, 5.650],
+    axis: 'Y',
+    hinge: [-0.375, 0.020], // South post
+    dir: '+Y',
+    openAngle: -Math.PI / 2  // Swings east into Gate Landing
+  },
+  {
+    id: 'G1-L2',
+    pairId: 'G1',
+    name: 'Main Entrance Gate',
+    floor: 'ground_floor',
+    material: 'M-GATE-MS',
+    isGate: true,
+    box: [-0.435, -0.315, 3.770, 7.480, 0.150, 5.650],
+    axis: 'Y',
+    hinge: [-0.375, 7.480], // North post
+    dir: '-Y',
+    openAngle: Math.PI / 2   // Swings east into Gate Landing
+  },
+
+  // Main Garage Gate (Dual Heavy Leaves)
+  {
+    id: 'G2-L1',
+    pairId: 'G2',
+    name: 'Main Garage Gate',
+    floor: 'ground_floor',
+    material: 'M-GATE-MS',
+    isGate: true,
+    box: [36.520, 42.855, -0.435, -0.315, 0.100, 7.900],
+    axis: 'X',
+    hinge: [36.520, -0.375], // West pillar
+    dir: '+X',
+    openAngle: Math.PI / 2   // Swings north into Garage along west wall
+  },
+  {
+    id: 'G2-L2',
+    pairId: 'G2',
+    name: 'Main Garage Gate',
+    floor: 'ground_floor',
+    material: 'M-GATE-MS',
+    isGate: true,
+    box: [42.895, 49.230, -0.435, -0.315, 0.100, 7.900],
+    axis: 'X',
+    hinge: [49.230, -0.375], // East pillar
+    dir: '-X',
+    openAngle: -Math.PI / 2  // Swings north into Garage along east wall
   }
 ];
 
@@ -152,21 +233,27 @@ class DoorAudio {
     this.ctx = null;
   }
 
+  ensureContext() {
+    if (!this.ctx) {
+      const AudioClass = typeof window !== 'undefined' ? (window.AudioContext || window.webkitAudioContext) : null;
+      if (AudioClass) this.ctx = new AudioClass();
+    }
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+    return this.ctx;
+  }
+
   playLatch(isOpen) {
     try {
-      if (!this.ctx) {
-        const AudioClass = typeof window !== 'undefined' ? (window.AudioContext || window.webkitAudioContext) : null;
-        if (AudioClass) this.ctx = new AudioClass();
-      }
-      if (!this.ctx) return;
-      if (this.ctx.state === 'suspended') this.ctx.resume();
-
-      const now = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
+      const ctx = this.ensureContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
 
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(ctx.destination);
 
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(isOpen ? 175 : 125, now);
@@ -177,6 +264,43 @@ class DoorAudio {
 
       osc.start(now);
       osc.stop(now + 0.08);
+    } catch (_) {}
+  }
+
+  playGate(isOpen) {
+    try {
+      const ctx = this.ensureContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+
+      // Heavy low-frequency metallic clank
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+
+      osc1.type = 'triangle';
+      osc1.frequency.setValueAtTime(isOpen ? 95 : 75, now);
+      osc1.frequency.exponentialRampToValueAtTime(25, now + 0.18);
+      gain1.gain.setValueAtTime(0.28, now);
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+      // Metallic high ring
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+
+      osc2.type = 'sawtooth';
+      osc2.frequency.setValueAtTime(isOpen ? 380 : 290, now);
+      osc2.frequency.exponentialRampToValueAtTime(80, now + 0.12);
+      gain2.gain.setValueAtTime(0.14, now);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + 0.18);
+      osc2.stop(now + 0.12);
     } catch (_) {}
   }
 }
@@ -245,8 +369,14 @@ export class DoorManager {
       const edgeOutline = new THREE.LineSegments(edgeGeo, edgeMat);
       leafMesh.add(edgeOutline);
 
-      // Modern Stainless Steel Lever Handles (Both Sides)
-      this.addDoorHandles(leafMesh, spec, width, thickness, s);
+      // Modern Door Details (Gate vs Glazed Balcony vs Solid Flush Door)
+      if (spec.isGate) {
+        this.addGateDetails(leafMesh, spec, width, height, thickness, s);
+      } else if (spec.isGlazed) {
+        this.addGlazedBalconyDetails(leafMesh, spec, width, height, thickness, s);
+      } else {
+        this.addDoorHandles(leafMesh, spec, width, thickness, s);
+      }
 
       pivotGroup.add(leafMesh);
       this.rootGroup.add(pivotGroup);
@@ -289,6 +419,135 @@ export class DoorManager {
 
     scene.add(this.rootGroup);
     return this.rootGroup;
+  }
+
+  addGateDetails(leafMesh, spec, width, height, thickness, s) {
+    const msMat = this.materials.get('M-GATE-MS');
+    const ssMat = this.materials.get('M-STEEL-SS');
+
+    const group = new THREE.Group();
+    group.name = `GateDetails_${spec.id}`;
+
+    const isAxisX = spec.axis === 'X';
+    const frameTubeSize = 0.16 * s; // 2.2 inches RHS square tube
+    const kickHeight = Math.min(1.8 * s, height * 0.28);
+    const kickY = -height / 2 + kickHeight / 2;
+
+    // 1. Solid lower kick-plate (bottom section of gate)
+    const kickWidth = width - frameTubeSize;
+    const kickGeo = isAxisX
+      ? new THREE.BoxGeometry(kickWidth, kickHeight, thickness * 0.7)
+      : new THREE.BoxGeometry(thickness * 0.7, kickHeight, kickWidth);
+    const kickMesh = new THREE.Mesh(kickGeo, msMat);
+    kickMesh.position.set(0, kickY, 0);
+    kickMesh.castShadow = true;
+    group.add(kickMesh);
+
+    // Kick-plate architectural edge/trim
+    const kickEdge = new THREE.LineSegments(
+      new THREE.EdgesGeometry(kickGeo),
+      this.materials.getEdgeMaterial()
+    );
+    kickMesh.add(kickEdge);
+
+    // 2. Horizontal architectural slats / privacy louvers (middle to top section)
+    const numSlats = spec.isGate && width > 4.5 * s ? 9 : 7;
+    const slatStartY = kickY + kickHeight / 2 + 0.16 * s;
+    const slatEndY = height / 2 - 0.22 * s;
+    const slatSpacing = (slatEndY - slatStartY) / numSlats;
+    const slatHeight = 0.14 * s;
+    const slatThick = thickness * 0.6;
+    const slatWidth = width - frameTubeSize * 1.5;
+
+    for (let i = 0; i < numSlats; i++) {
+      const curY = slatStartY + i * slatSpacing;
+      const slatGeo = isAxisX
+        ? new THREE.BoxGeometry(slatWidth, slatHeight, slatThick)
+        : new THREE.BoxGeometry(slatThick, slatHeight, slatWidth);
+      const slatMesh = new THREE.Mesh(slatGeo, msMat);
+      slatMesh.position.set(0, curY, 0);
+      slatMesh.castShadow = true;
+      group.add(slatMesh);
+
+      const slatEdge = new THREE.LineSegments(
+        new THREE.EdgesGeometry(slatGeo),
+        this.materials.getEdgeMaterial()
+      );
+      slatMesh.add(slatEdge);
+    }
+
+    // 3. Contemporary Vertical Stainless Steel Pull Handle Bar (on meeting stile)
+    const handleBarHeight = Math.min(3.2 * s, height * 0.55);
+    const handleY = 0; // centered at mid-height
+    const handleOffset = (width / 2) - frameTubeSize * 1.2;
+    const barRadius = 0.038 * s;
+
+    [-1, 1].forEach(side => {
+      const barZ = (thickness / 2 + 0.06 * s) * side;
+      const barGeo = new THREE.CylinderGeometry(barRadius, barRadius, handleBarHeight, 12);
+      const barMesh = new THREE.Mesh(barGeo, ssMat);
+
+      // Standoff mount posts
+      const mountGeo = new THREE.CylinderGeometry(0.025 * s, 0.025 * s, 0.07 * s, 8);
+      const mountTop = new THREE.Mesh(mountGeo, ssMat);
+      const mountBot = new THREE.Mesh(mountGeo, ssMat);
+      mountTop.rotation.x = Math.PI / 2;
+      mountBot.rotation.x = Math.PI / 2;
+      mountTop.position.set(0, handleBarHeight * 0.38, (0.035 * s) * -side);
+      mountBot.position.set(0, -handleBarHeight * 0.38, (0.035 * s) * -side);
+
+      const barAssembly = new THREE.Group();
+      barAssembly.add(barMesh);
+      barAssembly.add(mountTop);
+      barAssembly.add(mountBot);
+
+      if (isAxisX) {
+        const xPos = (spec.dir === '+X') ? handleOffset : -handleOffset;
+        barAssembly.position.set(xPos, handleY, barZ);
+      } else {
+        const zPos = (spec.dir === '+Y') ? -handleOffset : handleOffset;
+        barAssembly.rotation.y = Math.PI / 2;
+        barAssembly.position.set(barZ, handleY, zPos);
+      }
+      group.add(barAssembly);
+    });
+
+    leafMesh.add(group);
+  }
+
+  addGlazedBalconyDetails(leafMesh, spec, width, height, thickness, s) {
+    const glassMat = this.materials.get('M-GLASS');
+    const aluMat = this.materials.get('M-ALU-FRAME');
+
+    const group = new THREE.Group();
+    group.name = `GlazedDetails_${spec.id}`;
+
+    const isAxisX = spec.axis === 'X';
+    const glassWidth = width - 0.34 * s;
+    const glassHeight = height - 0.40 * s;
+
+    // Large safety glass panel inset
+    const glassGeo = isAxisX
+      ? new THREE.BoxGeometry(glassWidth, glassHeight, thickness * 0.35)
+      : new THREE.BoxGeometry(thickness * 0.35, glassHeight, glassWidth);
+    const glassMesh = new THREE.Mesh(glassGeo, glassMat);
+    glassMesh.castShadow = false;
+    glassMesh.receiveShadow = true;
+    group.add(glassMesh);
+
+    // Horizontal aluminium mid-rail (at handle level, Y = -0.35 * s)
+    const railGeo = isAxisX
+      ? new THREE.BoxGeometry(glassWidth, 0.18 * s, thickness * 1.05)
+      : new THREE.BoxGeometry(thickness * 1.05, 0.18 * s, glassWidth);
+    const railMesh = new THREE.Mesh(railGeo, aluMat);
+    railMesh.position.set(0, -0.35 * s, 0);
+    railMesh.castShadow = true;
+    group.add(railMesh);
+
+    leafMesh.add(group);
+
+    // Also add sleek lever handles
+    this.addDoorHandles(leafMesh, spec, width, thickness, s);
   }
 
   addDoorHandles(leafMesh, spec, width, thickness, s) {
@@ -340,16 +599,29 @@ export class DoorManager {
   }
 
   toggleDoor(door) {
-    door.isOpen = !door.isOpen;
-    door.targetAngle = door.isOpen ? door.openAngle : 0;
-    door.isAnimating = true;
+    const newOpenState = !door.isOpen;
 
-    // Immediately toggle physical collider so doorway can be walked through
-    if (door.collider) {
-      door.collider.disabled = door.isOpen;
+    // Support paired leaves (e.g. double gate leaves G1 or G2)
+    const targets = door.spec.pairId
+      ? this.doors.filter(d => d.spec.pairId === door.spec.pairId)
+      : [door];
+
+    targets.forEach(d => {
+      d.isOpen = newOpenState;
+      d.targetAngle = d.isOpen ? d.openAngle : 0;
+      d.isAnimating = true;
+
+      // Immediately toggle physical collider so opening can be walked/driven through
+      if (d.collider) {
+        d.collider.disabled = d.isOpen;
+      }
+    });
+
+    if (door.spec.isGate) {
+      this.audio.playGate(newOpenState);
+    } else {
+      this.audio.playLatch(newOpenState);
     }
-
-    this.audio.playLatch(door.isOpen);
   }
 
   interact(ui, showPrompt = false) {
@@ -371,12 +643,13 @@ export class DoorManager {
     this.raycaster.setFromCamera(mouse, camera);
 
     const activeMeshes = this.interactiveMeshes.filter(m => m.visible);
-    const intersects = this.raycaster.intersectObjects(activeMeshes, false);
+    const intersects = this.raycaster.intersectObjects(activeMeshes, true);
 
     if (intersects.length > 0) {
-      const door = intersects[0].object.userData.door;
-      if (door) {
-        door.toggle();
+      let cur = intersects[0].object;
+      while (cur && !cur.userData?.door) cur = cur.parent;
+      if (cur && cur.userData?.door) {
+        cur.userData.door.toggle();
       }
     }
   }
@@ -412,25 +685,35 @@ export class DoorManager {
       return;
     }
 
-    const reachDistance = 6.5 * s; // ~8.8 ft reach
     const activeDoors = this.doors.filter(d => {
       if (!d.leafMesh.visible) return false;
       const dDist = playerPosition.distanceTo(d.worldCenter);
-      return dDist <= reachDistance;
+      const reach = d.spec.isGate ? (11.0 * s) : (6.5 * s);
+      return dDist <= reach;
     });
 
     let bestDoor = null;
     let closestDist = Infinity;
 
-    // Direct center reticle raycast
+    // Direct center reticle raycast (deep check through gate slats/frame)
     this.raycaster.setFromCamera({ x: 0, y: 0 }, camera);
     const candidateMeshes = activeDoors.map(d => d.leafMesh);
-    const intersects = this.raycaster.intersectObjects(candidateMeshes, false);
+    const intersects = this.raycaster.intersectObjects(candidateMeshes, true);
 
-    if (intersects.length > 0 && intersects[0].distance <= reachDistance) {
-      bestDoor = intersects[0].object.userData.door;
-    } else {
-      // Proximity & look-angle fallback (only when directly facing door leaf)
+    if (intersects.length > 0) {
+      let cur = intersects[0].object;
+      while (cur && !cur.userData?.door) cur = cur.parent;
+      if (cur && cur.userData?.door) {
+        const hitDoor = cur.userData.door;
+        const reach = hitDoor.spec.isGate ? (11.0 * s) : (6.5 * s);
+        if (intersects[0].distance <= reach) {
+          bestDoor = hitDoor;
+        }
+      }
+    }
+
+    if (!bestDoor) {
+      // Proximity & look-angle fallback
       const camDir = new THREE.Vector3();
       camera.getWorldDirection(camDir);
 
@@ -439,8 +722,10 @@ export class DoorManager {
         const dist = toDoor.length();
         toDoor.normalize();
         const dot = camDir.dot(toDoor);
+        const maxDist = door.spec.isGate ? (7.5 * s) : (4.5 * s);
+        const minDot = door.spec.isGate ? 0.70 : 0.82;
 
-        if (dot > 0.82 && dist <= 4.5 * s && dist < closestDist) {
+        if (dot > minDot && dist <= maxDist && dist < closestDist) {
           closestDist = dist;
           bestDoor = door;
         }

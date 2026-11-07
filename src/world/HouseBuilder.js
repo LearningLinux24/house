@@ -51,12 +51,6 @@ export class HouseBuilder {
       }
     });
 
-    // 2. Build garage sloped wedge using ShapeGeometry + ExtrudeGeometry
-    if (floorData.garageWedge) {
-      const wedgeMesh = this.createGarageWedge(floorData.garageWedge);
-      floorGroup.add(wedgeMesh);
-    }
-
     // 3. Build stair finishes and stainless steel railing (Ground Floor Spec Section 6)
     if (floorData.id === 'ground_floor') {
       const stairRailingGroup = this.buildStairRailing();
@@ -95,45 +89,6 @@ export class HouseBuilder {
       const edgeMesh = new THREE.LineSegments(edgeGeo, this.materials.getEdgeMaterial());
       mesh.add(edgeMesh);
     }
-
-    return mesh;
-  }
-
-  createGarageWedge(wedgeSpec) {
-    const { xMin, xMax, yMin, yMax, zMin, zMaxAtNorth, type } = wedgeSpec;
-    const lengthY = yMax - yMin;
-    const heightZ = zMaxAtNorth - zMin;
-    const widthX = xMax - xMin;
-
-    // Create 2D right-triangle shape in local XY
-    const shape = new THREE.Shape();
-    shape.moveTo(0, 0);
-    shape.lineTo(lengthY, 0);
-    shape.lineTo(lengthY, heightZ);
-    shape.closePath();
-
-    const extrudeSettings = {
-      depth: widthX,
-      bevelEnabled: false
-    };
-
-    const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    geo.computeVertexNormals();
-
-    const mat = this.materials.get(type || 'garage');
-    const mesh = new THREE.Mesh(geo, mat);
-
-    // Rotate so local X aligns with Three -Z (North), local Y is up, local Z is +X (East)
-    mesh.rotation.y = -Math.PI / 2;
-    mesh.position.set(xMin, zMin, -yMin);
-
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    mesh.userData = wedgeSpec;
-
-    const edgeGeo = new THREE.EdgesGeometry(geo);
-    const edgeMesh = new THREE.LineSegments(edgeGeo, this.materials.getEdgeMaterial());
-    mesh.add(edgeMesh);
 
     return mesh;
   }

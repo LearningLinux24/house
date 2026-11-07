@@ -106,18 +106,6 @@ export const GROUND_FLOOR_DATA = {
     { id: 'SL4-E', box: [32.375, 33.875, 19.125, 22.875, 11.500, 12.000], type: 'slab' }
   ],
 
-  // Garage Floor Triangular Prism Wedge (GF)
-  garageWedge: {
-    id: 'GF',
-    xMin: 34.250,
-    xMax: 49.250,
-    yMin: 0.000,
-    yMax: 15.000,
-    zMin: 0.000,
-    zMaxAtNorth: 0.500,
-    type: 'garage'
-  },
-
   // Rooms and Zones for Spatial Detection (Section 4)
   zones: [
     { id: 'Z1', name: 'Gate Landing', bounds: [0.000, 3.250, 0.000, 7.500] },

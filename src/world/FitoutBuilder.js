@@ -84,8 +84,14 @@ export class FitoutBuilder {
   }
 
   createFitoutMesh(item) {
-    // Skip door leaves and handles because they are dynamically built and animated by DoorManager
-    if (item.type === 'door_leaf' || item.type === 'door-leaf' || item.id === 'D6-HANDLE') {
+    // Skip door leaves, handles, and boundary gates because they are dynamically built and animated by DoorManager
+    if (
+      item.type === 'door_leaf' ||
+      item.type === 'door-leaf' ||
+      item.id === 'D6-HANDLE' ||
+      item.category === 'gates' ||
+      item.type === 'gate'
+    ) {
       return null;
     }
 
