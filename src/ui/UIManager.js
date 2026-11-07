@@ -32,6 +32,7 @@ export class UIManager {
       // Layer Controls
       btnToggleRoof: document.getElementById('btn-toggle-roof'),
       btnToggleLabels: document.getElementById('btn-toggle-labels'),
+      btnTogglePrompts: document.getElementById('btn-toggle-prompts'),
       btnToggleFurniture: document.getElementById('btn-toggle-furniture'),
 
       // Floor Level Controls
@@ -106,6 +107,12 @@ export class UIManager {
     if (this.elements.btnToggleLabels) {
       this.elements.btnToggleLabels.addEventListener('click', () => {
         this.onToggleLabels();
+      });
+    }
+
+    if (this.elements.btnTogglePrompts) {
+      this.elements.btnTogglePrompts.addEventListener('click', () => {
+        if (this.callbacks.onTogglePrompts) this.callbacks.onTogglePrompts();
       });
     }
 
@@ -346,6 +353,13 @@ export class UIManager {
     if (this.elements.btnToggleLabels) {
       this.elements.btnToggleLabels.innerHTML = labelsVisible ? '🏷️ Labels: ON (L)' : '🏷️ Labels: OFF (L)';
       this.elements.btnToggleLabels.classList.toggle('active', labelsVisible);
+    }
+  }
+
+  setPromptsButtonState(promptsVisible) {
+    if (this.elements.btnTogglePrompts) {
+      this.elements.btnTogglePrompts.innerHTML = promptsVisible ? '💬 Prompts: ON (H)' : '💬 Prompts: OFF (H)';
+      this.elements.btnTogglePrompts.classList.toggle('active', promptsVisible);
     }
   }
 

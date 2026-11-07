@@ -66,6 +66,9 @@ export class InputManager {
       case 'KeyE':
         this.emit('interact');
         break;
+      case 'KeyH':
+        this.emit('togglePrompts');
+        break;
       case 'KeyR':
         this.emit('resetPlayer');
         break;

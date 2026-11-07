@@ -91,6 +91,7 @@ export class Engine {
     // 11. UI State
     this.roofVisible = true;
     this.labelsVisible = false;
+    this.promptsVisible = false;
     this.furnitureVisible = true;
 
     // 12. UI Manager
@@ -109,6 +110,9 @@ export class Engine {
       },
       onToggleLabels: () => {
         this.toggleLabels();
+      },
+      onTogglePrompts: () => {
+        this.togglePrompts();
       },
       onToggleFurniture: () => {
         this.toggleFurniture();
@@ -152,8 +156,9 @@ export class Engine {
     this.input.on('toggleView', () => this.toggleView());
     this.input.on('toggleRoof', () => this.toggleRoof());
     this.input.on('toggleLabels', () => this.toggleLabels());
+    this.input.on('togglePrompts', () => this.togglePrompts());
     this.input.on('toggleFurniture', () => this.toggleFurniture());
-    this.input.on('interact', () => this.doorManager.interact(this.ui));
+    this.input.on('interact', () => this.doorManager.interact(this.ui, this.promptsVisible));
     this.input.on('resetPlayer', () => this.resetPlayer());
     this.input.on('filterFloor', (filter) => this.setFloorFilter(filter));
 
@@ -168,7 +173,7 @@ export class Engine {
       if (dist > 5) return; // Ignore drag operations (e.g. orbit rotation)
 
       if (this.cameraCtrl.fpControls.isLocked) {
-        this.doorManager.interact(this.ui);
+        this.doorManager.interact(this.ui, this.promptsVisible);
       } else if (this.cameraCtrl.isOrbitMode) {
         this.doorManager.handleOrbitClick(e, this.sceneManager.camera);
       }
@@ -194,7 +199,21 @@ export class Engine {
 
   toggleLabels() {
     this.labelsVisible = this.labels.toggle();
+    // Synchronize prompt visibility with labels
+    this.promptsVisible = this.labelsVisible;
     this.ui.setLabelsButtonState(this.labelsVisible);
+    this.ui.setPromptsButtonState(this.promptsVisible);
+    if (!this.promptsVisible) {
+      this.ui.hideInteractionPrompt();
+    }
+  }
+
+  togglePrompts() {
+    this.promptsVisible = !this.promptsVisible;
+    this.ui.setPromptsButtonState(this.promptsVisible);
+    if (!this.promptsVisible) {
+      this.ui.hideInteractionPrompt();
+    }
   }
 
   toggleFurniture() {
@@ -255,7 +274,8 @@ export class Engine {
       this.sceneManager.camera,
       this.player.position,
       isFPActive,
-      this.ui
+      this.ui,
+      this.promptsVisible
     );
 
     // Extract current camera yaw angle

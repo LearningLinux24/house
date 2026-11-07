@@ -352,11 +352,13 @@ export class DoorManager {
     this.audio.playLatch(door.isOpen);
   }
 
-  interact(ui) {
+  interact(ui, showPrompt = false) {
     if (this.targetedDoor) {
       this.targetedDoor.toggle();
-      if (ui) {
+      if (ui && showPrompt) {
         ui.showInteractionPrompt(`[E] ${this.targetedDoor.isOpen ? 'Close' : 'Open'} ${this.targetedDoor.name}`);
+      } else if (ui) {
+        ui.hideInteractionPrompt();
       }
     }
   }
@@ -379,7 +381,7 @@ export class DoorManager {
     }
   }
 
-  update(delta, camera, playerPosition, isFPActive, ui) {
+  update(delta, camera, playerPosition, isFPActive, ui, showPrompt = false) {
     const s = WORLD_SCALE;
     const animSpeed = 5.5;
 
@@ -410,7 +412,7 @@ export class DoorManager {
       return;
     }
 
-    const reachDistance = 9.0 * s;
+    const reachDistance = 6.5 * s; // ~8.8 ft reach
     const activeDoors = this.doors.filter(d => {
       if (!d.leafMesh.visible) return false;
       const dDist = playerPosition.distanceTo(d.worldCenter);
@@ -428,7 +430,7 @@ export class DoorManager {
     if (intersects.length > 0 && intersects[0].distance <= reachDistance) {
       bestDoor = intersects[0].object.userData.door;
     } else {
-      // Proximity & look-angle fallback
+      // Proximity & look-angle fallback (only when directly facing door leaf)
       const camDir = new THREE.Vector3();
       camera.getWorldDirection(camDir);
 
@@ -438,22 +440,21 @@ export class DoorManager {
         toDoor.normalize();
         const dot = camDir.dot(toDoor);
 
-        if (dot > 0.45 && dist < closestDist) {
+        if (dot > 0.82 && dist <= 4.5 * s && dist < closestDist) {
           closestDist = dist;
           bestDoor = door;
         }
       });
     }
 
-    if (bestDoor !== this.targetedDoor) {
-      this.targetedDoor = bestDoor;
-      if (this.targetedDoor && ui) {
+    this.targetedDoor = bestDoor;
+
+    if (ui) {
+      if (this.targetedDoor && showPrompt) {
         ui.showInteractionPrompt(`[E] ${this.targetedDoor.isOpen ? 'Close' : 'Open'} ${this.targetedDoor.name}`);
-      } else if (ui) {
+      } else {
         ui.hideInteractionPrompt();
       }
-    } else if (this.targetedDoor && ui) {
-      ui.showInteractionPrompt(`[E] ${this.targetedDoor.isOpen ? 'Close' : 'Open'} ${this.targetedDoor.name}`);
     }
   }
 
