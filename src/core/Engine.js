@@ -6,6 +6,7 @@ import { MaterialManager } from '../world/Materials.js';
 import { HouseBuilder } from '../world/HouseBuilder.js';
 import { FitoutBuilder } from '../world/FitoutBuilder.js';
 import { RoomLabelsManager } from '../world/RoomLabels.js';
+import { DoorManager } from '../world/DoorManager.js';
 import { CollisionSystem } from '../player/CollisionSystem.js';
 import { InputManager } from '../player/InputManager.js';
 import { Player } from '../player/Player.js';
@@ -69,6 +70,10 @@ export class Engine {
     const allZones = getAllZones();
     const allColliders = getAllColliders();
     this.collision = new CollisionSystem(allZones, allColliders);
+
+    // 7b. Interactive Doors Manager (12 Residential Doors with Dynamic Colliders)
+    this.doorManager = new DoorManager(this.materials, this.collision);
+    this.doorManager.buildDoors(this.sceneManager.scene);
 
     // 8. FPS Player
     this.spawnPoint = getSpawnPoint();
@@ -148,8 +153,26 @@ export class Engine {
     this.input.on('toggleRoof', () => this.toggleRoof());
     this.input.on('toggleLabels', () => this.toggleLabels());
     this.input.on('toggleFurniture', () => this.toggleFurniture());
+    this.input.on('interact', () => this.doorManager.interact(this.ui));
     this.input.on('resetPlayer', () => this.resetPlayer());
     this.input.on('filterFloor', (filter) => this.setFloorFilter(filter));
+
+    // Mouse click door interaction (FP click + Orbit raycast click)
+    let pointerDownPos = { x: 0, y: 0 };
+    window.addEventListener('pointerdown', (e) => {
+      pointerDownPos = { x: e.clientX, y: e.clientY };
+    });
+
+    window.addEventListener('click', (e) => {
+      const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+      if (dist > 5) return; // Ignore drag operations (e.g. orbit rotation)
+
+      if (this.cameraCtrl.fpControls.isLocked) {
+        this.doorManager.interact(this.ui);
+      } else if (this.cameraCtrl.isOrbitMode) {
+        this.doorManager.handleOrbitClick(e, this.sceneManager.camera);
+      }
+    });
 
     // Position initial camera
     this.sceneManager.camera.position.copy(this.player.position);
@@ -184,6 +207,9 @@ export class Engine {
     this.houseBuilder.setFloorFilter(filter);
     this.fitoutBuilder.setFloorFilter(filter);
     this.labels.setFloorFilter(filter);
+    if (this.doorManager) {
+      this.doorManager.setFloorFilter(filter);
+    }
     this.ui.setFloorButtonState(filter);
 
     if (autoSwitchToOrbit && !this.cameraCtrl.isOrbitMode) {
@@ -221,6 +247,16 @@ export class Engine {
 
     // Animate ceiling fan blades & dynamic light assignment
     this.fitoutBuilder.update(delta, this.sceneManager.camera.position);
+
+    // Update interactive doors (hinge swing lerping + reticle proximity targeting)
+    const isFPActive = !this.cameraCtrl.isOrbitMode && this.cameraCtrl.fpControls.isLocked;
+    this.doorManager.update(
+      delta,
+      this.sceneManager.camera,
+      this.player.position,
+      isFPActive,
+      this.ui
+    );
 
     // Extract current camera yaw angle
     const euler = new THREE.Euler(0, 0, 0, 'YXZ');

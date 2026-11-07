@@ -18,6 +18,10 @@ export class UIManager {
       hudFloor: document.getElementById('hud-floor'),
       modeBadge: document.getElementById('hud-mode-badge'),
 
+      // Interaction Prompt
+      interactionPrompt: document.getElementById('interaction-prompt'),
+      interactionLabel: document.getElementById('interaction-label'),
+
       // Top-Right Minimap
       minimapCanvas: document.getElementById('minimap-canvas'),
 
@@ -357,6 +361,19 @@ export class UIManager {
     if (this.elements.btnFloorAll) this.elements.btnFloorAll.classList.toggle('active', filter === 'all');
     if (this.elements.btnFloorGf) this.elements.btnFloorGf.classList.toggle('active', filter === 'ground_floor');
     if (this.elements.btnFloorFf) this.elements.btnFloorFf.classList.toggle('active', filter === 'first_floor');
+  }
+
+  showInteractionPrompt(text) {
+    if (this.elements.interactionPrompt && this.elements.interactionLabel) {
+      this.elements.interactionLabel.textContent = text;
+      this.elements.interactionPrompt.style.display = 'flex';
+    }
+  }
+
+  hideInteractionPrompt() {
+    if (this.elements.interactionPrompt) {
+      this.elements.interactionPrompt.style.display = 'none';
+    }
   }
 
   hideBlocker() {

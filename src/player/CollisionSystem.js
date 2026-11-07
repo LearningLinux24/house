@@ -138,6 +138,10 @@ export class CollisionSystem {
     const s = this.scale;
 
     for (const item of this.colliders) {
+      if (item.disabled) {
+        continue;
+      }
+
       const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
 
       // Skip boxes that don't vertically intersect the player torso

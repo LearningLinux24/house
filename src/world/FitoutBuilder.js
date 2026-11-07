@@ -46,6 +46,7 @@ export class FitoutBuilder {
     // 1. Build box-based fitout items
     fitoutData.forEach(item => {
       const mesh = this.createFitoutMesh(item);
+      if (!mesh) return;
       this.allFitoutObjects.push(mesh);
       const cat = item.category || 'furniture';
 
@@ -83,6 +84,11 @@ export class FitoutBuilder {
   }
 
   createFitoutMesh(item) {
+    // Skip door leaves and handles because they are dynamically built and animated by DoorManager
+    if (item.type === 'door_leaf' || item.type === 'door-leaf' || item.id === 'D6-HANDLE') {
+      return null;
+    }
+
     let [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
     const s = WORLD_SCALE;
 

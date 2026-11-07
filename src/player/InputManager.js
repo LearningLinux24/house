@@ -63,6 +63,9 @@ export class InputManager {
       case 'KeyF':
         this.emit('toggleFurniture');
         break;
+      case 'KeyE':
+        this.emit('interact');
+        break;
       case 'KeyR':
         this.emit('resetPlayer');
         break;
