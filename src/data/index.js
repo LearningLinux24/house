@@ -110,7 +110,8 @@ export function getAllColliders() {
       if (
         solid.type.startsWith('wall') ||
         solid.type === 'lintel' ||
-        solid.type === 'duct'
+        solid.type === 'duct' ||
+        solid.type === 'railing_collider'
       ) {
         colliders.push(solid);
       }

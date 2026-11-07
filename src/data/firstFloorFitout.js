@@ -7,35 +7,15 @@
  * Coordinate system:  [xmin, xmax, ymin, ymax, zmin, zmax]  absolute feet, Z-up.
  * First floor level:  Z = 12.00.  Roof slab underside: Z = 22.00.
  *
- * All boxes are RAW (unscaled).  src/data/index.js multiplies every coordinate
- * by WORLD_SCALE = 1.35 before the values reach Three.js.
- *
- * Build order follows spec section 12.
+ * All boxes are RAW (unscaled). src/data/index.js multiplies every coordinate
+ * by WORLD_SCALE = 1.35 before values reach Three.js.
  */
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SECTION 3 GEOMETRY OVERRIDES
-// These replace or supplement boxes that exist in firstFloorData.js.
-// They are placed in the fitout array so they are rendered as fitout meshes.
+// DUCT / SHAFT WALLS & CAP (OF3)
 // ─────────────────────────────────────────────────────────────────────────────
 
-// OF1 – kitchen/balcony wall + lintel
-// F-INT-04 is shortened in firstFloorData.js to [3.250, 11.000, 4.000, 4.375, 12.000, 22.000].
-// Add the lintel above the balcony door opening (X 11.0–13.625):
-const OF1_OVERRIDES = [
-  { id: 'F-LIN-07', name: 'Lintel above kitchen balcony door', category: 'furniture', type: 'lintel', box: [11.000, 13.625, 4.000, 4.375, 19.000, 22.000], material: 'M-EXT-PLASTER' },
-];
-
-// OF2 – balcony parapet splits (replaces full-height F-EXT-W and F-EXT-S)
-const OF2_OVERRIDES = [
-  { id: 'F-EXT-W-LOW',  name: 'West balcony parapet (3 ft)',         category: 'furniture', type: 'wall-ext', box: [-0.750, 0.000,  0.000, 11.750, 12.000, 15.000], material: 'M-EXT-PLASTER' },
-  { id: 'F-EXT-W-UP',   name: 'West exterior wall upper (full h)',   category: 'furniture', type: 'wall-ext', box: [-0.750, 0.000, 11.750, 23.250, 12.000, 22.000], material: 'M-EXT-PLASTER' },
-  { id: 'F-EXT-S-LOW',  name: 'South balcony parapet (3 ft)',        category: 'furniture', type: 'wall-ext', box: [-0.750, 14.000, -0.750, 0.000, 12.000, 15.000], material: 'M-EXT-PLASTER' },
-  { id: 'F-EXT-S-UP',   name: 'South exterior wall upper (full h)',  category: 'furniture', type: 'wall-ext', box: [14.000, 50.000, -0.750,  0.000, 12.000, 22.000], material: 'M-EXT-PLASTER' },
-];
-
-// OF3 – shaft/duct walls + jali cap
-const OF3_OVERRIDES = [
+const DUCT_WALLS = [
   { id: 'DT-F-S',   name: 'Duct wall south',  category: 'furniture', type: 'duct', box: [27.625, 32.375, 19.125, 19.500, 12.000, 22.500], material: 'M-PAINT-INT' },
   { id: 'DT-F-N',   name: 'Duct wall north',  category: 'furniture', type: 'duct', box: [27.625, 32.375, 22.500, 22.875, 12.000, 22.500], material: 'M-PAINT-INT' },
   { id: 'DT-F-W',   name: 'Duct wall west',   category: 'furniture', type: 'duct', box: [27.625, 28.000, 19.500, 22.500, 12.000, 22.500], material: 'M-PAINT-INT' },
@@ -43,15 +23,8 @@ const OF3_OVERRIDES = [
   { id: 'DT-F-CAP', name: 'Duct jali cap',    category: 'furniture', type: 'duct', box: [28.000, 32.000, 19.500, 22.500, 22.400, 22.500], material: 'M-STEEL-SS' },
 ];
 
-// OF6 – master bedroom balcony wall splits + lintel
-const OF6_OVERRIDES = [
-  { id: 'F-INT-02-W', name: 'Master bed west wall west stub',  category: 'furniture', type: 'wall-int', box: [0.000,  0.500, 11.375, 11.750, 12.000, 22.000], material: 'M-PAINT-INT' },
-  { id: 'F-INT-02-E', name: 'Master bed west wall east stub',  category: 'furniture', type: 'wall-int', box: [3.250, 14.000, 11.375, 11.750, 12.000, 22.000], material: 'M-PAINT-INT' },
-  { id: 'F-LIN-08',   name: 'Lintel above master balcony door',category: 'furniture', type: 'lintel',   box: [0.500,  3.250, 11.375, 11.750, 19.000, 22.000], material: 'M-PAINT-INT' },
-];
-
 // ─────────────────────────────────────────────────────────────────────────────
-// SECTION 4 – WINDOWS & VENTILATORS (glass fill + frame)
+// SECTION 4 – WINDOWS & VENTILATORS
 // ─────────────────────────────────────────────────────────────────────────────
 
 const WINDOWS = [
@@ -80,7 +53,9 @@ const WINDOWS = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SECTION 5 – DOORS (frames + leaves)
+// SECTION 5 – DOORS & FRAMES
+// Note: Balcony doors DF3 and DF8 retain clean architectural frames while leaving
+// the walk-through completely open and unobstructed into the balcony.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const DOORS = [
@@ -89,49 +64,84 @@ const DOORS = [
   { id: 'DF1-FJ2',  name: 'DF1 jamb north',   category: 'doors', type: 'door-frame', box: [13.625, 14.000, 14.830, 15.000, 12.000, 18.830], material: 'M-FRAME-WOOD' },
   { id: 'DF1-FH',   name: 'DF1 head',         category: 'doors', type: 'door-frame', box: [13.625, 14.000, 11.750, 15.000, 18.830, 19.000], material: 'M-FRAME-WOOD' },
   { id: 'DF1-LEAF', name: 'DF1 leaf',         category: 'doors', type: 'door-leaf',  box: [13.755, 13.870, 11.940, 14.810, 12.040, 18.810], material: 'M-DOOR-TEAK' },
+
   // DF2 – Kitchen door (teak)
   { id: 'DF2-FJ1',  name: 'DF2 jamb south',   category: 'doors', type: 'door-frame', box: [13.625, 14.000,  8.375,  8.545, 12.000, 18.830], material: 'M-FRAME-WOOD' },
   { id: 'DF2-FJ2',  name: 'DF2 jamb north',   category: 'doors', type: 'door-frame', box: [13.625, 14.000, 11.205, 11.375, 12.000, 18.830], material: 'M-FRAME-WOOD' },
   { id: 'DF2-FH',   name: 'DF2 head',         category: 'doors', type: 'door-frame', box: [13.625, 14.000,  8.375, 11.375, 18.830, 19.000], material: 'M-FRAME-WOOD' },
   { id: 'DF2-LEAF', name: 'DF2 leaf',         category: 'doors', type: 'door-leaf',  box: [13.755, 13.870,  8.565, 11.185, 12.040, 18.810], material: 'M-DOOR-TEAK' },
-  // DF3 – Kitchen balcony door (glazed aluminium)
+
+  // DF3 – Kitchen to balcony door frame (open walk-through)
   { id: 'DF3-FJ1',  name: 'DF3 jamb west',    category: 'doors', type: 'door-frame', box: [11.000, 11.170, 4.000, 4.375, 12.000, 18.830], material: 'M-ALU-FRAME' },
   { id: 'DF3-FJ2',  name: 'DF3 jamb east',    category: 'doors', type: 'door-frame', box: [13.455, 13.625, 4.000, 4.375, 12.000, 18.830], material: 'M-ALU-FRAME' },
   { id: 'DF3-FH',   name: 'DF3 head',         category: 'doors', type: 'door-frame', box: [11.000, 13.625, 4.000, 4.375, 18.830, 19.000], material: 'M-ALU-FRAME' },
-  { id: 'DF3-LEAF', name: 'DF3 glass leaf',   category: 'doors', type: 'door-leaf',  box: [11.190, 13.435, 4.130, 4.245, 12.040, 18.810], material: 'M-GLASS' },
+
   // DF4 – Bathroom 1 door (PVC)
   { id: 'DF4-FJ1',  name: 'DF4 jamb west',    category: 'doors', type: 'door-frame', box: [17.625, 17.795, 18.875, 19.250, 12.000, 18.830], material: 'M-FRAME-WOOD' },
   { id: 'DF4-FJ2',  name: 'DF4 jamb east',    category: 'doors', type: 'door-frame', box: [19.955, 20.125, 18.875, 19.250, 12.000, 18.830], material: 'M-FRAME-WOOD' },
   { id: 'DF4-FH',   name: 'DF4 head',         category: 'doors', type: 'door-frame', box: [17.625, 20.125, 18.875, 19.250, 18.830, 19.000], material: 'M-FRAME-WOOD' },
   { id: 'DF4-LEAF', name: 'DF4 PVC leaf',     category: 'doors', type: 'door-leaf',  box: [17.815, 19.935, 19.005, 19.120, 12.040, 18.810], material: 'M-DOOR-PVC' },
+
   // DF5 – Bathroom 2 door (PVC)
   { id: 'DF5-FJ1',  name: 'DF5 jamb west',    category: 'doors', type: 'door-frame', box: [37.125, 37.295, 18.875, 19.250, 12.000, 18.830], material: 'M-FRAME-WOOD' },
   { id: 'DF5-FJ2',  name: 'DF5 jamb east',    category: 'doors', type: 'door-frame', box: [39.705, 39.875, 18.875, 19.250, 12.000, 18.830], material: 'M-FRAME-WOOD' },
   { id: 'DF5-FH',   name: 'DF5 head',         category: 'doors', type: 'door-frame', box: [37.125, 39.875, 18.875, 19.250, 18.830, 19.000], material: 'M-FRAME-WOOD' },
   { id: 'DF5-LEAF', name: 'DF5 PVC leaf',     category: 'doors', type: 'door-leaf',  box: [37.315, 39.685, 19.005, 19.120, 12.040, 18.810], material: 'M-DOOR-PVC' },
+
   // DF6 – Child bedroom door (teak)
   { id: 'DF6-FJ1',  name: 'DF6 jamb south',   category: 'doors', type: 'door-frame', box: [39.875, 40.250,  9.375,  9.545, 12.000, 18.830], material: 'M-FRAME-WOOD' },
   { id: 'DF6-FJ2',  name: 'DF6 jamb north',   category: 'doors', type: 'door-frame', box: [39.875, 40.250, 12.705, 12.875, 12.000, 18.830], material: 'M-FRAME-WOOD' },
   { id: 'DF6-FH',   name: 'DF6 head',         category: 'doors', type: 'door-frame', box: [39.875, 40.250,  9.375, 12.875, 18.830, 19.000], material: 'M-FRAME-WOOD' },
   { id: 'DF6-LEAF', name: 'DF6 leaf',         category: 'doors', type: 'door-leaf',  box: [40.005, 40.120,  9.565, 12.685, 12.040, 18.810], material: 'M-DOOR-TEAK' },
+
   // DF7 – Mandir door (teak)
   { id: 'DF7-FJ1',  name: 'DF7 jamb south',   category: 'doors', type: 'door-frame', box: [39.875, 40.250, 6.500, 6.670, 12.000, 18.830], material: 'M-FRAME-WOOD' },
   { id: 'DF7-FJ2',  name: 'DF7 jamb north',   category: 'doors', type: 'door-frame', box: [39.875, 40.250, 8.830, 9.000, 12.000, 18.830], material: 'M-FRAME-WOOD' },
   { id: 'DF7-FH',   name: 'DF7 head',         category: 'doors', type: 'door-frame', box: [39.875, 40.250, 6.500, 9.000, 18.830, 19.000], material: 'M-FRAME-WOOD' },
   { id: 'DF7-LEAF', name: 'DF7 leaf',         category: 'doors', type: 'door-leaf',  box: [40.005, 40.120, 6.690, 8.810, 12.040, 18.810], material: 'M-DOOR-TEAK' },
-  // DF8 – Master bedroom balcony door (glazed aluminium)
+
+  // DF8 – Master bedroom to balcony door frame (open walk-through)
   { id: 'DF8-FJ1',  name: 'DF8 jamb west',    category: 'doors', type: 'door-frame', box: [0.500, 0.670, 11.375, 11.750, 12.000, 18.830], material: 'M-ALU-FRAME' },
   { id: 'DF8-FJ2',  name: 'DF8 jamb east',    category: 'doors', type: 'door-frame', box: [3.080, 3.250, 11.375, 11.750, 12.000, 18.830], material: 'M-ALU-FRAME' },
   { id: 'DF8-FH',   name: 'DF8 head',         category: 'doors', type: 'door-frame', box: [0.500, 3.250, 11.375, 11.750, 18.830, 19.000], material: 'M-ALU-FRAME' },
-  { id: 'DF8-LEAF', name: 'DF8 glass leaf',   category: 'doors', type: 'door-leaf',  box: [0.690, 3.060, 11.505, 11.620, 12.040, 18.810], material: 'M-GLASS' },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SECTION 6 – RAILINGS
+// SECTION 6 – RAILINGS (Stair Guard Rails & Full-Height Balcony Railings)
+// Full 3.5 ft modern stainless steel railings around balcony perimeter (no walls!)
 // ─────────────────────────────────────────────────────────────────────────────
 
+function createBalconyBalusters() {
+  const balusters = [];
+  // South run: from X = -0.40 to 13.70 at step ~0.40 ft (Y = -0.65)
+  for (let x = -0.40; x <= 13.70; x += 0.40) {
+    const rx = Math.round(x * 1000) / 1000;
+    balusters.push({
+      id: `BAL-S-B-${rx}`,
+      name: 'Balcony south baluster',
+      category: 'furniture',
+      type: 'railing',
+      box: [rx - 0.018, rx + 0.018, -0.668, -0.632, 12.160, 15.420],
+      material: 'M-STEEL-SS'
+    });
+  }
+  // West run: from Y = -0.40 to 11.50 at step ~0.40 ft (X = -0.65)
+  for (let y = -0.40; y <= 11.50; y += 0.40) {
+    const ry = Math.round(y * 1000) / 1000;
+    balusters.push({
+      id: `BAL-W-B-${ry}`,
+      name: 'Balcony west baluster',
+      category: 'furniture',
+      type: 'railing',
+      box: [-0.668, -0.632, ry - 0.018, ry + 0.018, 12.160, 15.420],
+      material: 'M-STEEL-SS'
+    });
+  }
+  return balusters;
+}
+
 const RAILINGS = [
-  // 6.2 Guard rail posts around floor opening (over ground flight)
+  // 6.2 Guard rail around stair floor opening (over ground flight)
   { id: 'GR-S-P1', name: 'Guard rail south post 1', category: 'furniture', type: 'railing', box: [30.125, 30.225, 6.900, 7.000, 12.000, 15.000], material: 'M-STEEL-SS' },
   { id: 'GR-S-P2', name: 'Guard rail south post 2', category: 'furniture', type: 'railing', box: [31.950, 32.050, 6.900, 7.000, 12.000, 15.000], material: 'M-STEEL-SS' },
   { id: 'GR-S-P3', name: 'Guard rail south post 3', category: 'furniture', type: 'railing', box: [33.775, 33.875, 6.900, 7.000, 12.000, 15.000], material: 'M-STEEL-SS' },
@@ -143,27 +153,34 @@ const RAILINGS = [
   { id: 'GR-W-RAIL', name: 'Guard rail west top rail', category: 'furniture', type: 'railing', box: [30.030, 30.090, 7.000, 13.250, 14.935, 14.965], material: 'M-STEEL-SS' },
   { id: 'GR-W-MID',  name: 'Guard rail west mid rail',  category: 'furniture', type: 'railing', box: [30.040, 30.085, 7.000, 13.250, 13.470, 13.530], material: 'M-STEEL-SS' },
 
-  // 6.3 Balcony railing on parapet top (Z 15.00 to 16.00) – MS
-  // South run: Y = -0.375, X from -0.75 to 14.0
-  { id: 'BAL-S-P1', name: 'Balcony south railing post 1', category: 'furniture', type: 'railing', box: [-0.750, -0.650, -0.425, -0.325, 15.000, 16.000], material: 'M-GRILL-MS' },
-  { id: 'BAL-S-P2', name: 'Balcony south railing post 2', category: 'furniture', type: 'railing', box: [ 2.180,  2.280, -0.425, -0.325, 15.000, 16.000], material: 'M-GRILL-MS' },
-  { id: 'BAL-S-P3', name: 'Balcony south railing post 3', category: 'furniture', type: 'railing', box: [ 5.110,  5.210, -0.425, -0.325, 15.000, 16.000], material: 'M-GRILL-MS' },
-  { id: 'BAL-S-P4', name: 'Balcony south railing post 4', category: 'furniture', type: 'railing', box: [ 8.040,  8.140, -0.425, -0.325, 15.000, 16.000], material: 'M-GRILL-MS' },
-  { id: 'BAL-S-P5', name: 'Balcony south railing post 5', category: 'furniture', type: 'railing', box: [10.970, 11.070, -0.425, -0.325, 15.000, 16.000], material: 'M-GRILL-MS' },
-  { id: 'BAL-S-P6', name: 'Balcony south railing post 6', category: 'furniture', type: 'railing', box: [13.900, 14.000, -0.425, -0.325, 15.000, 16.000], material: 'M-GRILL-MS' },
-  { id: 'BAL-S-RAIL', name: 'Balcony south top rail', category: 'furniture', type: 'railing', box: [-0.750, 14.000, -0.410, -0.340, 15.930, 15.965], material: 'M-GRILL-MS' },
-  { id: 'BAL-S-MID',  name: 'Balcony south mid rail',  category: 'furniture', type: 'railing', box: [-0.750, 14.000, -0.415, -0.335, 15.470, 15.530], material: 'M-GRILL-MS' },
-  // West run: X = -0.375, Y from -0.75 to 11.75
-  { id: 'BAL-W-P1', name: 'Balcony west railing post 1', category: 'furniture', type: 'railing', box: [-0.425, -0.325, -0.750, -0.650, 15.000, 16.000], material: 'M-GRILL-MS' },
-  { id: 'BAL-W-P2', name: 'Balcony west railing post 2', category: 'furniture', type: 'railing', box: [-0.425, -0.325,  2.350,  2.450, 15.000, 16.000], material: 'M-GRILL-MS' },
-  { id: 'BAL-W-P3', name: 'Balcony west railing post 3', category: 'furniture', type: 'railing', box: [-0.425, -0.325,  5.450,  5.550, 15.000, 16.000], material: 'M-GRILL-MS' },
-  { id: 'BAL-W-P4', name: 'Balcony west railing post 4', category: 'furniture', type: 'railing', box: [-0.425, -0.325,  8.550,  8.650, 15.000, 16.000], material: 'M-GRILL-MS' },
-  { id: 'BAL-W-P5', name: 'Balcony west railing post 5', category: 'furniture', type: 'railing', box: [-0.425, -0.325, 11.650, 11.750, 15.000, 16.000], material: 'M-GRILL-MS' },
-  { id: 'BAL-W-RAIL', name: 'Balcony west top rail', category: 'furniture', type: 'railing', box: [-0.410, -0.340, -0.750, 11.750, 15.930, 15.965], material: 'M-GRILL-MS' },
-  { id: 'BAL-W-MID',  name: 'Balcony west mid rail',  category: 'furniture', type: 'railing', box: [-0.415, -0.335, -0.750, 11.750, 15.470, 15.530], material: 'M-GRILL-MS' },
-  // Parapet granite coping
-  { id: 'BAL-COP-S', name: 'Balcony south parapet coping', category: 'furniture', type: 'railing', box: [-0.750, 14.000, -0.750, 0.000, 14.900, 15.000], material: 'M-GRANITE-STEP' },
-  { id: 'BAL-COP-W', name: 'Balcony west parapet coping',  category: 'furniture', type: 'railing', box: [-0.750, 0.000, -0.750, 11.750, 14.900, 15.000], material: 'M-GRANITE-STEP' },
+  // 6.3 FULL-HEIGHT BALCONY RAILINGS (Z = 12.00 to 15.50 ft, gleaming Stainless Steel)
+  // Replaces all walls with open 3.5 ft railings.
+  // Main structural posts (0.10 × 0.10 ft from Z = 12.00 to 15.50):
+  { id: 'BAL-CORNER-P', name: 'Balcony SW corner post', category: 'furniture', type: 'railing', box: [-0.700, -0.600, -0.700, -0.600, 12.000, 15.500], material: 'M-STEEL-SS' },
+  { id: 'BAL-S-P1', name: 'Balcony south post 1', category: 'furniture', type: 'railing', box: [ 2.200,  2.300, -0.700, -0.600, 12.000, 15.500], material: 'M-STEEL-SS' },
+  { id: 'BAL-S-P2', name: 'Balcony south post 2', category: 'furniture', type: 'railing', box: [ 5.100,  5.200, -0.700, -0.600, 12.000, 15.500], material: 'M-STEEL-SS' },
+  { id: 'BAL-S-P3', name: 'Balcony south post 3', category: 'furniture', type: 'railing', box: [ 8.050,  8.150, -0.700, -0.600, 12.000, 15.500], material: 'M-STEEL-SS' },
+  { id: 'BAL-S-P4', name: 'Balcony south post 4', category: 'furniture', type: 'railing', box: [11.000, 11.100, -0.700, -0.600, 12.000, 15.500], material: 'M-STEEL-SS' },
+  { id: 'BAL-S-P5', name: 'Balcony south post 5', category: 'furniture', type: 'railing', box: [13.900, 14.000, -0.700, -0.600, 12.000, 15.500], material: 'M-STEEL-SS' },
+  { id: 'BAL-W-P1', name: 'Balcony west post 1', category: 'furniture', type: 'railing', box: [-0.700, -0.600,  2.350,  2.450, 12.000, 15.500], material: 'M-STEEL-SS' },
+  { id: 'BAL-W-P2', name: 'Balcony west post 2', category: 'furniture', type: 'railing', box: [-0.700, -0.600,  5.450,  5.550, 12.000, 15.500], material: 'M-STEEL-SS' },
+  { id: 'BAL-W-P3', name: 'Balcony west post 3', category: 'furniture', type: 'railing', box: [-0.700, -0.600,  8.550,  8.650, 12.000, 15.500], material: 'M-STEEL-SS' },
+  { id: 'BAL-W-P4', name: 'Balcony west post 4', category: 'furniture', type: 'railing', box: [-0.700, -0.600, 11.650, 11.750, 12.000, 15.500], material: 'M-STEEL-SS' },
+
+  // Top Handrails (Z = 15.42 to 15.50):
+  { id: 'BAL-S-TOP',  name: 'Balcony south top rail', category: 'furniture', type: 'railing', box: [-0.700, 14.000, -0.690, -0.610, 15.420, 15.500], material: 'M-STEEL-SS' },
+  { id: 'BAL-W-TOP',  name: 'Balcony west top rail',  category: 'furniture', type: 'railing', box: [-0.690, -0.610, -0.700, 11.750, 15.420, 15.500], material: 'M-STEEL-SS' },
+
+  // Mid Rails (Z = 13.72 to 13.78):
+  { id: 'BAL-S-MID',  name: 'Balcony south mid rail', category: 'furniture', type: 'railing', box: [-0.700, 14.000, -0.665, -0.635, 13.720, 13.780], material: 'M-STEEL-SS' },
+  { id: 'BAL-W-MID',  name: 'Balcony west mid rail',  category: 'furniture', type: 'railing', box: [-0.665, -0.635, -0.700, 11.750, 13.720, 13.780], material: 'M-STEEL-SS' },
+
+  // Bottom Rails (Z = 12.10 to 12.16):
+  { id: 'BAL-S-BOT',  name: 'Balcony south bottom rail', category: 'furniture', type: 'railing', box: [-0.700, 14.000, -0.665, -0.635, 12.100, 12.160], material: 'M-STEEL-SS' },
+  { id: 'BAL-W-BOT',  name: 'Balcony west bottom rail',  category: 'furniture', type: 'railing', box: [-0.665, -0.635, -0.700, 11.750, 12.100, 12.160], material: 'M-STEEL-SS' },
+
+  // Vertical Balusters:
+  ...createBalconyBalusters()
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -296,13 +313,8 @@ const MANDIR = [
   { id: 'MD-05', name: 'Prayer mat 2×2 ft',                  category: 'furniture', type: 'furniture', box: [44.000, 46.000, 3.000, 5.000, 12.000, 12.040], material: 'M-CARPET-RED' },
 ];
 
-// 8.10  Balconies (F1, F2)
-const BALCONIES = [
-  { id: 'BAL-01', name: 'Folding clothes-drying stand 4×1.5 ft', category: 'furniture', type: 'furniture', box: [5.000, 9.000, 1.000, 2.500, 12.000, 16.500], material: 'M-STEEL-GREY' },
-  { id: 'BAL-02', name: 'Potted plant 1',                        category: 'furniture', type: 'furniture', box: [0.400, 1.200, 5.000, 5.800, 12.000, 14.500], material: 'M-TERRACOTTA' },
-  { id: 'BAL-03', name: 'Potted plant 2',                        category: 'furniture', type: 'furniture', box: [0.400, 1.200, 8.000, 8.800, 12.000, 14.500], material: 'M-TERRACOTTA' },
-  { id: 'BAL-04', name: 'Floor drain grate 0.4×0.4 ft',          category: 'furniture', type: 'furniture', box: [0.300, 0.700, 0.300, 0.700, 12.000, 12.020], material: 'M-STEEL-SS' },
-];
+// 8.10  Balcony (F1, F2) — Completely empty per user requirement
+const BALCONIES = [];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SECTION 9 – ELECTRICAL / SWITCHBOARDS
@@ -325,10 +337,7 @@ const ELECTRICAL = [
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const FIRST_FLOOR_FITOUT = [
-  ...OF1_OVERRIDES,
-  ...OF2_OVERRIDES,
-  ...OF3_OVERRIDES,
-  ...OF6_OVERRIDES,
+  ...DUCT_WALLS,
   ...WINDOWS,
   ...DOORS,
   ...RAILINGS,
@@ -348,7 +357,6 @@ export const FIRST_FLOOR_FITOUT = [
 // ─────────────────────────────────────────────────────────────────────────────
 // SECTION 9.1 – CEILING FANS (5 total)
 // ceilZ = 22.0 (unscaled) → first floor roof slab underside
-// cx and cy_spec are unscaled; index.js scaleFans() will multiply by WORLD_SCALE.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const FF_FANS = [
@@ -362,7 +370,6 @@ export const FF_FANS = [
 // ─────────────────────────────────────────────────────────────────────────────
 // SECTION 9.2 – CEILING LIGHTS (18 LED panels)
 // ceilZ = 22.0 (unscaled) — panels sit at Z 21.94–22.00.
-// cx, cy_spec, sizeX, sizeY are unscaled; index.js scaleLights() will scale them.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const FF_LIGHTS = [

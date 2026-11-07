@@ -40,13 +40,14 @@ export const FIRST_FLOOR_DATA = {
 
     // ─────────────────────────────────────────────────────────────────────
     // STEP 2 · Exterior Walls  (Z = 12.00 to 22.00, T_EXT = 0.75 ft)
-    // All four are unbroken — no windows, no gates on this floor.
-    // The west and south walls span over what were gate openings on the ground floor.
+    // Balcony west and south perimeters are open with railings (no solid walls).
     // ─────────────────────────────────────────────────────────────────────
     { id: 'F-EXT-N', box: [-0.750, 50.000, 23.250, 24.000, 12.000, 22.000], type: 'wall_ext' },
     { id: 'F-EXT-E', box: [49.250, 50.000,  0.000, 23.250, 12.000, 22.000], type: 'wall_ext' },
-    { id: 'F-EXT-W', box: [-0.750,  0.000,  0.000, 23.250, 12.000, 22.000], type: 'wall_ext' },
-    { id: 'F-EXT-S', box: [-0.750, 50.000, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
+    // F-EXT-W: Master bedroom west wall only (Y 11.75 to 23.25). Balcony west side is open with railing.
+    { id: 'F-EXT-W', box: [-0.750,  0.000, 11.750, 23.250, 12.000, 22.000], type: 'wall_ext' },
+    // F-EXT-S: Lobby through Mandir south wall only (X 14.0 to 50.0). Balcony south side is open with railing.
+    { id: 'F-EXT-S', box: [14.000, 50.000, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
 
     // ─────────────────────────────────────────────────────────────────────
     // STEP 3 · Interior Walls  (Z = 12.00 to 22.00, T_INT = 0.375 ft)
@@ -56,16 +57,17 @@ export const FIRST_FLOOR_DATA = {
     //   Master bedroom door: gap at Y = 11.75 to 15.0
     { id: 'F-INT-01',  box: [13.625, 14.000, 15.000, 23.250, 12.000, 22.000], type: 'wall_int' },
 
-    // F-INT-02: Master bedroom south wall / kitchen north wall (full width X 0 to 14.0)
-    //   Includes owner's thin black line for X = 0 to 3.25 (balcony north wall)
-    { id: 'F-INT-02',  box: [ 0.000, 14.000, 11.375, 11.750, 12.000, 22.000], type: 'wall_int' },
+    // F-INT-02: Master bedroom south wall / kitchen north wall
+    //   Doorway to west balcony: open gap at X = 0.500 to 3.250 (DF8)
+    { id: 'F-INT-02-W', box: [ 0.000,  0.500, 11.375, 11.750, 12.000, 22.000], type: 'wall_int' },
+    { id: 'F-INT-02-E', box: [ 3.250, 14.000, 11.375, 11.750, 12.000, 22.000], type: 'wall_int' },
 
     // F-INT-03: Kitchen west wall / balcony east wall (Y 4.375 to 11.375)
     { id: 'F-INT-03',  box: [ 3.250,  3.625,  4.375, 11.375, 12.000, 22.000], type: 'wall_int' },
 
-    // F-INT-04: Kitchen south wall / south balcony north wall (full width X 3.25 to 13.625)
-    //   Includes owner's heavy black bar (X 10.4 to 13.625). No opening by default.
-    { id: 'F-INT-04',  box: [ 3.250, 13.625,  4.000,  4.375, 12.000, 22.000], type: 'wall_int' },
+    // F-INT-04: Kitchen south wall / south balcony north wall
+    //   Doorway to south balcony: open gap at X = 11.000 to 13.625 (DF3)
+    { id: 'F-INT-04',  box: [ 3.250, 11.000,  4.000,  4.375, 12.000, 22.000], type: 'wall_int' },
 
     // F-INT-05: Lobby west wall, south part (Y 0 to 8.375). No door here.
     //   Kitchen door: gap at Y = 8.375 to 11.375
@@ -115,6 +117,14 @@ export const FIRST_FLOOR_DATA = {
     { id: 'F-LIN-04', box: [37.125, 39.875, 18.875, 19.250, 19.000, 22.000], type: 'lintel' }, // Bathroom 2 door (2.75 ft)
     { id: 'F-LIN-05', box: [39.875, 40.250,  9.375, 12.875, 19.000, 22.000], type: 'lintel' }, // Child bedroom door (3.50 ft)
     { id: 'F-LIN-06', box: [39.875, 40.250,  6.500,  9.000, 19.000, 22.000], type: 'lintel' }, // Mandir door (2.50 ft)
+    { id: 'F-LIN-07', box: [11.000, 13.625,  4.000,  4.375, 19.000, 22.000], type: 'lintel' }, // Kitchen to balcony door lintel (2.625 ft)
+    { id: 'F-LIN-08', box: [ 0.500,  3.250, 11.375, 11.750, 19.000, 22.000], type: 'lintel' }, // Master bedroom to balcony door lintel (2.75 ft)
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Balcony Railing Safety Colliders (prevents walking off balcony edge)
+    // ─────────────────────────────────────────────────────────────────────
+    { id: 'BAL-COL-S', box: [-0.750, 14.000, -0.750, -0.500, 12.000, 15.500], type: 'railing_collider' },
+    { id: 'BAL-COL-W', box: [-0.750, -0.500, -0.750, 11.750, 12.000, 15.500], type: 'railing_collider' },
 
     // ─────────────────────────────────────────────────────────────────────
     // STEP 4 · Upper Staircase — Lane A  (X = 26.375 to 29.625, ascending SOUTH)
@@ -142,24 +152,7 @@ export const FIRST_FLOOR_DATA = {
     { id: 'RF1', box: [-0.750, 26.375, -0.750, 24.000, 22.000, 22.500], type: 'slab' },
     { id: 'RF2', box: [29.625, 50.000, -0.750, 24.000, 22.000, 22.500], type: 'slab' },
     { id: 'RF3', box: [26.375, 29.625, -0.750,  4.000, 22.000, 22.500], type: 'slab' },
-    { id: 'RF4', box: [26.375, 29.625, 11.000, 24.000, 22.000, 22.500], type: 'slab' },
-
-    // ─────────────────────────────────────────────────────────────────────
-    // STEP 6 · Fixtures (spec section 9 — four drawn items only)
-    // ─────────────────────────────────────────────────────────────────────
-    { id: 'FX-KT-W',   box: [ 3.625,  5.625,  4.375, 11.375, 12.000, 14.750], type: 'fixture' }, // Kitchen platform, west arm (2.0×7.0 ft)
-    { id: 'FX-KT-S',   box: [ 3.625, 11.000,  4.375,  6.625, 12.000, 14.750], type: 'fixture' }, // Kitchen platform, south arm (7.375×2.25 ft)
-    { id: 'FX-BASIN',  box: [34.250, 36.250,  3.000,  6.750, 12.000, 14.750], type: 'fixture' }, // Hallway basin counter (2.0×3.75 ft)
-    { id: 'FX-WM',     box: [37.875, 39.875,  0.000,  2.000, 12.000, 15.000], type: 'fixture' }, // Washing machine (2.0×2.0 ft)
-
-    // ─────────────────────────────────────────────────────────────────────
-    // STEP 7 · Shaft marker  (thin raised border on floor, default build — no walls)
-    // Same XY as ground floor shaft Z10; one shaft through both floors.
-    // ─────────────────────────────────────────────────────────────────────
-    { id: 'FSH-S', box: [28.000, 32.000, 19.500, 19.600, 12.000, 12.100], type: 'shaft' },
-    { id: 'FSH-N', box: [28.000, 32.000, 22.400, 22.500, 12.000, 12.100], type: 'shaft' },
-    { id: 'FSH-W', box: [28.000, 28.100, 19.600, 22.400, 12.000, 12.100], type: 'shaft' },
-    { id: 'FSH-E', box: [31.900, 32.000, 19.600, 22.400, 12.000, 12.100], type: 'shaft' }
+    { id: 'RF4', box: [26.375, 29.625, 11.000, 24.000, 22.000, 22.500], type: 'slab' }
   ],
 
   // ─────────────────────────────────────────────────────────────────────────

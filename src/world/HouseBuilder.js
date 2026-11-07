@@ -21,6 +21,9 @@ export class HouseBuilder {
 
     // 1. Build standard box solids
     floorData.solids.forEach(item => {
+      // Skip invisible collision-only volumes (e.g. balcony railing colliders)
+      if (item.type === 'railing_collider') return;
+
       const mesh = this.createBoxMesh(item);
       floorGroup.add(mesh);
 
