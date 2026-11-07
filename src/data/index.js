@@ -7,6 +7,7 @@
 import { GROUND_FLOOR_DATA as RAW_GF_DATA } from './groundFloorData.js';
 import { GROUND_FLOOR_FITOUT as RAW_GF_FITOUT, FITOUT_FANS as RAW_FANS, FITOUT_LIGHTS as RAW_LIGHTS } from './groundFloorFitout.js';
 import { FIRST_FLOOR_DATA as RAW_FF_DATA } from './firstFloorData.js';
+import { FIRST_FLOOR_FITOUT as RAW_FF_FITOUT, FF_FANS as RAW_FF_FANS, FF_LIGHTS as RAW_FF_LIGHTS } from './firstFloorFitout.js';
 import { WORLD_SCALE } from '../config/constants.js';
 
 function scaleFloor(floor, s) {
@@ -62,6 +63,8 @@ function scaleFans(fans, s) {
     ...fan,
     cx: fan.cx * s,
     cy_spec: fan.cy_spec * s
+    // ceilZ is NOT scaled here — FitoutBuilder uses it in local group space
+    // before root.scale.set(s,s,s) multiplies it uniformly.
   }));
 }
 
@@ -80,6 +83,16 @@ export const FIRST_FLOOR_DATA = scaleFloor(RAW_FF_DATA, WORLD_SCALE);
 export const GROUND_FLOOR_FITOUT = scaleFitout(RAW_GF_FITOUT, WORLD_SCALE);
 export const FITOUT_FANS = scaleFans(RAW_FANS, WORLD_SCALE);
 export const FITOUT_LIGHTS = scaleLights(RAW_LIGHTS, WORLD_SCALE);
+
+// First floor fitout (scaled)
+export const FIRST_FLOOR_FITOUT = scaleFitout(RAW_FF_FITOUT, WORLD_SCALE);
+export const FF_FANS   = scaleFans(RAW_FF_FANS, WORLD_SCALE);
+export const FF_LIGHTS = scaleLights(RAW_FF_LIGHTS, WORLD_SCALE);
+
+// Merged arrays for Engine — both floors combined
+export const ALL_FITOUT = [...GROUND_FLOOR_FITOUT, ...FIRST_FLOOR_FITOUT];
+export const ALL_FANS   = [...FITOUT_FANS,   ...FF_FANS];
+export const ALL_LIGHTS = [...FITOUT_LIGHTS, ...FF_LIGHTS];
 
 export const FLOORS = [
   GROUND_FLOOR_DATA,

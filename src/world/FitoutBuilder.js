@@ -138,27 +138,31 @@ export class FitoutBuilder {
     const chromeMat = this.materials.get('M-CHROME');
     const bladeMat = this.materials.get('M-WOOD-DARK');
 
-    // 1. Slab Canopy (cylinder at slab underside, Z = 11.25 to 11.50)
+    // Support multi-floor: ceilZ is the unscaled spec Z of the ceiling underside.
+    // Ground floor ceiling = 11.50, First floor ceiling = 22.00.
+    const ceilZ = (spec.ceilZ !== undefined) ? spec.ceilZ : 11.50;
+
+    // 1. Slab Canopy — centred at ceilZ - 0.125
     const canopyGeo = new THREE.CylinderGeometry(0.25, 0.25, 0.25, 16);
     const canopy = new THREE.Mesh(canopyGeo, chromeMat);
-    canopy.position.set(0, 11.375, 0);
+    canopy.position.set(0, ceilZ - 0.125, 0);
     root.add(canopy);
 
-    // 2. Down-rod (cylinder Z = 10.75 to 11.25)
+    // 2. Down-rod — from ceilZ - 0.75 to ceilZ - 0.25 (centre ceilZ - 0.50)
     const rodGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.50, 12);
     const rod = new THREE.Mesh(rodGeo, chromeMat);
-    rod.position.set(0, 11.000, 0);
+    rod.position.set(0, ceilZ - 0.50, 0);
     root.add(rod);
 
-    // 3. Central Hub (cylinder Z = 10.60 to 10.75)
+    // 3. Central Hub — centre at ceilZ - 0.825
     const hubGeo = new THREE.CylinderGeometry(0.30, 0.30, 0.15, 20);
     const hub = new THREE.Mesh(hubGeo, chromeMat);
-    hub.position.set(0, 10.675, 0);
+    hub.position.set(0, ceilZ - 0.825, 0);
     root.add(hub);
 
-    // 4. Rotating Blade Assembly (3 blades, 1200mm / 4ft sweep, at Z = 10.62)
+    // 4. Rotating Blade Assembly — at ceilZ - 0.875
     const bladeAssembly = new THREE.Group();
-    bladeAssembly.position.set(0, 10.625, 0);
+    bladeAssembly.position.set(0, ceilZ - 0.875, 0);
 
     const bladeLength = 1.67;
     const bladeWidth = 0.40;
@@ -195,13 +199,17 @@ export class FitoutBuilder {
     const { cx, cy_spec, sizeX, sizeY, id } = spec;
     const s = WORLD_SCALE;
 
-    // LED Panel Box: thickness 0.06 ft from Z = 11.44 to 11.50
+    // Support multi-floor: ceilZ is the unscaled spec Z of the ceiling underside.
+    // Ground floor ceiling = 11.50, First floor ceiling = 22.00.
+    const ceilZ = (spec.ceilZ !== undefined) ? spec.ceilZ : 11.50;
+
+    // LED Panel Box: 0.06 ft thick, flush against ceiling underside
     const panelHeight = 0.06 * s;
     const geo = new THREE.BoxGeometry(sizeX, panelHeight, sizeY);
     const mat = this.materials.get('M-LIGHT-PANEL');
     const mesh = new THREE.Mesh(geo, mat);
 
-    const posY = 11.47 * s;
+    const posY = (ceilZ - 0.03) * s;
     mesh.position.set(cx, posY, -cy_spec);
     mesh.name = `LightPanel_${id}`;
 
@@ -210,9 +218,9 @@ export class FitoutBuilder {
     const edgeMat = new THREE.LineBasicMaterial({ color: 0xcccccc });
     mesh.add(new THREE.LineSegments(edgeGeo, edgeMat));
 
-    // Indoor warm point light underneath each panel
+    // Indoor warm point light underneath the panel (0.3 ft below panel centre)
     const pointLight = new THREE.PointLight(0xfff3d4, 0.45, 16 * s, 1.2);
-    pointLight.position.set(cx, 11.2 * s, -cy_spec);
+    pointLight.position.set(cx, (ceilZ - 0.30) * s, -cy_spec);
     pointLight.name = `PointLight_${id}`;
 
     return { mesh, pointLight };

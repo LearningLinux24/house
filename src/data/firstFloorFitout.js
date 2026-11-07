@@ -1,0 +1,387 @@
+/**
+ * First Floor Interior Fitout Data
+ * Sources:
+ *   - first_floor_3d_fitout_and_interior_specification.md  (the fitout spec)
+ *   - first_floor_3d_simulation_specification.md           (the base spec)
+ *
+ * Coordinate system:  [xmin, xmax, ymin, ymax, zmin, zmax]  absolute feet, Z-up.
+ * First floor level:  Z = 12.00.  Roof slab underside: Z = 22.00.
+ *
+ * All boxes are RAW (unscaled).  src/data/index.js multiplies every coordinate
+ * by WORLD_SCALE = 1.35 before the values reach Three.js.
+ *
+ * Build order follows spec section 12.
+ */
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SECTION 3 GEOMETRY OVERRIDES
+// These replace or supplement boxes that exist in firstFloorData.js.
+// They are placed in the fitout array so they are rendered as fitout meshes.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// OF1 – kitchen/balcony wall + lintel
+// F-INT-04 is shortened in firstFloorData.js to [3.250, 11.000, 4.000, 4.375, 12.000, 22.000].
+// Add the lintel above the balcony door opening (X 11.0–13.625):
+const OF1_OVERRIDES = [
+  { id: 'F-LIN-07', name: 'Lintel above kitchen balcony door', category: 'furniture', type: 'lintel', box: [11.000, 13.625, 4.000, 4.375, 19.000, 22.000], material: 'M-EXT-PLASTER' },
+];
+
+// OF2 – balcony parapet splits (replaces full-height F-EXT-W and F-EXT-S)
+const OF2_OVERRIDES = [
+  { id: 'F-EXT-W-LOW',  name: 'West balcony parapet (3 ft)',         category: 'furniture', type: 'wall-ext', box: [-0.750, 0.000,  0.000, 11.750, 12.000, 15.000], material: 'M-EXT-PLASTER' },
+  { id: 'F-EXT-W-UP',   name: 'West exterior wall upper (full h)',   category: 'furniture', type: 'wall-ext', box: [-0.750, 0.000, 11.750, 23.250, 12.000, 22.000], material: 'M-EXT-PLASTER' },
+  { id: 'F-EXT-S-LOW',  name: 'South balcony parapet (3 ft)',        category: 'furniture', type: 'wall-ext', box: [-0.750, 14.000, -0.750, 0.000, 12.000, 15.000], material: 'M-EXT-PLASTER' },
+  { id: 'F-EXT-S-UP',   name: 'South exterior wall upper (full h)',  category: 'furniture', type: 'wall-ext', box: [14.000, 50.000, -0.750,  0.000, 12.000, 22.000], material: 'M-EXT-PLASTER' },
+];
+
+// OF3 – shaft/duct walls + jali cap
+const OF3_OVERRIDES = [
+  { id: 'DT-F-S',   name: 'Duct wall south',  category: 'furniture', type: 'duct', box: [27.625, 32.375, 19.125, 19.500, 12.000, 22.500], material: 'M-PAINT-INT' },
+  { id: 'DT-F-N',   name: 'Duct wall north',  category: 'furniture', type: 'duct', box: [27.625, 32.375, 22.500, 22.875, 12.000, 22.500], material: 'M-PAINT-INT' },
+  { id: 'DT-F-W',   name: 'Duct wall west',   category: 'furniture', type: 'duct', box: [27.625, 28.000, 19.500, 22.500, 12.000, 22.500], material: 'M-PAINT-INT' },
+  { id: 'DT-F-E',   name: 'Duct wall east',   category: 'furniture', type: 'duct', box: [32.000, 32.375, 19.500, 22.500, 12.000, 22.500], material: 'M-PAINT-INT' },
+  { id: 'DT-F-CAP', name: 'Duct jali cap',    category: 'furniture', type: 'duct', box: [28.000, 32.000, 19.500, 22.500, 22.400, 22.500], material: 'M-STEEL-SS' },
+];
+
+// OF6 – master bedroom balcony wall splits + lintel
+const OF6_OVERRIDES = [
+  { id: 'F-INT-02-W', name: 'Master bed west wall west stub',  category: 'furniture', type: 'wall-int', box: [0.000,  0.500, 11.375, 11.750, 12.000, 22.000], material: 'M-PAINT-INT' },
+  { id: 'F-INT-02-E', name: 'Master bed west wall east stub',  category: 'furniture', type: 'wall-int', box: [3.250, 14.000, 11.375, 11.750, 12.000, 22.000], material: 'M-PAINT-INT' },
+  { id: 'F-LIN-08',   name: 'Lintel above master balcony door',category: 'furniture', type: 'lintel',   box: [0.500,  3.250, 11.375, 11.750, 19.000, 22.000], material: 'M-PAINT-INT' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SECTION 4 – WINDOWS & VENTILATORS (glass fill + frame)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const WINDOWS = [
+  // WF-1  Master bedroom west window  4 × 4 ft  sill Z 15.00
+  { id: 'WF-1-GLASS', name: 'Master bedroom west window glass',  category: 'windows', type: 'window',    box: [-0.750, 0.000, 15.500, 19.500, 15.000, 19.000], material: 'M-GLASS' },
+  // WF-2  Kitchen window (west, onto balcony)  3 × 3 ft  sill Z 15.50
+  { id: 'WF-2-GLASS', name: 'Kitchen west window glass',        category: 'windows', type: 'window',    box: [3.250, 3.625, 6.750, 9.750, 15.500, 18.500], material: 'M-GLASS' },
+  // WF-3  Lobby south window west  4 × 4 ft  sill Z 15.00
+  { id: 'WF-3-GLASS', name: 'Lobby south window west glass',    category: 'windows', type: 'window',    box: [15.000, 19.000, -0.750, 0.000, 15.000, 19.000], material: 'M-GLASS' },
+  // WF-4  Lobby south window east  4 × 4 ft  sill Z 15.00
+  { id: 'WF-4-GLASS', name: 'Lobby south window east glass',    category: 'windows', type: 'window',    box: [21.000, 25.000, -0.750, 0.000, 15.000, 19.000], material: 'M-GLASS' },
+  // WF-5  Stair bay south window  4 × 4 ft  sill Z 15.00
+  { id: 'WF-5-GLASS', name: 'Stair bay south window glass',     category: 'windows', type: 'window',    box: [28.000, 32.000, -0.750, 0.000, 15.000, 19.000], material: 'M-GLASS' },
+  // WF-6  Hallway south window  3 × 3 ft  sill Z 15.50
+  { id: 'WF-6-GLASS', name: 'Hallway south window glass',       category: 'windows', type: 'window',    box: [34.500, 37.500, -0.750, 0.000, 15.500, 18.500], material: 'M-GLASS' },
+  // WF-7  Mandir south window  3 × 3 ft  sill Z 15.50
+  { id: 'WF-7-GLASS', name: 'Mandir south window glass',        category: 'windows', type: 'window',    box: [43.000, 46.000, -0.750, 0.000, 15.500, 18.500], material: 'M-GLASS' },
+  // WF-8  Child bedroom north window  4 × 4 ft  sill Z 15.00
+  { id: 'WF-8-GLASS', name: 'Child bedroom north window glass', category: 'windows', type: 'window',    box: [43.500, 47.500, 23.250, 24.000, 15.000, 19.000], material: 'M-GLASS' },
+  // VF-1  Bathroom 1 ventilator (north)  2 × 1.5 ft  sill Z 17.50
+  { id: 'VF-1-GLASS', name: 'Bathroom 1 ventilator glass',      category: 'windows', type: 'ventilator',box: [22.800, 24.800, 23.250, 24.000, 17.500, 19.000], material: 'M-GLASS' },
+  // VF-2  Bathroom 2 ventilator (north)  2 × 1.5 ft  sill Z 17.50
+  { id: 'VF-2-GLASS', name: 'Bathroom 2 ventilator glass',      category: 'windows', type: 'ventilator',box: [35.400, 37.400, 23.250, 24.000, 17.500, 19.000], material: 'M-GLASS' },
+  // EF-F  Kitchen exhaust fan opening (vents to balcony)  1 × 1 ft  sill Z 17.50
+  { id: 'EF-F-FRAME', name: 'Kitchen exhaust fan opening',      category: 'windows', type: 'ventilator',box: [8.000, 9.000, 4.000, 4.375, 17.500, 18.500], material: 'M-STEEL-SS' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SECTION 5 – DOORS (frames + leaves)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const DOORS = [
+  // DF1 – Master bedroom door (teak)
+  { id: 'DF1-FJ1',  name: 'DF1 jamb south',   category: 'doors', type: 'door-frame', box: [13.625, 14.000, 11.750, 11.920, 12.000, 18.830], material: 'M-FRAME-WOOD' },
+  { id: 'DF1-FJ2',  name: 'DF1 jamb north',   category: 'doors', type: 'door-frame', box: [13.625, 14.000, 14.830, 15.000, 12.000, 18.830], material: 'M-FRAME-WOOD' },
+  { id: 'DF1-FH',   name: 'DF1 head',         category: 'doors', type: 'door-frame', box: [13.625, 14.000, 11.750, 15.000, 18.830, 19.000], material: 'M-FRAME-WOOD' },
+  { id: 'DF1-LEAF', name: 'DF1 leaf',         category: 'doors', type: 'door-leaf',  box: [13.755, 13.870, 11.940, 14.810, 12.040, 18.810], material: 'M-DOOR-TEAK' },
+  // DF2 – Kitchen door (teak)
+  { id: 'DF2-FJ1',  name: 'DF2 jamb south',   category: 'doors', type: 'door-frame', box: [13.625, 14.000,  8.375,  8.545, 12.000, 18.830], material: 'M-FRAME-WOOD' },
+  { id: 'DF2-FJ2',  name: 'DF2 jamb north',   category: 'doors', type: 'door-frame', box: [13.625, 14.000, 11.205, 11.375, 12.000, 18.830], material: 'M-FRAME-WOOD' },
+  { id: 'DF2-FH',   name: 'DF2 head',         category: 'doors', type: 'door-frame', box: [13.625, 14.000,  8.375, 11.375, 18.830, 19.000], material: 'M-FRAME-WOOD' },
+  { id: 'DF2-LEAF', name: 'DF2 leaf',         category: 'doors', type: 'door-leaf',  box: [13.755, 13.870,  8.565, 11.185, 12.040, 18.810], material: 'M-DOOR-TEAK' },
+  // DF3 – Kitchen balcony door (glazed aluminium)
+  { id: 'DF3-FJ1',  name: 'DF3 jamb west',    category: 'doors', type: 'door-frame', box: [11.000, 11.170, 4.000, 4.375, 12.000, 18.830], material: 'M-ALU-FRAME' },
+  { id: 'DF3-FJ2',  name: 'DF3 jamb east',    category: 'doors', type: 'door-frame', box: [13.455, 13.625, 4.000, 4.375, 12.000, 18.830], material: 'M-ALU-FRAME' },
+  { id: 'DF3-FH',   name: 'DF3 head',         category: 'doors', type: 'door-frame', box: [11.000, 13.625, 4.000, 4.375, 18.830, 19.000], material: 'M-ALU-FRAME' },
+  { id: 'DF3-LEAF', name: 'DF3 glass leaf',   category: 'doors', type: 'door-leaf',  box: [11.190, 13.435, 4.130, 4.245, 12.040, 18.810], material: 'M-GLASS' },
+  // DF4 – Bathroom 1 door (PVC)
+  { id: 'DF4-FJ1',  name: 'DF4 jamb west',    category: 'doors', type: 'door-frame', box: [17.625, 17.795, 18.875, 19.250, 12.000, 18.830], material: 'M-FRAME-WOOD' },
+  { id: 'DF4-FJ2',  name: 'DF4 jamb east',    category: 'doors', type: 'door-frame', box: [19.955, 20.125, 18.875, 19.250, 12.000, 18.830], material: 'M-FRAME-WOOD' },
+  { id: 'DF4-FH',   name: 'DF4 head',         category: 'doors', type: 'door-frame', box: [17.625, 20.125, 18.875, 19.250, 18.830, 19.000], material: 'M-FRAME-WOOD' },
+  { id: 'DF4-LEAF', name: 'DF4 PVC leaf',     category: 'doors', type: 'door-leaf',  box: [17.815, 19.935, 19.005, 19.120, 12.040, 18.810], material: 'M-DOOR-PVC' },
+  // DF5 – Bathroom 2 door (PVC)
+  { id: 'DF5-FJ1',  name: 'DF5 jamb west',    category: 'doors', type: 'door-frame', box: [37.125, 37.295, 18.875, 19.250, 12.000, 18.830], material: 'M-FRAME-WOOD' },
+  { id: 'DF5-FJ2',  name: 'DF5 jamb east',    category: 'doors', type: 'door-frame', box: [39.705, 39.875, 18.875, 19.250, 12.000, 18.830], material: 'M-FRAME-WOOD' },
+  { id: 'DF5-FH',   name: 'DF5 head',         category: 'doors', type: 'door-frame', box: [37.125, 39.875, 18.875, 19.250, 18.830, 19.000], material: 'M-FRAME-WOOD' },
+  { id: 'DF5-LEAF', name: 'DF5 PVC leaf',     category: 'doors', type: 'door-leaf',  box: [37.315, 39.685, 19.005, 19.120, 12.040, 18.810], material: 'M-DOOR-PVC' },
+  // DF6 – Child bedroom door (teak)
+  { id: 'DF6-FJ1',  name: 'DF6 jamb south',   category: 'doors', type: 'door-frame', box: [39.875, 40.250,  9.375,  9.545, 12.000, 18.830], material: 'M-FRAME-WOOD' },
+  { id: 'DF6-FJ2',  name: 'DF6 jamb north',   category: 'doors', type: 'door-frame', box: [39.875, 40.250, 12.705, 12.875, 12.000, 18.830], material: 'M-FRAME-WOOD' },
+  { id: 'DF6-FH',   name: 'DF6 head',         category: 'doors', type: 'door-frame', box: [39.875, 40.250,  9.375, 12.875, 18.830, 19.000], material: 'M-FRAME-WOOD' },
+  { id: 'DF6-LEAF', name: 'DF6 leaf',         category: 'doors', type: 'door-leaf',  box: [40.005, 40.120,  9.565, 12.685, 12.040, 18.810], material: 'M-DOOR-TEAK' },
+  // DF7 – Mandir door (teak)
+  { id: 'DF7-FJ1',  name: 'DF7 jamb south',   category: 'doors', type: 'door-frame', box: [39.875, 40.250, 6.500, 6.670, 12.000, 18.830], material: 'M-FRAME-WOOD' },
+  { id: 'DF7-FJ2',  name: 'DF7 jamb north',   category: 'doors', type: 'door-frame', box: [39.875, 40.250, 8.830, 9.000, 12.000, 18.830], material: 'M-FRAME-WOOD' },
+  { id: 'DF7-FH',   name: 'DF7 head',         category: 'doors', type: 'door-frame', box: [39.875, 40.250, 6.500, 9.000, 18.830, 19.000], material: 'M-FRAME-WOOD' },
+  { id: 'DF7-LEAF', name: 'DF7 leaf',         category: 'doors', type: 'door-leaf',  box: [40.005, 40.120, 6.690, 8.810, 12.040, 18.810], material: 'M-DOOR-TEAK' },
+  // DF8 – Master bedroom balcony door (glazed aluminium)
+  { id: 'DF8-FJ1',  name: 'DF8 jamb west',    category: 'doors', type: 'door-frame', box: [0.500, 0.670, 11.375, 11.750, 12.000, 18.830], material: 'M-ALU-FRAME' },
+  { id: 'DF8-FJ2',  name: 'DF8 jamb east',    category: 'doors', type: 'door-frame', box: [3.080, 3.250, 11.375, 11.750, 12.000, 18.830], material: 'M-ALU-FRAME' },
+  { id: 'DF8-FH',   name: 'DF8 head',         category: 'doors', type: 'door-frame', box: [0.500, 3.250, 11.375, 11.750, 18.830, 19.000], material: 'M-ALU-FRAME' },
+  { id: 'DF8-LEAF', name: 'DF8 glass leaf',   category: 'doors', type: 'door-leaf',  box: [0.690, 3.060, 11.505, 11.620, 12.040, 18.810], material: 'M-GLASS' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SECTION 6 – RAILINGS
+// ─────────────────────────────────────────────────────────────────────────────
+
+const RAILINGS = [
+  // 6.2 Guard rail posts around floor opening (over ground flight)
+  { id: 'GR-S-P1', name: 'Guard rail south post 1', category: 'furniture', type: 'railing', box: [30.125, 30.225, 6.900, 7.000, 12.000, 15.000], material: 'M-STEEL-SS' },
+  { id: 'GR-S-P2', name: 'Guard rail south post 2', category: 'furniture', type: 'railing', box: [31.950, 32.050, 6.900, 7.000, 12.000, 15.000], material: 'M-STEEL-SS' },
+  { id: 'GR-S-P3', name: 'Guard rail south post 3', category: 'furniture', type: 'railing', box: [33.775, 33.875, 6.900, 7.000, 12.000, 15.000], material: 'M-STEEL-SS' },
+  { id: 'GR-S-RAIL', name: 'Guard rail south top rail', category: 'furniture', type: 'railing', box: [30.125, 33.875, 6.930, 6.995, 14.935, 14.965], material: 'M-STEEL-SS' },
+  { id: 'GR-S-MID',  name: 'Guard rail south mid rail',  category: 'furniture', type: 'railing', box: [30.125, 33.875, 6.940, 6.990, 13.470, 13.530], material: 'M-STEEL-SS' },
+  { id: 'GR-W-P1', name: 'Guard rail west post 1', category: 'furniture', type: 'railing', box: [30.025, 30.125, 7.000, 7.100, 12.000, 15.000], material: 'M-STEEL-SS' },
+  { id: 'GR-W-P2', name: 'Guard rail west post 2', category: 'furniture', type: 'railing', box: [30.025, 30.125, 10.075, 10.175, 12.000, 15.000], material: 'M-STEEL-SS' },
+  { id: 'GR-W-P3', name: 'Guard rail west post 3', category: 'furniture', type: 'railing', box: [30.025, 30.125, 13.150, 13.250, 12.000, 15.000], material: 'M-STEEL-SS' },
+  { id: 'GR-W-RAIL', name: 'Guard rail west top rail', category: 'furniture', type: 'railing', box: [30.030, 30.090, 7.000, 13.250, 14.935, 14.965], material: 'M-STEEL-SS' },
+  { id: 'GR-W-MID',  name: 'Guard rail west mid rail',  category: 'furniture', type: 'railing', box: [30.040, 30.085, 7.000, 13.250, 13.470, 13.530], material: 'M-STEEL-SS' },
+
+  // 6.3 Balcony railing on parapet top (Z 15.00 to 16.00) – MS
+  // South run: Y = -0.375, X from -0.75 to 14.0
+  { id: 'BAL-S-P1', name: 'Balcony south railing post 1', category: 'furniture', type: 'railing', box: [-0.750, -0.650, -0.425, -0.325, 15.000, 16.000], material: 'M-GRILL-MS' },
+  { id: 'BAL-S-P2', name: 'Balcony south railing post 2', category: 'furniture', type: 'railing', box: [ 2.180,  2.280, -0.425, -0.325, 15.000, 16.000], material: 'M-GRILL-MS' },
+  { id: 'BAL-S-P3', name: 'Balcony south railing post 3', category: 'furniture', type: 'railing', box: [ 5.110,  5.210, -0.425, -0.325, 15.000, 16.000], material: 'M-GRILL-MS' },
+  { id: 'BAL-S-P4', name: 'Balcony south railing post 4', category: 'furniture', type: 'railing', box: [ 8.040,  8.140, -0.425, -0.325, 15.000, 16.000], material: 'M-GRILL-MS' },
+  { id: 'BAL-S-P5', name: 'Balcony south railing post 5', category: 'furniture', type: 'railing', box: [10.970, 11.070, -0.425, -0.325, 15.000, 16.000], material: 'M-GRILL-MS' },
+  { id: 'BAL-S-P6', name: 'Balcony south railing post 6', category: 'furniture', type: 'railing', box: [13.900, 14.000, -0.425, -0.325, 15.000, 16.000], material: 'M-GRILL-MS' },
+  { id: 'BAL-S-RAIL', name: 'Balcony south top rail', category: 'furniture', type: 'railing', box: [-0.750, 14.000, -0.410, -0.340, 15.930, 15.965], material: 'M-GRILL-MS' },
+  { id: 'BAL-S-MID',  name: 'Balcony south mid rail',  category: 'furniture', type: 'railing', box: [-0.750, 14.000, -0.415, -0.335, 15.470, 15.530], material: 'M-GRILL-MS' },
+  // West run: X = -0.375, Y from -0.75 to 11.75
+  { id: 'BAL-W-P1', name: 'Balcony west railing post 1', category: 'furniture', type: 'railing', box: [-0.425, -0.325, -0.750, -0.650, 15.000, 16.000], material: 'M-GRILL-MS' },
+  { id: 'BAL-W-P2', name: 'Balcony west railing post 2', category: 'furniture', type: 'railing', box: [-0.425, -0.325,  2.350,  2.450, 15.000, 16.000], material: 'M-GRILL-MS' },
+  { id: 'BAL-W-P3', name: 'Balcony west railing post 3', category: 'furniture', type: 'railing', box: [-0.425, -0.325,  5.450,  5.550, 15.000, 16.000], material: 'M-GRILL-MS' },
+  { id: 'BAL-W-P4', name: 'Balcony west railing post 4', category: 'furniture', type: 'railing', box: [-0.425, -0.325,  8.550,  8.650, 15.000, 16.000], material: 'M-GRILL-MS' },
+  { id: 'BAL-W-P5', name: 'Balcony west railing post 5', category: 'furniture', type: 'railing', box: [-0.425, -0.325, 11.650, 11.750, 15.000, 16.000], material: 'M-GRILL-MS' },
+  { id: 'BAL-W-RAIL', name: 'Balcony west top rail', category: 'furniture', type: 'railing', box: [-0.410, -0.340, -0.750, 11.750, 15.930, 15.965], material: 'M-GRILL-MS' },
+  { id: 'BAL-W-MID',  name: 'Balcony west mid rail',  category: 'furniture', type: 'railing', box: [-0.415, -0.335, -0.750, 11.750, 15.470, 15.530], material: 'M-GRILL-MS' },
+  // Parapet granite coping
+  { id: 'BAL-COP-S', name: 'Balcony south parapet coping', category: 'furniture', type: 'railing', box: [-0.750, 14.000, -0.750, 0.000, 14.900, 15.000], material: 'M-GRANITE-STEP' },
+  { id: 'BAL-COP-W', name: 'Balcony west parapet coping',  category: 'furniture', type: 'railing', box: [-0.750, 0.000, -0.750, 11.750, 14.900, 15.000], material: 'M-GRANITE-STEP' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SECTION 8 – ROOM FURNITURE
+// ─────────────────────────────────────────────────────────────────────────────
+
+// 8.1  Master bedroom (F4)
+const MASTER_BEDROOM = [
+  { id: 'MB-01', name: 'King bed frame 6×6.5 ft',          category: 'furniture', type: 'furniture', box: [4.000, 10.000, 16.750, 23.250, 12.000, 13.000], material: 'M-WOOD-DARK' },
+  { id: 'MB-02', name: 'Mattress 5.85×6.2 ft',             category: 'furniture', type: 'furniture', box: [4.075,  9.925, 16.900, 23.100, 13.000, 13.800], material: 'M-FABRIC-BEIGE' },
+  { id: 'MB-03', name: 'Headboard 6 ft wide 3.5 ft high',  category: 'furniture', type: 'furniture', box: [4.000, 10.000, 23.000, 23.250, 12.000, 15.500], material: 'M-WOOD-DARK' },
+  { id: 'MB-04', name: 'Pillow pair left',                  category: 'furniture', type: 'furniture', box: [4.500,  6.500, 22.300, 23.000, 13.800, 14.150], material: 'M-FABRIC-WHITE' },
+  { id: 'MB-05', name: 'Pillow pair right',                 category: 'furniture', type: 'furniture', box: [7.500,  9.500, 22.300, 23.000, 13.800, 14.150], material: 'M-FABRIC-WHITE' },
+  { id: 'MB-06', name: 'Bedside table west 1.5×1.5 ft',    category: 'furniture', type: 'furniture', box: [2.500,  4.000, 21.750, 23.250, 12.000, 13.750], material: 'M-WOOD-DARK' },
+  { id: 'MB-07', name: 'Bedside table east 1.5×1.5 ft',    category: 'furniture', type: 'furniture', box: [10.000, 11.500, 21.750, 23.250, 12.000, 13.750], material: 'M-WOOD-DARK' },
+  { id: 'MB-08', name: 'Wardrobe 7 ft wide×2 ft deep',     category: 'furniture', type: 'furniture', box: [3.350, 10.350, 11.750, 13.750, 12.000, 19.000], material: 'M-LAMINATE-WALNUT' },
+  { id: 'MB-09', name: 'Dressing table 1.5×3.25 ft',       category: 'furniture', type: 'furniture', box: [0.000,  1.500, 20.000, 23.250, 12.000, 14.500], material: 'M-LAMINATE-WALNUT' },
+  { id: 'MB-10', name: 'Dressing mirror 2.45×3.5 ft',      category: 'furniture', type: 'furniture', box: [0.000,  0.100, 20.400, 22.850, 14.500, 18.000], material: 'M-MIRROR' },
+  { id: 'MB-11', name: 'Dressing stool',                   category: 'furniture', type: 'furniture', box: [1.600,  2.400, 20.800, 21.600, 12.000, 13.500], material: 'M-WOOD-DARK' },
+  { id: 'MB-12', name: 'Curtain west window',              category: 'furniture', type: 'furniture', box: [0.050,  0.200, 15.000, 20.000, 12.100, 19.300], material: 'M-FABRIC-CURTAIN' },
+];
+
+// 8.2  Basin niche (F5)
+const BASIN_NICHE = [
+  { id: 'NB-01', name: 'Wash basin bowl 1.75×1.3 ft',  category: 'furniture', type: 'furniture', box: [14.750, 16.500, 21.950, 23.250, 14.000, 14.750], material: 'M-SANITARY-WHITE' },
+  { id: 'NB-02', name: 'Basin pedestal',               category: 'furniture', type: 'furniture', box: [15.250, 16.000, 22.500, 23.000, 12.000, 14.000], material: 'M-SANITARY-WHITE' },
+  { id: 'NB-03', name: 'Basin mirror 1.55×2 ft',       category: 'furniture', type: 'furniture', box: [14.850, 16.400, 23.150, 23.250, 16.000, 18.000], material: 'M-MIRROR' },
+];
+
+// 8.3  Bathroom 1 (F6)
+const BATHROOM_1 = [
+  { id: 'B1-01', name: 'WC floor mounted 1.25×2.25 ft',    category: 'furniture', type: 'furniture', box: [21.000, 22.250, 21.000, 23.250, 12.000, 13.400], material: 'M-SANITARY-WHITE' },
+  { id: 'B1-02', name: 'Basin bowl 1.75×1.3 ft',           category: 'furniture', type: 'furniture', box: [18.000, 19.750, 21.950, 23.250, 14.000, 14.750], material: 'M-SANITARY-WHITE' },
+  { id: 'B1-03', name: 'Basin pedestal',                   category: 'furniture', type: 'furniture', box: [18.500, 19.250, 22.500, 23.000, 12.000, 14.000], material: 'M-SANITARY-WHITE' },
+  { id: 'B1-04', name: 'Mirror 1.55×2 ft above basin',    category: 'furniture', type: 'furniture', box: [18.100, 19.650, 23.150, 23.250, 16.000, 18.000], material: 'M-MIRROR' },
+  { id: 'B1-05', name: 'Electric geyser 15L above WC',    category: 'furniture', type: 'furniture', box: [21.100, 22.000, 22.350, 23.250, 17.500, 18.900], material: 'M-SANITARY-WHITE' },
+  { id: 'B1-06', name: 'Shower head',                     category: 'furniture', type: 'furniture', box: [25.050, 25.550, 22.300, 22.800, 18.350, 18.400], material: 'M-CHROME' },
+  { id: 'B1-07', name: 'Shower arm',                      category: 'furniture', type: 'furniture', box: [25.200, 25.400, 22.800, 23.250, 18.400, 18.500], material: 'M-CHROME' },
+  { id: 'B1-08', name: 'Shower mixer valve',              category: 'furniture', type: 'furniture', box: [25.100, 25.500, 23.100, 23.250, 15.300, 15.600], material: 'M-CHROME' },
+  { id: 'B1-09', name: 'Floor drain grate 0.4×0.4 ft',   category: 'furniture', type: 'furniture', box: [25.100, 25.500, 21.000, 21.400, 12.000, 12.020], material: 'M-STEEL-SS' },
+];
+
+// 8.4  Bathroom 2 (F11)
+const BATHROOM_2 = [
+  { id: 'B2-01', name: 'WC floor mounted 1.25×2.25 ft',    category: 'furniture', type: 'furniture', box: [35.400, 36.650, 21.000, 23.250, 12.000, 13.400], material: 'M-SANITARY-WHITE' },
+  { id: 'B2-02', name: 'Basin bowl 1.75×1.3 ft',           category: 'furniture', type: 'furniture', box: [38.000, 39.750, 21.950, 23.250, 14.000, 14.750], material: 'M-SANITARY-WHITE' },
+  { id: 'B2-03', name: 'Basin pedestal',                   category: 'furniture', type: 'furniture', box: [38.500, 39.250, 22.500, 23.000, 12.000, 14.000], material: 'M-SANITARY-WHITE' },
+  { id: 'B2-04', name: 'Mirror 1.5×2 ft above basin',     category: 'furniture', type: 'furniture', box: [38.100, 39.600, 23.150, 23.250, 16.000, 18.000], material: 'M-MIRROR' },
+  { id: 'B2-05', name: 'Electric geyser 15L east wall',   category: 'furniture', type: 'furniture', box: [38.975, 39.875, 22.200, 23.100, 17.500, 18.900], material: 'M-SANITARY-WHITE' },
+  { id: 'B2-06', name: 'Shower head',                     category: 'furniture', type: 'furniture', box: [33.650, 34.150, 22.300, 22.800, 18.350, 18.400], material: 'M-CHROME' },
+  { id: 'B2-07', name: 'Shower arm',                      category: 'furniture', type: 'furniture', box: [33.800, 34.000, 22.800, 23.250, 18.400, 18.500], material: 'M-CHROME' },
+  { id: 'B2-08', name: 'Shower mixer valve',              category: 'furniture', type: 'furniture', box: [33.700, 34.100, 23.100, 23.250, 15.300, 15.600], material: 'M-CHROME' },
+  { id: 'B2-09', name: 'Floor drain grate 0.4×0.4 ft',   category: 'furniture', type: 'furniture', box: [33.700, 34.100, 21.000, 21.400, 12.000, 12.020], material: 'M-STEEL-SS' },
+];
+
+// 8.5  Kitchen (F3)
+const KITCHEN = [
+  { id: 'KF-01', name: 'Base cabinet west leg 2×7 ft',          category: 'furniture', type: 'furniture', box: [3.625,  5.625,  4.375, 11.375, 12.000, 14.600], material: 'M-LAMINATE-GREY' },
+  { id: 'KF-02', name: 'Granite top west leg',                  category: 'furniture', type: 'furniture', box: [3.625,  5.700,  4.375, 11.375, 14.600, 14.750], material: 'M-GRANITE-BLACK' },
+  { id: 'KF-03', name: 'Base cabinet south leg 7.375×2.25 ft',  category: 'furniture', type: 'furniture', box: [3.625, 11.000,  4.375,  6.625, 12.000, 14.600], material: 'M-LAMINATE-GREY' },
+  { id: 'KF-04', name: 'Granite top south leg',                 category: 'furniture', type: 'furniture', box: [3.625, 11.000,  4.375,  6.700, 14.600, 14.750], material: 'M-GRANITE-BLACK' },
+  { id: 'KF-05', name: 'Double-bowl steel sink 2.5×1.6 ft',     category: 'furniture', type: 'furniture', box: [3.850,  5.450,  7.000,  9.500, 14.050, 14.750], material: 'M-STEEL-SS' },
+  { id: 'KF-06', name: 'Sink tap',                             category: 'furniture', type: 'furniture', box: [3.650,  4.000,  8.100,  8.400, 14.750, 15.450], material: 'M-CHROME' },
+  { id: 'KF-07', name: '4-burner gas hob 2×1.6 ft',            category: 'furniture', type: 'furniture', box: [7.500,  9.500,  4.600,  6.200, 14.750, 14.850], material: 'M-GLASS-BLACK' },
+  { id: 'KF-08', name: 'Wall cabinet south wall west of fan',  category: 'furniture', type: 'furniture', box: [3.625,  6.900,  4.375,  5.375, 18.250, 20.500], material: 'M-LAMINATE-GREY' },
+  { id: 'KF-09', name: 'Wall cabinet south wall east of fan',  category: 'furniture', type: 'furniture', box: [9.750, 11.000,  4.375,  5.375, 18.250, 20.500], material: 'M-LAMINATE-GREY' },
+  { id: 'KF-10', name: 'Wall cabinet west wall north of window',category: 'furniture', type: 'furniture', box: [3.625,  4.625, 10.000, 11.375, 18.250, 20.500], material: 'M-LAMINATE-GREY' },
+  { id: 'KF-11', name: 'Refrigerator single door 1.8×2×5.5 ft',category: 'furniture', type: 'furniture', box: [5.900,  7.700,  9.375, 11.375, 12.000, 17.500], material: 'M-STEEL-SS' },
+];
+
+// 8.6  Lobby: living and dining (F7)
+const LOBBY = [
+  { id: 'LB-01', name: 'Sofa seat base 2.75×6.5 ft',      category: 'furniture', type: 'furniture', box: [16.800, 19.550,  3.500, 10.000, 12.000, 12.600], material: 'M-FABRIC-GREY' },
+  { id: 'LB-02', name: 'Sofa seat cushions',              category: 'furniture', type: 'furniture', box: [17.550, 19.550,  4.000,  9.500, 12.600, 13.500], material: 'M-FABRIC-GREY' },
+  { id: 'LB-03', name: 'Sofa back',                       category: 'furniture', type: 'furniture', box: [16.800, 17.550,  3.500, 10.000, 12.600, 14.800], material: 'M-FABRIC-GREY' },
+  { id: 'LB-04', name: 'Sofa arm south',                  category: 'furniture', type: 'furniture', box: [17.550, 19.550,  3.500,  4.000, 12.600, 14.100], material: 'M-FABRIC-GREY' },
+  { id: 'LB-05', name: 'Sofa arm north',                  category: 'furniture', type: 'furniture', box: [17.550, 19.550,  9.500, 10.000, 12.600, 14.100], material: 'M-FABRIC-GREY' },
+  { id: 'LB-06', name: 'Centre table 2×2.5×1.4 ft',       category: 'furniture', type: 'furniture', box: [20.800, 22.800,  5.500,  8.000, 12.000, 13.400], material: 'M-WOOD-DARK' },
+  { id: 'LB-07', name: 'TV unit 1.25×4×1.3 ft east wall', category: 'furniture', type: 'furniture', box: [24.750, 26.000,  4.000,  8.000, 12.000, 13.300], material: 'M-LAMINATE-WALNUT' },
+  { id: 'LB-08', name: '55-inch TV wall mounted',          category: 'furniture', type: 'furniture', box: [25.850, 26.000,  4.000,  8.000, 14.350, 16.650], material: 'M-GLASS-BLACK' },
+  { id: 'LB-09', name: 'Dining table top 5×3 ft',         category: 'furniture', type: 'furniture', box: [17.500, 22.500, 12.000, 15.000, 14.300, 14.500], material: 'M-WOOD-DARK' },
+  { id: 'LB-10', name: 'Dining table leg SW',             category: 'furniture', type: 'furniture', box: [17.500, 17.700, 12.000, 12.200, 12.000, 14.300], material: 'M-WOOD-DARK' },
+  { id: 'LB-11', name: 'Dining table leg SE',             category: 'furniture', type: 'furniture', box: [22.300, 22.500, 12.000, 12.200, 12.000, 14.300], material: 'M-WOOD-DARK' },
+  { id: 'LB-12', name: 'Dining table leg NW',             category: 'furniture', type: 'furniture', box: [17.500, 17.700, 14.800, 15.000, 12.000, 14.300], material: 'M-WOOD-DARK' },
+  { id: 'LB-13', name: 'Dining table leg NE',             category: 'furniture', type: 'furniture', box: [22.300, 22.500, 14.800, 15.000, 12.000, 14.300], material: 'M-WOOD-DARK' },
+  { id: 'LB-14', name: 'Dining chair west end',           category: 'furniture', type: 'furniture', box: [16.000, 17.700, 12.750, 14.250, 12.000, 13.600], material: 'M-WOOD-DARK' },
+  { id: 'LB-15', name: 'Dining chair east end',           category: 'furniture', type: 'furniture', box: [22.300, 24.000, 12.750, 14.250, 12.000, 13.600], material: 'M-WOOD-DARK' },
+  { id: 'LB-16', name: 'Dining chair south left',         category: 'furniture', type: 'furniture', box: [18.000, 19.500, 10.750, 12.250, 12.000, 13.600], material: 'M-WOOD-DARK' },
+  { id: 'LB-17', name: 'Dining chair south right',        category: 'furniture', type: 'furniture', box: [20.500, 22.000, 10.750, 12.250, 12.000, 13.600], material: 'M-WOOD-DARK' },
+  { id: 'LB-18', name: 'Dining chair north left',         category: 'furniture', type: 'furniture', box: [18.000, 19.500, 14.750, 16.000, 12.000, 13.600], material: 'M-WOOD-DARK' },
+  { id: 'LB-19', name: 'Dining chair north right',        category: 'furniture', type: 'furniture', box: [20.500, 22.000, 14.750, 16.000, 12.000, 13.600], material: 'M-WOOD-DARK' },
+  { id: 'LB-20', name: 'Curtain south window left',       category: 'furniture', type: 'furniture', box: [14.500, 19.500,  0.050,  0.200, 12.100, 19.300], material: 'M-FABRIC-CURTAIN' },
+  { id: 'LB-21', name: 'Curtain south window right',      category: 'furniture', type: 'furniture', box: [20.500, 25.500,  0.050,  0.200, 12.100, 19.300], material: 'M-FABRIC-CURTAIN' },
+];
+
+// 8.7  Hallway (F12)
+const HALLWAY = [
+  { id: 'HW-01', name: 'Vanity base cabinet 2×3.75 ft',  category: 'furniture', type: 'furniture', box: [34.250, 36.250, 3.000, 6.750, 12.000, 14.600], material: 'M-LAMINATE-GREY' },
+  { id: 'HW-02', name: 'Granite vanity top',             category: 'furniture', type: 'furniture', box: [34.250, 36.325, 3.000, 6.750, 14.600, 14.750], material: 'M-GRANITE-BLACK' },
+  { id: 'HW-03', name: 'Wash basin bowl 1.4×1.6 ft',    category: 'furniture', type: 'furniture', box: [34.500, 35.900, 4.050, 5.650, 14.000, 14.750], material: 'M-SANITARY-WHITE' },
+  { id: 'HW-04', name: 'Basin tap',                     category: 'furniture', type: 'furniture', box: [34.300, 34.600, 4.700, 5.000, 14.750, 15.400], material: 'M-CHROME' },
+  { id: 'HW-05', name: 'Mirror 2.1×2.5 ft west wall',   category: 'furniture', type: 'furniture', box: [34.250, 34.350, 3.800, 5.900, 16.000, 18.500], material: 'M-MIRROR' },
+  { id: 'HW-06', name: 'Washing machine front loader',   category: 'furniture', type: 'furniture', box: [37.875, 39.875, 0.000, 2.000, 12.000, 15.000], material: 'M-SANITARY-WHITE' },
+];
+
+// 8.8  Child bedroom (F13)
+const CHILD_BEDROOM = [
+  { id: 'CH-01', name: 'Single bed frame 4×6.5 ft',          category: 'furniture', type: 'furniture', box: [42.750, 49.250, 13.500, 17.500, 12.000, 12.900], material: 'M-WOOD-DARK' },
+  { id: 'CH-02', name: 'Mattress 3.9×6.4 ft',               category: 'furniture', type: 'furniture', box: [42.850, 49.150, 13.600, 17.400, 12.900, 13.600], material: 'M-FABRIC-BEIGE' },
+  { id: 'CH-03', name: 'Headboard 4 ft wide 2.8 ft above fl',category: 'furniture', type: 'furniture', box: [49.000, 49.250, 13.500, 17.500, 12.000, 14.800], material: 'M-WOOD-DARK' },
+  { id: 'CH-04', name: 'Pillow',                            category: 'furniture', type: 'furniture', box: [48.000, 48.900, 14.200, 15.800, 13.600, 13.950], material: 'M-FABRIC-WHITE' },
+  { id: 'CH-05', name: 'Bedside table south 1.5×1.5 ft',    category: 'furniture', type: 'furniture', box: [47.750, 49.250, 12.000, 13.500, 12.000, 13.600], material: 'M-WOOD-DARK' },
+  { id: 'CH-06', name: 'Bedside table north 1.5×1.5 ft',    category: 'furniture', type: 'furniture', box: [47.750, 49.250, 17.500, 19.000, 12.000, 13.600], material: 'M-WOOD-DARK' },
+  { id: 'CH-07', name: 'Wardrobe 4×2×7 ft south wall',      category: 'furniture', type: 'furniture', box: [44.500, 48.500,  9.375, 11.375, 12.000, 19.000], material: 'M-LAMINATE-WALNUT' },
+  { id: 'CH-08', name: 'Study desk top 2×4 ft',             category: 'furniture', type: 'furniture', box: [40.250, 42.250, 19.000, 23.000, 14.300, 14.500], material: 'M-WOOD-DARK' },
+  { id: 'CH-09', name: 'Desk side panel south',             category: 'furniture', type: 'furniture', box: [40.250, 42.250, 19.000, 19.100, 12.000, 14.300], material: 'M-WOOD-DARK' },
+  { id: 'CH-10', name: 'Desk side panel north',             category: 'furniture', type: 'furniture', box: [40.250, 42.250, 22.900, 23.000, 12.000, 14.300], material: 'M-WOOD-DARK' },
+  { id: 'CH-11', name: 'Study chair seat',                  category: 'furniture', type: 'furniture', box: [42.250, 43.750, 20.000, 21.500, 12.000, 13.600], material: 'M-WOOD-DARK' },
+  { id: 'CH-12', name: 'Study chair back',                  category: 'furniture', type: 'furniture', box: [43.550, 43.750, 20.000, 21.500, 13.600, 15.200], material: 'M-WOOD-DARK' },
+  { id: 'CH-13', name: 'Bookshelf 1×3 ft 6 ft high',        category: 'furniture', type: 'furniture', box: [48.250, 49.250, 20.000, 23.000, 12.000, 18.000], material: 'M-WOOD-DARK' },
+  { id: 'CH-14', name: 'Curtain north window',              category: 'furniture', type: 'furniture', box: [43.000, 48.000, 23.050, 23.200, 12.100, 19.300], material: 'M-FABRIC-CURTAIN' },
+];
+
+// 8.9  Mandir (F14)
+const MANDIR = [
+  { id: 'MD-01', name: 'Marble platform 2×4 ft 2.5 ft high', category: 'furniture', type: 'furniture', box: [47.250, 49.250, 2.500, 6.500, 12.000, 14.500], material: 'M-MARBLE-WHITE' },
+  { id: 'MD-02', name: 'Wooden temple unit 1.5×3×4.5 ft',    category: 'furniture', type: 'furniture', box: [47.750, 49.250, 3.000, 6.000, 14.500, 19.000], material: 'M-WOOD-DARK' },
+  { id: 'MD-03', name: 'Brass lamp south',                   category: 'furniture', type: 'furniture', box: [47.350, 47.650, 2.700, 3.000, 14.500, 15.200], material: 'M-BRASS' },
+  { id: 'MD-04', name: 'Brass lamp north',                   category: 'furniture', type: 'furniture', box: [47.350, 47.650, 6.000, 6.300, 14.500, 15.200], material: 'M-BRASS' },
+  { id: 'MD-05', name: 'Prayer mat 2×2 ft',                  category: 'furniture', type: 'furniture', box: [44.000, 46.000, 3.000, 5.000, 12.000, 12.040], material: 'M-CARPET-RED' },
+];
+
+// 8.10  Balconies (F1, F2)
+const BALCONIES = [
+  { id: 'BAL-01', name: 'Folding clothes-drying stand 4×1.5 ft', category: 'furniture', type: 'furniture', box: [5.000, 9.000, 1.000, 2.500, 12.000, 16.500], material: 'M-STEEL-GREY' },
+  { id: 'BAL-02', name: 'Potted plant 1',                        category: 'furniture', type: 'furniture', box: [0.400, 1.200, 5.000, 5.800, 12.000, 14.500], material: 'M-TERRACOTTA' },
+  { id: 'BAL-03', name: 'Potted plant 2',                        category: 'furniture', type: 'furniture', box: [0.400, 1.200, 8.000, 8.800, 12.000, 14.500], material: 'M-TERRACOTTA' },
+  { id: 'BAL-04', name: 'Floor drain grate 0.4×0.4 ft',          category: 'furniture', type: 'furniture', box: [0.300, 0.700, 0.300, 0.700, 12.000, 12.020], material: 'M-STEEL-SS' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SECTION 9 – ELECTRICAL / SWITCHBOARDS
+// ─────────────────────────────────────────────────────────────────────────────
+
+const ELECTRICAL = [
+  { id: 'SB-MB',   name: 'Switchboard master bedroom',  category: 'electrical', type: 'switchboard', box: [13.525, 13.625, 15.200, 15.600, 15.800, 16.200], material: 'M-PAINT-INT' },
+  { id: 'SB-KIT',  name: 'Switchboard kitchen',         category: 'electrical', type: 'switchboard', box: [13.525, 13.625,  7.600,  8.000, 15.800, 16.200], material: 'M-PAINT-INT' },
+  { id: 'SB-LOB',  name: 'Switchboard lobby',           category: 'electrical', type: 'switchboard', box: [14.000, 14.100, 15.300, 15.700, 15.800, 16.200], material: 'M-PAINT-INT' },
+  { id: 'SB-B1',   name: 'Switchboard bathroom 1',      category: 'electrical', type: 'switchboard', box: [20.400, 20.800, 19.250, 19.350, 15.800, 16.200], material: 'M-PAINT-INT' },
+  { id: 'SB-B2',   name: 'Switchboard bathroom 2',      category: 'electrical', type: 'switchboard', box: [36.500, 36.900, 19.250, 19.350, 15.800, 16.200], material: 'M-PAINT-INT' },
+  { id: 'SB-CH',   name: 'Switchboard child bedroom',   category: 'electrical', type: 'switchboard', box: [40.250, 40.350, 13.100, 13.500, 15.800, 16.200], material: 'M-PAINT-INT' },
+  { id: 'SB-MD',   name: 'Switchboard mandir',          category: 'electrical', type: 'switchboard', box: [40.250, 40.350,  5.600,  6.000, 15.800, 16.200], material: 'M-PAINT-INT' },
+  { id: 'SB-HALL', name: 'Switchboard hallway',         category: 'electrical', type: 'switchboard', box: [34.250, 34.350,  8.000,  8.400, 15.800, 16.200], material: 'M-PAINT-INT' },
+  { id: 'SUB-DB',  name: 'First floor sub-distribution board', category: 'electrical', type: 'switchboard', box: [24.000, 24.800, 18.775, 18.875, 16.000, 17.000], material: 'M-STEEL-SS' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MASTER EXPORT
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const FIRST_FLOOR_FITOUT = [
+  ...OF1_OVERRIDES,
+  ...OF2_OVERRIDES,
+  ...OF3_OVERRIDES,
+  ...OF6_OVERRIDES,
+  ...WINDOWS,
+  ...DOORS,
+  ...RAILINGS,
+  ...MASTER_BEDROOM,
+  ...BASIN_NICHE,
+  ...BATHROOM_1,
+  ...BATHROOM_2,
+  ...KITCHEN,
+  ...LOBBY,
+  ...HALLWAY,
+  ...CHILD_BEDROOM,
+  ...MANDIR,
+  ...BALCONIES,
+  ...ELECTRICAL,
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SECTION 9.1 – CEILING FANS (5 total)
+// ceilZ = 22.0 (unscaled) → first floor roof slab underside
+// cx and cy_spec are unscaled; index.js scaleFans() will multiply by WORLD_SCALE.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const FF_FANS = [
+  { id: 'FN-F1', name: 'Master bedroom fan',          room: 'Master Bedroom', cx:  6.800, cy_spec: 17.500, ceilZ: 22.0 },
+  { id: 'FN-F2', name: 'Lobby living area fan',       room: 'Lobby',          cx: 21.000, cy_spec:  6.500, ceilZ: 22.0 },
+  { id: 'FN-F3', name: 'Lobby dining area fan',       room: 'Lobby',          cx: 20.000, cy_spec: 13.500, ceilZ: 22.0 },
+  { id: 'FN-F4', name: 'Child bedroom fan',           room: 'Child Bedroom',  cx: 45.000, cy_spec: 16.500, ceilZ: 22.0 },
+  { id: 'FN-F5', name: 'Mandir fan',                  room: 'Mandir',         cx: 44.750, cy_spec:  4.500, ceilZ: 22.0 },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SECTION 9.2 – CEILING LIGHTS (18 LED panels)
+// ceilZ = 22.0 (unscaled) — panels sit at Z 21.94–22.00.
+// cx, cy_spec, sizeX, sizeY are unscaled; index.js scaleLights() will scale them.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const FF_LIGHTS = [
+  { id: 'LT-F1',  name: 'Master bedroom LED',    room: 'Master Bedroom', cx:  6.800, cy_spec: 20.500, sizeX: 2.0, sizeY: 2.0, ceilZ: 22.0 },
+  { id: 'LT-F2',  name: 'Kitchen LED',           room: 'Kitchen',        cx:  8.625, cy_spec:  8.000, sizeX: 2.0, sizeY: 2.0, ceilZ: 22.0 },
+  { id: 'LT-F3',  name: 'Lobby SW LED',          room: 'Lobby',          cx: 17.500, cy_spec:  6.000, sizeX: 2.0, sizeY: 2.0, ceilZ: 22.0 },
+  { id: 'LT-F4',  name: 'Lobby SE LED',          room: 'Lobby',          cx: 22.500, cy_spec:  6.000, sizeX: 2.0, sizeY: 2.0, ceilZ: 22.0 },
+  { id: 'LT-F5',  name: 'Lobby dining W LED',    room: 'Lobby',          cx: 17.500, cy_spec: 14.000, sizeX: 2.0, sizeY: 2.0, ceilZ: 22.0 },
+  { id: 'LT-F6',  name: 'Lobby dining E LED',    room: 'Lobby',          cx: 22.500, cy_spec: 14.000, sizeX: 2.0, sizeY: 2.0, ceilZ: 22.0 },
+  { id: 'LT-F7',  name: 'Lobby north LED',       room: 'Lobby',          cx: 20.000, cy_spec: 17.500, sizeX: 2.0, sizeY: 2.0, ceilZ: 22.0 },
+  { id: 'LT-F8',  name: 'North gallery W LED',   room: 'Gallery',        cx: 29.000, cy_spec: 16.900, sizeX: 2.0, sizeY: 2.0, ceilZ: 22.0 },
+  { id: 'LT-F9',  name: 'North gallery E LED',   room: 'Gallery',        cx: 32.500, cy_spec: 16.900, sizeX: 2.0, sizeY: 2.0, ceilZ: 22.0 },
+  { id: 'LT-F10', name: 'Hallway south LED',     room: 'Hallway',        cx: 37.000, cy_spec:  4.000, sizeX: 2.0, sizeY: 2.0, ceilZ: 22.0 },
+  { id: 'LT-F11', name: 'Hallway centre LED',    room: 'Hallway',        cx: 37.000, cy_spec: 10.000, sizeX: 2.0, sizeY: 2.0, ceilZ: 22.0 },
+  { id: 'LT-F12', name: 'Hallway north LED',     room: 'Hallway',        cx: 37.000, cy_spec: 16.000, sizeX: 2.0, sizeY: 2.0, ceilZ: 22.0 },
+  { id: 'LT-F13', name: 'Child bedroom LED',     room: 'Child Bedroom',  cx: 45.000, cy_spec: 19.500, sizeX: 2.0, sizeY: 2.0, ceilZ: 22.0 },
+  { id: 'LT-F14', name: 'Mandir LED',            room: 'Mandir',         cx: 44.750, cy_spec:  6.500, sizeX: 2.0, sizeY: 2.0, ceilZ: 22.0 },
+  { id: 'LT-F15', name: 'Basin niche LED',       room: 'Basin Niche',    cx: 15.600, cy_spec: 21.000, sizeX: 1.0, sizeY: 1.0, ceilZ: 22.0 },
+  { id: 'LT-F16', name: 'Bathroom 1 LED',        room: 'Bathroom 1',     cx: 22.125, cy_spec: 21.250, sizeX: 1.0, sizeY: 1.0, ceilZ: 22.0 },
+  { id: 'LT-F17', name: 'Bathroom 2 LED',        room: 'Bathroom 2',     cx: 36.375, cy_spec: 21.250, sizeX: 1.0, sizeY: 1.0, ceilZ: 22.0 },
+  { id: 'LT-F18', name: 'South balcony bulkhead',room: 'Balcony',        cx:  6.800, cy_spec:  2.000, sizeX: 1.0, sizeY: 0.5, ceilZ: 22.0 },
+];

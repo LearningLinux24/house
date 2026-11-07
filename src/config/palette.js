@@ -279,6 +279,33 @@ export const PALETTE = {
     metalness: 0.0
   },
 
+  // --- First floor additional materials (spec section 7.2) ---
+  'M-MARBLE-WHITE': {
+    color: '#F2EFE8',
+    roughness: 0.20,
+    metalness: 0.0
+  },
+  'M-CARPET-RED': {
+    color: '#8E2A2A',
+    roughness: 0.95,
+    metalness: 0.0
+  },
+  'M-BRASS': {
+    color: '#B5902F',
+    roughness: 0.30,
+    metalness: 1.0
+  },
+  'M-EXT-PLASTER': {
+    color: '#E6DCC6',
+    roughness: 0.90,
+    metalness: 0.0
+  },
+  'M-PAINT-INT': {
+    color: '#F1E9D8',
+    roughness: 0.85,
+    metalness: 0.0
+  },
+
   // --- Edge Outlines ---
   edge_outline: {
     color: '#383632',

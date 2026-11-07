@@ -14,9 +14,9 @@ import { UIManager } from '../ui/UIManager.js';
 
 import {
   FLOORS,
-  GROUND_FLOOR_FITOUT,
-  FITOUT_FANS,
-  FITOUT_LIGHTS,
+  ALL_FITOUT,
+  ALL_FANS,
+  ALL_LIGHTS,
   getAllColliders,
   getAllTeleports,
   getAllZones,
@@ -52,7 +52,7 @@ export class Engine {
 
     // 5. Fitout & Interior Builder
     this.fitoutBuilder = new FitoutBuilder(this.materials);
-    this.fitoutBuilder.buildFitout(GROUND_FLOOR_FITOUT, FITOUT_FANS, FITOUT_LIGHTS);
+    this.fitoutBuilder.buildFitout(ALL_FITOUT, ALL_FANS, ALL_LIGHTS);
     this.sceneManager.scene.add(this.fitoutBuilder.getRoot());
 
     // 6. Floating Room Labels
