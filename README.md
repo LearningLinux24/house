@@ -16,8 +16,10 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
 | <kbd>D</kbd> or <kbd>→</kbd> | Strafe Right |
 | <kbd>Shift</kbd> (Hold) | Sprint / Walk Fast |
 | <kbd>Space</kbd> | Jump |
+| <kbd>E</kbd> | **Interact with Doors & Gates** (Open / Close targeted door or overhead garage door) |
+| <kbd>H</kbd> | **Toggle Interaction Prompt** (Show/hide the "[E] Interact" hint on screen) |
 | **Mouse Move** | Look around (Yaw & Pitch) |
-| **Left Click** | Lock mouse cursor & enter walk mode |
+| **Left Click** | Lock mouse cursor & enter walk mode (or interact with doors) |
 | <kbd>Esc</kbd> | Release mouse cursor & pause navigation |
 
 ### View & Simulation Hotkeys
@@ -30,6 +32,7 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
 | <kbd>3</kbd> or <kbd>0</kbd> | **Show Both Floors** | Display the full two-storey residential building in Dollhouse overview |
 | <kbd>C</kbd> | **Toggle Roof Slab** | Show/hide top roof slab and terrace parapets to look inside from above |
 | <kbd>L</kbd> | **Toggle Room Labels** | Show/hide 3D architectural room name badges (OFF by default for clean immersion) |
+| <kbd>H</kbd> | **Toggle Interaction Prompt** | Toggle the on-screen "[E] Interact" hint prompt without affecting room labels |
 | <kbd>F</kbd> | **Toggle Furniture** | Show/hide interior fitout (furniture, fixtures, appliances, doors, fans) |
 | <kbd>R</kbd> | **Reset Position** | Teleport player back to the default spawn point (Gate Landing) |
 
@@ -38,11 +41,24 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
 | Mouse Action | Effect |
 | :--- | :--- |
 | **Left Click + Drag** | Orbit / Rotate camera around the house |
+| **Left Click on Door/Gate** | Interactively open / close door, gate, or motorized garage door |
 | **Right Click + Drag** | Pan camera horizontally and vertically |
 | **Scroll Wheel** | Zoom in / Zoom out |
 
 ### Interactive UI & Architecture Features
 
+* **Interactive Doors, Boundary Gates & Motorized Garage System**:
+  * **Motorized Overhead Sectional Garage Door**:
+    * Authentic residential overhead roll-up sectional mechanism replacing swinging leaves.
+    * 5 horizontal articulating panels in architectural dark charcoal steel (`M-GATE-MS`) with embossed shadow grooves, 4 upper frosted glass vision lites (`M-GLASS`), bottom rubber bulb weather seal, recessed flush handle, and side roller hinges.
+    * Structural C-channel vertical guide jamb tracks, top lintel torsion drum shaft, motorized opener unit, and horizontal ceiling runners extending into the garage.
+    * Lifts smoothly vertically **UP** ($7.60$ ft lift height) into ceiling clearance when activated, clearing the full 12.7 ft driveway width for vehicle and player passage.
+    * Realistic mechanical audio via Web Audio API featuring electric motor hum combined with chain and roller track rumble.
+    * Dynamic collision integration: solid physical barrier when closed; dynamically deactivated when open for smooth walk-through / drive-through.
+  * **Interactive Pedestrian Entrance Gate (<kbd>G1</kbd>)**: Dual-leaf mild steel boundary gate with solid kick plates, horizontal privacy slats, and vertical stainless steel pull handles.
+  * **Interactive Glazed Balcony Doors (<kbd>DF3</kbd>, <kbd>DF8</kbd>)**: Powder-coated aluminum framed doors with full-height safety glass panels leading to exterior first-floor balconies.
+  * **Interior Flush Doors**: Solid teak doors with stainless steel lever handles and realistic latch audio.
+  * **Dual Interaction Support**: Walk up in First-Person mode and press <kbd>E</kbd> or click; in Dollhouse / Orbit mode, simply left-click directly on any door or gate leaf.
 * **Collapsible Sidebar (<kbd>☰</kbd> / <kbd>✕</kbd>)**: Click the toggle tab on the right edge to expand or collapse the control drawer.
 * **Floor Level View (Dollhouse Overview)**:
   * **🏢 Both Floors (<kbd>3</kbd>)**: View the full two-storey residential building.
@@ -90,6 +106,7 @@ house/
     ├── world/
     │   ├── HouseBuilder.js      # Procedural mesh builder for structural solids and stairs
     │   ├── FitoutBuilder.js     # Mesh builder for doors, windows, gates, animated fans, lights
+    │   ├── DoorManager.js       # Interactive doors, pedestrian gates, motorized overhead garage door & audio
     │   ├── Materials.js         # Reusable Three.js PBR materials manager
     │   ├── Environment.js       # Extended terrain, street, fog, and sky dome
     │   └── RoomLabels.js        # 3D billboard canvas sprites for room labels
