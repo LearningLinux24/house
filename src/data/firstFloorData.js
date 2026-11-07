@@ -169,8 +169,9 @@ export const FIRST_FLOOR_DATA = {
     { id: 'TER-PAR-S', box: [ 0.000, 49.250, -0.750,  0.000, 22.500, 25.750], type: 'wall_ext' },
 
     // Terrace Stair Guard Railing Walls (protects open stair well on terrace)
-    { id: 'TER-STAIR-W', box: [26.000, 26.375,  4.000, 11.000, 22.500, 25.500], type: 'wall_int' },
-    { id: 'TER-STAIR-N', box: [26.000, 29.625, 11.000, 11.375, 22.500, 25.500], type: 'wall_int' }
+    { id: 'TER-STAIR-W', box: [26.000, 26.375,  4.000, 11.375, 22.500, 25.500], type: 'wall_int' },
+    { id: 'TER-STAIR-N', box: [26.000, 30.000, 11.000, 11.375, 22.500, 25.500], type: 'wall_int' },
+    { id: 'TER-STAIR-E', box: [29.625, 30.000,  4.000, 11.375, 22.500, 25.500], type: 'wall_int' }
   ],
 
   // ─────────────────────────────────────────────────────────────────────────

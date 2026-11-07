@@ -34,61 +34,71 @@ export class CollisionSystem {
       return 0.00;
     }
 
-    // ── STAIR FLIGHT LANE B (Ground Floor <-> First Floor) ───────────────
-    // Connects Ground Floor (Z = 1.50) to First Floor (Z = 12.00)
-    // Seamless in both ascending (south to north) and descending (north to south)
-    if (xs >= 30.125 && xs <= 33.875) {
-      // Arrival landing at top of ground flight (First Floor slab level)
-      if (ys >= 13.24 && ys <= 15.0) {
-        if (unscaledElev >= 6.5) {
-          return 12.00 * s; // First Floor landing
-        }
-        return 1.50 * s;    // Ground Floor under landing slab
+    // ═════════════════════════════════════════════════════════════════════
+    // TIER 1 · TERRACE FLOOR  (unscaledElev >= 18.0)
+    // ═════════════════════════════════════════════════════════════════════
+    if (unscaledElev >= 18.0) {
+      // Lane A stairwell opening (X=26.375–29.625, Y=4.0–11.0)
+      // When entering the staircase to descend south-to-north:
+      if (xs >= 26.375 && xs <= 29.625 && ys >= 4.0 && ys <= 11.0) {
+        const k = Math.min(13, Math.max(1, Math.ceil((14.01 - ys) / 0.770)));
+        return (12.00 + 0.75 * k) * s;
       }
 
-      // The 12 stair treads climbing from 1.50 to 12.00
-      if (ys >= 4.0 && ys <= 13.24) {
-        const treadIndex = Math.min(12, Math.max(1, Math.floor((ys - 4.0) / 0.770) + 1));
-        return (1.50 + 0.8077 * treadIndex) * s;
-      }
-
-      // South of flight foot (ys < 4.0):
-      // If player is on first floor slab above: 12.00
-      // Otherwise ground floor hallway: 1.50
-      if (unscaledElev >= 6.5) {
-        return 12.00 * s;
-      }
-      return 1.50 * s;
+      // Entire terrace floor slab & shaft ceiling grating:
+      // Includes roof slabs RF1, RF2-S, RF2-N, RF2-E, RF3, RF4-S, RF4-W, RF4-N,
+      // and the walkable stainless steel ceiling/terrace grating (X=27.625–32.375, Y=19.125–22.875).
+      return 22.50 * s;
     }
 
-    // ── UPPER FLOORS (First Floor & Terrace: unscaledElev >= 6.5) ────────
+    // ═════════════════════════════════════════════════════════════════════
+    // TIER 2 · FIRST FLOOR  (6.5 <= unscaledElev < 18.0)
+    // ═════════════════════════════════════════════════════════════════════
     if (unscaledElev >= 6.5) {
-      // Upper flight Lane A (X = 26.375 to 29.625) climbing south to Terrace
+      // 1. Upper stair flight Lane A (climbing south to terrace)
       if (xs >= 26.375 && xs <= 29.625) {
-        if (ys >= 0.0 && ys < 4.0) {
-          return 22.50 * s; // Terrace roof level
+        if (ys < 4.0) {
+          return 22.50 * s; // Terrace arrival landing
         }
-        if (ys >= 4.0 && ys <= 14.01) {
+        if (ys <= 14.01) {
           const k = Math.min(13, Math.max(1, Math.ceil((14.01 - ys) / 0.770)));
           return (12.00 + 0.75 * k) * s;
         }
-        // North of upper stair foot: First floor plate
+        // North of stair foot: First floor plate
         return 12.00 * s;
       }
 
-      // Terrace level for terrace players
-      if (unscaledElev >= 18.0) {
-        return 22.50 * s;
+      // 2. Lower stair flight Lane B (descending south to ground floor)
+      if (xs >= 30.125 && xs <= 33.875) {
+        if (ys >= 13.24 && ys <= 15.0) {
+          return 12.00 * s; // First Floor landing
+        }
+        if (ys >= 4.0 && ys < 13.24) {
+          const treadIndex = Math.min(12, Math.max(1, Math.floor((ys - 4.0) / 0.770) + 1));
+          return (1.50 + 0.8077 * treadIndex) * s;
+        }
+        // South of flight foot (ys < 4.0): First floor slab above ground hallway
+        return 12.00 * s;
       }
 
-      // Everywhere across First Floor plate
+      // 3. Everywhere across First Floor plate (including shaft alcove walkable floor grating)
       return 12.00 * s;
     }
 
-    // ── GROUND FLOOR (unscaledElev < 6.5) ────────────────────────────────
-    // NOTE: On Ground Floor, Lane A (xs = 26.375 to 29.625) is Zone Z9A
-    // (Stairs Bay West Passage) and South Hallway at Z = 1.50 * s.
-    // It is NEVER treated as upper terrace stairs!
+    // ═════════════════════════════════════════════════════════════════════
+    // TIER 3 · GROUND FLOOR  (unscaledElev < 6.5)
+    // ═════════════════════════════════════════════════════════════════════
+    // Lower stair flight Lane B (ascending north to first floor)
+    if (xs >= 30.125 && xs <= 33.875) {
+      if (ys >= 13.24 && ys <= 15.0) {
+        return 1.50 * s; // Ground Floor under landing slab
+      }
+      if (ys >= 4.0 && ys < 13.24) {
+        const treadIndex = Math.min(12, Math.max(1, Math.floor((ys - 4.0) / 0.770) + 1));
+        return (1.50 + 0.8077 * treadIndex) * s;
+      }
+      return 1.50 * s; // Ground floor hallway
+    }
 
     // Garage threshold two steps (Override O4: X=34.25–41.25, Y=14.0–15.0)
     if (xs >= 34.25 && xs <= 41.25 && ys >= 14.0 && ys <= 15.0) {
@@ -177,7 +187,15 @@ export class CollisionSystem {
   getZoneAt(x, z, playerElev = 0) {
     const xs = x;
     const ys = -z;
-    const isFirstFloor = playerElev >= 6.5 * this.scale;
+    const isTerrace = playerElev >= 18.0 * this.scale;
+    const isFirstFloor = playerElev >= 6.5 * this.scale && !isTerrace;
+
+    if (isTerrace) {
+      return {
+        id: 'TER',
+        name: 'Terrace (Open Air)'
+      };
+    }
 
     for (const zone of this.zones) {
       const isZoneF1 = zone.id.startsWith('F');
