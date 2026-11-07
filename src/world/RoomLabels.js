@@ -5,13 +5,16 @@ export class RoomLabelsManager {
   constructor() {
     this.group = new THREE.Group();
     this.group.name = 'RoomLabels';
-    this.visible = true;
+    this.visible = false;
+    this.group.visible = false;
+    this.currentFloorFilter = 'all';
   }
 
-  addLabels(labelsData) {
+  addLabels(labelsData, floorId = 'all') {
     labelsData.forEach(item => {
       const sprite = this.createLabelSprite(item.text, item.sub);
       sprite.position.set(item.x, item.elev, -item.y_spec);
+      sprite.userData = { ...item, floor: floorId };
       this.group.add(sprite);
     });
   }
@@ -69,9 +72,27 @@ export class RoomLabelsManager {
     return sprite;
   }
 
+  setFloorFilter(filter) {
+    this.currentFloorFilter = filter;
+    this.group.children.forEach(sprite => {
+      if (!this.visible) {
+        sprite.visible = false;
+        return;
+      }
+      if (filter === 'all') {
+        sprite.visible = true;
+      } else {
+        sprite.visible = sprite.userData && (sprite.userData.floor === filter || sprite.userData.floor === 'all');
+      }
+    });
+  }
+
   setVisibility(visible) {
     this.visible = visible;
     this.group.visible = visible;
+    if (visible) {
+      this.setFloorFilter(this.currentFloorFilter || 'all');
+    }
   }
 
   toggle() {

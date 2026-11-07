@@ -29,6 +29,10 @@ export class FitoutBuilder {
     // Fans tracking for rotation animation
     this.fans = [];
 
+    // All objects tracked for floor filtering
+    this.allFitoutObjects = [];
+    this.currentFloorFilter = 'all';
+
     // Pooled dynamic point lights (fixed count = 8 to prevent shader recompilation)
     this.maxActiveLights = 8;
     this.lightPool = [];
@@ -42,6 +46,7 @@ export class FitoutBuilder {
     // 1. Build box-based fitout items
     fitoutData.forEach(item => {
       const mesh = this.createFitoutMesh(item);
+      this.allFitoutObjects.push(mesh);
       const cat = item.category || 'furniture';
 
       if (this.groups[cat]) {
@@ -56,12 +61,14 @@ export class FitoutBuilder {
       const fanObj = this.createCeilingFan(fanSpec);
       this.groups.fans.add(fanObj.root);
       this.fans.push(fanObj);
+      this.allFitoutObjects.push(fanObj.root);
     });
 
     // 3. Build ceiling lights (LED panels + pooled point lights)
     lightsData.forEach(lightSpec => {
       const lightObj = this.createCeilingLight(lightSpec);
       this.groups.lighting.add(lightObj.mesh);
+      this.allFitoutObjects.push(lightObj.mesh);
     });
 
     // Initialize fixed pool of 8 active point lights
@@ -99,6 +106,7 @@ export class FitoutBuilder {
     const geo = new THREE.BoxGeometry(sizeX, sizeY, sizeZ);
     const mat = this.materials.get(item.material);
     const mesh = new THREE.Mesh(geo, mat);
+    mesh.userData = item;
 
     const posX = (xmin + xmax) / 2;
     const posY = (zmin + zmax) / 2;
@@ -147,6 +155,7 @@ export class FitoutBuilder {
     const s = WORLD_SCALE;
     const root = new THREE.Group();
     root.name = `Fan_${spec.id}`;
+    root.userData = spec;
 
     const chromeMat = this.materials.get('M-CHROME');
     const bladeMat = this.materials.get('M-WOOD-DARK');
@@ -225,6 +234,7 @@ export class FitoutBuilder {
     const posY = (ceilZ - 0.03) * s;
     mesh.position.set(cx, posY, -cy_spec);
     mesh.name = `LightPanel_${id}`;
+    mesh.userData = spec;
 
     // Frame outline around panel
     const edgeGeo = new THREE.EdgesGeometry(geo);
@@ -234,6 +244,7 @@ export class FitoutBuilder {
     // Indoor warm point light registered for dynamic nearest-assignment
     this.lightSources.push({
       id: id,
+      floor: spec.floor,
       position: new THREE.Vector3(cx, (ceilZ - 0.30) * s, -cy_spec),
       color: 0xfff3d4,
       intensity: 0.50,
@@ -260,15 +271,19 @@ export class FitoutBuilder {
       if (this.lightUpdateTimer >= 0.08) {
         this.lightUpdateTimer = 0;
 
-        for (let i = 0; i < this.lightSources.length; i++) {
-          const src = this.lightSources[i];
+        const candidateSources = (this.currentFloorFilter && this.currentFloorFilter !== 'all')
+          ? this.lightSources.filter(s => !s.floor || s.floor === this.currentFloorFilter)
+          : this.lightSources;
+
+        for (let i = 0; i < candidateSources.length; i++) {
+          const src = candidateSources[i];
           src._distSq = src.position.distanceToSquared(cameraPos);
         }
-        this.lightSources.sort((a, b) => a._distSq - b._distSq);
+        candidateSources.sort((a, b) => a._distSq - b._distSq);
 
-        const count = Math.min(this.maxActiveLights, this.lightSources.length);
+        const count = Math.min(this.maxActiveLights, candidateSources.length);
         for (let i = 0; i < count; i++) {
-          const src = this.lightSources[i];
+          const src = candidateSources[i];
           const pl = this.lightPool[i];
           pl.position.copy(src.position);
           pl.color.set(src.color);
@@ -282,6 +297,19 @@ export class FitoutBuilder {
         }
       }
     }
+  }
+
+  setFloorFilter(filter) {
+    this.currentFloorFilter = filter;
+    this.allFitoutObjects.forEach(obj => {
+      const floor = obj.userData?.floor;
+      if (!floor) return;
+      if (filter === 'all') {
+        obj.visible = true;
+      } else {
+        obj.visible = (floor === filter);
+      }
+    });
   }
 
   setFurnitureVisibility(visible) {

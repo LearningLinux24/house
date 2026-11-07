@@ -59,9 +59,10 @@ export class Engine {
     this.labels = new RoomLabelsManager();
     FLOORS.forEach(floor => {
       if (floor.labels) {
-        this.labels.addLabels(floor.labels);
+        this.labels.addLabels(floor.labels, floor.id);
       }
     });
+    this.labels.setVisibility(false);
     this.sceneManager.scene.add(this.labels.getRoot());
 
     // 7. Physics & Wall Collisions
@@ -84,7 +85,7 @@ export class Engine {
 
     // 11. UI State
     this.roofVisible = true;
-    this.labelsVisible = true;
+    this.labelsVisible = false;
     this.furnitureVisible = true;
 
     // 12. UI Manager
@@ -108,7 +109,7 @@ export class Engine {
         this.toggleFurniture();
       },
       onFloorFilter: (filter) => {
-        this.houseBuilder.setFloorFilter(filter);
+        this.setFloorFilter(filter);
       },
       onReset: () => {
         this.resetPlayer();
@@ -136,6 +137,8 @@ export class Engine {
       if (isOrbit) {
         this.houseBuilder.setRoofVisibility(false);
       } else {
+        // When returning to First-Person, restore full house view
+        this.setFloorFilter('all', false);
         this.houseBuilder.setRoofVisibility(this.roofVisible);
       }
     });
@@ -146,6 +149,7 @@ export class Engine {
     this.input.on('toggleLabels', () => this.toggleLabels());
     this.input.on('toggleFurniture', () => this.toggleFurniture());
     this.input.on('resetPlayer', () => this.resetPlayer());
+    this.input.on('filterFloor', (filter) => this.setFloorFilter(filter));
 
     // Position initial camera
     this.sceneManager.camera.position.copy(this.player.position);
@@ -173,6 +177,18 @@ export class Engine {
   toggleFurniture() {
     this.furnitureVisible = this.fitoutBuilder.toggleFurniture();
     this.ui.setFurnitureButtonState(this.furnitureVisible);
+  }
+
+  setFloorFilter(filter, autoSwitchToOrbit = true) {
+    this.currentFloorFilter = filter;
+    this.houseBuilder.setFloorFilter(filter);
+    this.fitoutBuilder.setFloorFilter(filter);
+    this.labels.setFloorFilter(filter);
+    this.ui.setFloorButtonState(filter);
+
+    if (autoSwitchToOrbit && !this.cameraCtrl.isOrbitMode) {
+      this.cameraCtrl.setMode(true, this.player);
+    }
   }
 
   resetPlayer() {

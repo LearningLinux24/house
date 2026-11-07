@@ -62,6 +62,22 @@ export class InputManager {
       case 'KeyR':
         this.emit('resetPlayer');
         break;
+
+      // Floor Isolation Hotkeys (Dollhouse Overview)
+      case 'Digit1':
+      case 'Numpad1':
+        this.emit('filterFloor', 'ground_floor');
+        break;
+      case 'Digit2':
+      case 'Numpad2':
+        this.emit('filterFloor', 'first_floor');
+        break;
+      case 'Digit3':
+      case 'Numpad3':
+      case 'Digit0':
+      case 'Numpad0':
+        this.emit('filterFloor', 'all');
+        break;
     }
   }
 

@@ -58,7 +58,7 @@ export class UIManager {
     // State tracking
     this.sidebarOpen = false;
     this.roofVisible = true;
-    this.labelsVisible = true;
+    this.labelsVisible = false;
     this.furnitureVisible = true;
     this.isOrbitMode = false;
 
@@ -351,6 +351,12 @@ export class UIManager {
       this.elements.btnToggleFurniture.innerHTML = furnitureVisible ? '🛋️ Furniture: ON (F)' : '🛋️ Furniture: OFF (F)';
       this.elements.btnToggleFurniture.classList.toggle('active', furnitureVisible);
     }
+  }
+
+  setFloorButtonState(filter) {
+    if (this.elements.btnFloorAll) this.elements.btnFloorAll.classList.toggle('active', filter === 'all');
+    if (this.elements.btnFloorGf) this.elements.btnFloorGf.classList.toggle('active', filter === 'ground_floor');
+    if (this.elements.btnFloorFf) this.elements.btnFloorFf.classList.toggle('active', filter === 'first_floor');
   }
 
   hideBlocker() {

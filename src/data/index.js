@@ -51,16 +51,18 @@ function scaleFloor(floor, s) {
   };
 }
 
-function scaleFitout(fitout, s) {
+function scaleFitout(fitout, s, floorId = 'ground_floor') {
   return fitout.map(item => ({
     ...item,
+    floor: floorId,
     box: item.box.map(coord => coord * s)
   }));
 }
 
-function scaleFans(fans, s) {
+function scaleFans(fans, s, floorId = 'ground_floor') {
   return fans.map(fan => ({
     ...fan,
+    floor: floorId,
     cx: fan.cx * s,
     cy_spec: fan.cy_spec * s
     // ceilZ is NOT scaled here — FitoutBuilder uses it in local group space
@@ -68,9 +70,10 @@ function scaleFans(fans, s) {
   }));
 }
 
-function scaleLights(lights, s) {
+function scaleLights(lights, s, floorId = 'ground_floor') {
   return lights.map(light => ({
     ...light,
+    floor: floorId,
     cx: light.cx * s,
     cy_spec: light.cy_spec * s,
     sizeX: light.sizeX * s,
@@ -80,14 +83,14 @@ function scaleLights(lights, s) {
 
 export const GROUND_FLOOR_DATA = scaleFloor(RAW_GF_DATA, WORLD_SCALE);
 export const FIRST_FLOOR_DATA = scaleFloor(RAW_FF_DATA, WORLD_SCALE);
-export const GROUND_FLOOR_FITOUT = scaleFitout(RAW_GF_FITOUT, WORLD_SCALE);
-export const FITOUT_FANS = scaleFans(RAW_FANS, WORLD_SCALE);
-export const FITOUT_LIGHTS = scaleLights(RAW_LIGHTS, WORLD_SCALE);
+export const GROUND_FLOOR_FITOUT = scaleFitout(RAW_GF_FITOUT, WORLD_SCALE, 'ground_floor');
+export const FITOUT_FANS = scaleFans(RAW_FANS, WORLD_SCALE, 'ground_floor');
+export const FITOUT_LIGHTS = scaleLights(RAW_LIGHTS, WORLD_SCALE, 'ground_floor');
 
 // First floor fitout (scaled)
-export const FIRST_FLOOR_FITOUT = scaleFitout(RAW_FF_FITOUT, WORLD_SCALE);
-export const FF_FANS   = scaleFans(RAW_FF_FANS, WORLD_SCALE);
-export const FF_LIGHTS = scaleLights(RAW_FF_LIGHTS, WORLD_SCALE);
+export const FIRST_FLOOR_FITOUT = scaleFitout(RAW_FF_FITOUT, WORLD_SCALE, 'first_floor');
+export const FF_FANS   = scaleFans(RAW_FF_FANS, WORLD_SCALE, 'first_floor');
+export const FF_LIGHTS = scaleLights(RAW_FF_LIGHTS, WORLD_SCALE, 'first_floor');
 
 // Merged arrays for Engine — both floors combined
 export const ALL_FITOUT = [...GROUND_FLOOR_FITOUT, ...FIRST_FLOOR_FITOUT];
