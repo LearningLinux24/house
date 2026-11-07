@@ -25,9 +25,8 @@ export const GROUND_FLOOR_DATA = {
     // 1. Ground Base Slab
     { id: 'G0', box: [-0.750, 50.000, -0.750, 24.000, -0.500, 0.000], type: 'ground' },
 
-    // Garden finishes on ground slab
-    { id: 'G-GRASS', box: [0.000, 3.250, 9.000, 23.250, 0.000, 0.020], type: 'grass' },
-    { id: 'G-PATH', box: [0.000, 3.250, 7.500, 9.000, 0.000, 0.030], type: 'ground' },
+    // Garden finishes on ground slab — pure green grass across entire garden zone
+    { id: 'G-GRASS', box: [0.000, 3.250, 7.500, 23.250, 0.000, 0.020], type: 'grass' },
 
     // 2. Plinth Blocks (P1 - P4)
     { id: 'P1', box: [3.250, 34.250, 7.500, 23.250, 0.000, 1.500], type: 'plinth' },

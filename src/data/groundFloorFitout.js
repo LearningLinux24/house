@@ -848,42 +848,6 @@ export const GROUND_FLOOR_FITOUT = [
   },
 
   // ==========================================
-  // 12. GARDEN PLANTERS (Category: 'garden')
-  // ==========================================
-  {
-    id: 'GRD-01',
-    name: 'Traditional Tulsi Planter',
-    category: 'garden',
-    type: 'planter',
-    box: [0.900, 2.400, 9.600, 11.100, 0.000, 3.500],
-    material: 'M-CEMENT-PAINT'
-  },
-  {
-    id: 'GRD-02',
-    name: 'Garden Potted Plant 1',
-    category: 'garden',
-    type: 'pot',
-    box: [1.200, 2.000, 16.000, 16.800, 0.000, 2.500],
-    material: 'M-TERRACOTTA'
-  },
-  {
-    id: 'GRD-03',
-    name: 'Garden Potted Plant 2',
-    category: 'garden',
-    type: 'pot',
-    box: [1.200, 2.000, 18.300, 19.100, 0.000, 2.500],
-    material: 'M-TERRACOTTA'
-  },
-  {
-    id: 'GRD-04',
-    name: 'Garden Potted Plant 3',
-    category: 'garden',
-    type: 'pot',
-    box: [1.200, 2.000, 20.600, 21.400, 0.000, 2.500],
-    material: 'M-TERRACOTTA'
-  },
-
-  // ==========================================
   // 13. SWITCHBOARDS & DISTRIBUTION BOARD (Category: 'electrical')
   // ==========================================
   {

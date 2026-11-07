@@ -15,6 +15,7 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
 | <kbd>A</kbd> or <kbd>←</kbd> | Strafe Left |
 | <kbd>D</kbd> or <kbd>→</kbd> | Strafe Right |
 | <kbd>Shift</kbd> (Hold) | Sprint / Walk Fast |
+| <kbd>Space</kbd> | Jump |
 | **Mouse Move** | Look around (Yaw & Pitch) |
 | **Left Click** | Lock mouse cursor & enter walk mode |
 | <kbd>Esc</kbd> | Release mouse cursor & pause navigation |

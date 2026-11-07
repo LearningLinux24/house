@@ -8,12 +8,28 @@ export class Player {
 
     this.position = new THREE.Vector3(spawnPoint.x, spawnPoint.elev, -spawnPoint.y_spec);
     this.feetElevation = spawnPoint.elev;
+    this.velocityY = 0;
+    this.isGrounded = true;
   }
 
   update(delta, input, camera) {
+    const dt = Math.min(delta, 0.05);
     const isMoving = input.keys.forward || input.keys.backward || input.keys.left || input.keys.right;
     const speed = input.keys.sprint ? this.config.speed * this.config.sprintMultiplier : this.config.speed;
 
+    // 1. Jump initiation (only when grounded on solid floor)
+    if (input.keys.jump && this.isGrounded) {
+      this.velocityY = this.config.jumpForce;
+      this.isGrounded = false;
+    }
+
+    // 2. Vertical air physics (gravity & velocity)
+    if (!this.isGrounded) {
+      this.velocityY -= this.config.gravity * dt;
+      this.feetElevation += this.velocityY * dt;
+    }
+
+    // 3. Horizontal movement & wall collisions
     if (isMoving) {
       let moveX = 0;
       let moveZ = 0;
@@ -39,15 +55,17 @@ export class Player {
         .addScaledVector(right, moveX)
         .normalize();
 
-      const nextX = this.position.x + moveDir.x * speed * delta;
-      const nextZ = this.position.z + moveDir.z * speed * delta;
+      const nextX = this.position.x + moveDir.x * speed * dt;
+      const nextZ = this.position.z + moveDir.z * speed * dt;
 
-      // Sample step elevation before confirming move (pass current elev for multi-floor)
-      const targetElev = this.collision.getFloorElevation(nextX, nextZ, this.feetElevation);
-      const elevDiff = targetElev - this.feetElevation;
+      // Sample step elevation before confirming move
+      const targetFloorElev = this.collision.getFloorElevation(nextX, nextZ, this.feetElevation);
+      const elevDiff = targetFloorElev - this.feetElevation;
 
-      // Allow stepping up risers / stairs within stepMaxHeight
-      if (elevDiff <= this.config.stepMaxHeight) {
+      // Allow stepping up risers within stepMaxHeight when grounded or jumping
+      const canStep = this.isGrounded ? (elevDiff <= this.config.stepMaxHeight) : (elevDiff <= 0.5 * this.config.stepMaxHeight);
+
+      if (canStep) {
         // Resolve horizontal wall collisions
         const [cleanX, cleanZ] = this.collision.resolveWallCollisions(
           nextX,
@@ -58,18 +76,31 @@ export class Player {
 
         this.position.x = cleanX;
         this.position.z = cleanZ;
-
-        // Smooth elevation tracking
-        const surfaceElev = this.collision.getFloorElevation(this.position.x, this.position.z, this.feetElevation);
-        this.feetElevation += (surfaceElev - this.feetElevation) * this.config.groundSnapSpeed * delta;
       }
-    } else {
-      // Keep grounded when standing
-      const surfaceElev = this.collision.getFloorElevation(this.position.x, this.position.z, this.feetElevation);
-      this.feetElevation += (surfaceElev - this.feetElevation) * this.config.groundSnapSpeed * delta;
     }
 
-    // Camera height is feet elevation + human eye height
+    // 4. Grounding & surface snapping
+    const surfaceElev = this.collision.getFloorElevation(this.position.x, this.position.z, this.feetElevation);
+
+    if (!this.isGrounded) {
+      // Landing on floor
+      if (this.feetElevation <= surfaceElev) {
+        this.feetElevation = surfaceElev;
+        this.velocityY = 0;
+        this.isGrounded = true;
+      }
+    } else {
+      // Smooth elevation tracking on slopes and stairs
+      this.feetElevation += (surfaceElev - this.feetElevation) * this.config.groundSnapSpeed * dt;
+
+      // Detect walking off a high ledge
+      if (this.feetElevation - surfaceElev > this.config.stepMaxHeight) {
+        this.isGrounded = false;
+        this.velocityY = 0;
+      }
+    }
+
+    // 5. Camera height is feet elevation + human eye height
     this.position.y = this.feetElevation + this.config.eyeHeight;
   }
 
@@ -77,6 +108,8 @@ export class Player {
     this.position.x = x;
     this.position.z = -y_spec;
     this.feetElevation = elev;
+    this.velocityY = 0;
+    this.isGrounded = true;
     this.position.y = this.feetElevation + this.config.eyeHeight;
   }
 }

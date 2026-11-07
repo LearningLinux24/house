@@ -38,7 +38,9 @@ export const PLAYER_CONFIG = {
   speed: 10.5,                           // Walk speed in ft/sec (comfortable pace for scaled space)
   sprintMultiplier: 1.75,                // Sprint multiplier
   stepMaxHeight: 1.40 * WORLD_SCALE,     // Maximum step height human can climb (comfortable riser climbing)
-  groundSnapSpeed: 22.0                  // Smoothing factor for floor elevation
+  groundSnapSpeed: 22.0,                 // Smoothing factor for floor elevation
+  jumpForce: 15.0 * WORLD_SCALE,         // Initial jump impulse velocity (ft/sec)
+  gravity: 46.0 * WORLD_SCALE            // Gravity acceleration (ft/sec^2) for crisp, athletic jump
 };
 
 /**

@@ -5,7 +5,8 @@ export class InputManager {
       backward: false,
       left: false,
       right: false,
-      sprint: false
+      sprint: false,
+      jump: false
     };
 
     this.actionListeners = new Map();
@@ -44,6 +45,9 @@ export class InputManager {
       case 'ShiftLeft':
       case 'ShiftRight':
         this.keys.sprint = true;
+        break;
+      case 'Space':
+        this.keys.jump = true;
         break;
 
       // Hotkey Actions
@@ -102,6 +106,9 @@ export class InputManager {
       case 'ShiftLeft':
       case 'ShiftRight':
         this.keys.sprint = false;
+        break;
+      case 'Space':
+        this.keys.jump = false;
         break;
     }
   }
