@@ -24,9 +24,12 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
 | Shortcut | Function | Description |
 | :--- | :--- | :--- |
 | <kbd>V</kbd> | **Toggle Camera Mode** | Switch between **First-Person Walk** and **Dollhouse Orbit View** |
-| <kbd>C</kbd> | **Toggle Roof Slab** | Show/hide top roof slab to look inside the house from above |
-| <kbd>L</kbd> | **Toggle Room Labels** | Show/hide floating 3D architectural room name badges |
-| <kbd>F</kbd> | **Toggle Furniture** | Show/hide interior fitout (furniture, fixtures, appliances) |
+| <kbd>1</kbd> | **Isolate Ground Floor** | Isolate Ground Floor in Dollhouse overview (auto-switches to Dollhouse if in FP) |
+| <kbd>2</kbd> | **Isolate First Floor** | Isolate First Floor in Dollhouse overview (auto-switches to Dollhouse if in FP) |
+| <kbd>3</kbd> or <kbd>0</kbd> | **Show Both Floors** | Display the full two-storey residential building in Dollhouse overview |
+| <kbd>C</kbd> | **Toggle Roof Slab** | Show/hide top roof slab and terrace parapets to look inside from above |
+| <kbd>L</kbd> | **Toggle Room Labels** | Show/hide 3D architectural room name badges (OFF by default for clean immersion) |
+| <kbd>F</kbd> | **Toggle Furniture** | Show/hide interior fitout (furniture, fixtures, appliances, doors, fans) |
 | <kbd>R</kbd> | **Reset Position** | Teleport player back to the default spawn point (Gate Landing) |
 
 ### Dollhouse / Orbit Camera Controls
@@ -37,16 +40,24 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
 | **Right Click + Drag** | Pan camera horizontally and vertically |
 | **Scroll Wheel** | Zoom in / Zoom out |
 
-### Interactive UI Features
+### Interactive UI & Architecture Features
 
 * **Collapsible Sidebar (<kbd>☰</kbd> / <kbd>✕</kbd>)**: Click the toggle tab on the right edge to expand or collapse the control drawer.
-* **Floor Level View**:
-  * **🏢 Both Floors**: View the full two-storey residential building.
-  * **🏠 Ground Floor**: Isolate Ground Floor and view its interior from above.
-  * **🏢 First Floor**: Isolate First Floor and inspect its layout.
+* **Floor Level View (Dollhouse Overview)**:
+  * **🏢 Both Floors (<kbd>3</kbd>)**: View the full two-storey residential building.
+  * **🏠 Ground Floor (<kbd>1</kbd>)**: Isolate Ground Floor architecture, furniture, and lights; intermediate slab is hidden for an open top-down view into GF rooms.
+  * **🏢 First Floor (<kbd>2</kbd>)**: Isolate First Floor architecture and fitout with intermediate slab as its floor; roof and terrace parapets are hidden for an open look into 1F rooms.
+* **3-Tier Vertical Exploration (GF + 1F + Terrace)**:
+  * **Ground Floor** ($Z = 1.50$ ft plinth): Porch, Living room, Kitchen, Dining, Bedroom, Bathrooms, Storeroom, Garage ramp ($Z = 0.0$ to $0.50$ ft).
+  * **First Floor** ($Z = 12.00$ ft): Master Bedroom, Kitchen, Lobby, North Gallery, Bathrooms, Child Bedroom, Mandir, and open exterior balcony with 3.5 ft stainless steel railings.
+  * **Terrace Level** ($Z = 22.50$ ft): Fully accessible open-air terrace with 3.25 ft perimeter parapet walls and 3-sided stairwell guard enclosure.
+  * **Open Central Shaft with Walkable Gratings**: Features heavy-duty stainless steel open-bar gratings on the 1F floor (allowing see-through views down to GF without falling) and 1F ceiling (providing open sightlines up to the terrace and sky).
 * **Live Minimap (Top-Right)**: Real-time 2D top-down floor plan showing room boundaries, active floor (`GF PLAN` / `1F PLAN`), player position, and viewing direction cone.
-* **Quick Teleports**: Click any of the 27 room buttons in the sidebar to jump instantly to any zone on the Ground Floor or First Floor.
+* **Quick Teleports**: Click any of the room buttons in the sidebar to jump instantly to any zone across Ground Floor, First Floor, or Terrace.
 * **Real-time Status Bar (Bottom)**: Displays current room zone, exact X/Y coordinates in feet, floor elevation, and FPS performance counter.
+* **Optimized High-Fidelity Rendering**:
+  * Dynamic point light pooling (8 active lights smoothly tracked to camera vicinity, keeping fragment loops constant and avoiding Three.js shader recompilation).
+  * Soft PCF shadow mapping (2048x2048) and device pixel ratio capping for silky 60 FPS performance.
 
 ---
 
@@ -68,7 +79,8 @@ house/
     ├── data/
     │   ├── groundFloorData.js   # Ground floor CAD structure (walls, plinth, stairs, slab)
     │   ├── groundFloorFitout.js # Ground floor interior fitout (furniture, doors, windows, fans)
-    │   ├── firstFloorData.js    # First floor CAD structure (cantilevers, walls, upper stair, roof)
+    │   ├── firstFloorData.js    # First floor CAD structure (cantilevers, walls, upper stair, roof, parapet)
+    │   ├── firstFloorFitout.js  # First floor interior fitout (furniture, doors, windows, fans, shaft grills)
     │   └── index.js             # Master Floors Registry aggregating floors, colliders, teleports
     ├── core/
     │   ├── Engine.js            # Main loop, time delta, FPS counter, and system orchestration
