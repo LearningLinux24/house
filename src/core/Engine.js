@@ -203,8 +203,8 @@ export class Engine {
       this.fpsTimer = 0;
     }
 
-    // Animate ceiling fan blades
-    this.fitoutBuilder.update(delta);
+    // Animate ceiling fan blades & dynamic light assignment
+    this.fitoutBuilder.update(delta, this.sceneManager.camera.position);
 
     // Extract current camera yaw angle
     const euler = new THREE.Euler(0, 0, 0, 'YXZ');

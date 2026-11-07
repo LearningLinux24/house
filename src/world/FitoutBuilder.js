@@ -29,8 +29,11 @@ export class FitoutBuilder {
     // Fans tracking for rotation animation
     this.fans = [];
 
-    // Point lights tracking
-    this.pointLights = [];
+    // Pooled dynamic point lights (fixed count = 8 to prevent shader recompilation)
+    this.maxActiveLights = 8;
+    this.lightPool = [];
+    this.lightSources = [];
+    this.lightUpdateTimer = 0;
 
     this.furnitureVisible = true;
   }
@@ -55,15 +58,19 @@ export class FitoutBuilder {
       this.fans.push(fanObj);
     });
 
-    // 3. Build ceiling lights (LED panels + point lights)
+    // 3. Build ceiling lights (LED panels + pooled point lights)
     lightsData.forEach(lightSpec => {
       const lightObj = this.createCeilingLight(lightSpec);
       this.groups.lighting.add(lightObj.mesh);
-      if (lightObj.pointLight) {
-        this.groups.lighting.add(lightObj.pointLight);
-        this.pointLights.push(lightObj.pointLight);
-      }
     });
+
+    // Initialize fixed pool of 8 active point lights
+    for (let i = 0; i < this.maxActiveLights; i++) {
+      const pl = new THREE.PointLight(0xfff3d4, 0, 18 * WORLD_SCALE, 1.2);
+      pl.name = `PooledPointLight_${i}`;
+      this.groups.lighting.add(pl);
+      this.lightPool.push(pl);
+    }
 
     return this.rootGroup;
   }
@@ -112,18 +119,24 @@ export class FitoutBuilder {
       const frame = new THREE.LineSegments(frameGeo, frameMat);
       mesh.add(frame);
     } else if (item.category === 'furniture' || item.category === 'doors' || item.category === 'gates') {
-      // Subdued architectural edge for clean delineation
-      const edgeGeo = new THREE.EdgesGeometry(geo);
-      const edgeMat = this.materials.getEdgeMaterial();
-      const edge = new THREE.LineSegments(edgeGeo, edgeMat);
-      mesh.add(edge);
+      // Subdued architectural edge for clean delineation (skip tiny bars/balusters where it is invisible and wastes draw calls)
+      const isTiny = (sizeX < 0.08 && sizeZ < 0.08) || (sizeX < 0.08 && sizeY < 0.08) || (sizeY < 0.08 && sizeZ < 0.08);
+      if (!isTiny) {
+        const edgeGeo = new THREE.EdgesGeometry(geo);
+        const edgeMat = this.materials.getEdgeMaterial();
+        const edge = new THREE.LineSegments(edgeGeo, edgeMat);
+        mesh.add(edge);
+      }
     }
 
-    // Cast shadows for opaque furniture (exclude glass & lights)
+    // Cast shadows for opaque furniture (exclude glass & lights & tiny items)
     if (item.material !== 'M-GLASS' && item.category !== 'lighting' && item.category !== 'electrical') {
       mesh.receiveShadow = true;
       if (item.category === 'furniture' || item.category === 'doors' || item.category === 'vehicles') {
-        mesh.castShadow = true;
+        const isTiny = (sizeX < 0.08 && sizeZ < 0.08) || (sizeX < 0.08 && sizeY < 0.08) || (sizeY < 0.08 && sizeZ < 0.08);
+        if (!isTiny) {
+          mesh.castShadow = true;
+        }
       }
     }
 
@@ -218,21 +231,56 @@ export class FitoutBuilder {
     const edgeMat = new THREE.LineBasicMaterial({ color: 0xcccccc });
     mesh.add(new THREE.LineSegments(edgeGeo, edgeMat));
 
-    // Indoor warm point light underneath the panel (0.3 ft below panel centre)
-    const pointLight = new THREE.PointLight(0xfff3d4, 0.45, 16 * s, 1.2);
-    pointLight.position.set(cx, (ceilZ - 0.30) * s, -cy_spec);
-    pointLight.name = `PointLight_${id}`;
+    // Indoor warm point light registered for dynamic nearest-assignment
+    this.lightSources.push({
+      id: id,
+      position: new THREE.Vector3(cx, (ceilZ - 0.30) * s, -cy_spec),
+      color: 0xfff3d4,
+      intensity: 0.50,
+      distance: 18 * s,
+      decay: 1.2
+    });
 
-    return { mesh, pointLight };
+    return { mesh };
   }
 
-  update(delta) {
-    // Rotate ceiling fan blades
+  update(delta, cameraPos) {
+    // 1. Rotate ceiling fan blades
     if (this.groups.fans.visible) {
       const spinSpeed = 3.2; // radians/sec
       this.fans.forEach(fan => {
         fan.bladeGroup.rotation.y += delta * spinSpeed;
       });
+    }
+
+    // 2. Intelligent Point Light Pool Assignment (updates every ~0.08s)
+    // Only calculates lights in the camera's vicinity while all panels glow emissively
+    if (cameraPos && this.lightSources.length > 0) {
+      this.lightUpdateTimer += delta;
+      if (this.lightUpdateTimer >= 0.08) {
+        this.lightUpdateTimer = 0;
+
+        for (let i = 0; i < this.lightSources.length; i++) {
+          const src = this.lightSources[i];
+          src._distSq = src.position.distanceToSquared(cameraPos);
+        }
+        this.lightSources.sort((a, b) => a._distSq - b._distSq);
+
+        const count = Math.min(this.maxActiveLights, this.lightSources.length);
+        for (let i = 0; i < count; i++) {
+          const src = this.lightSources[i];
+          const pl = this.lightPool[i];
+          pl.position.copy(src.position);
+          pl.color.set(src.color);
+          pl.distance = src.distance;
+          pl.decay = src.decay;
+          pl.intensity = src.intensity;
+          pl.visible = true;
+        }
+        for (let i = count; i < this.lightPool.length; i++) {
+          this.lightPool[i].intensity = 0;
+        }
+      }
     }
   }
 

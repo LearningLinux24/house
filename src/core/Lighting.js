@@ -20,8 +20,8 @@ export class Lighting {
     this.sun.castShadow = true;
 
     // High fidelity shadow map covering entire plot
-    this.sun.shadow.mapSize.width = 4096;
-    this.sun.shadow.mapSize.height = 4096;
+    this.sun.shadow.mapSize.width = 2048;
+    this.sun.shadow.mapSize.height = 2048;
     this.sun.shadow.camera.near = 1;
     this.sun.shadow.camera.far = 250 * s;
     this.sun.shadow.camera.left = -60 * s;
