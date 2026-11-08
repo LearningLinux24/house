@@ -242,7 +242,7 @@ export const INTERIOR_COLLIDERS = [
     fitoutId: 'STO-01',
     name: 'Storeroom Steel Rack North',
     floor: 'ground_floor',
-    box: [36.750, 44.000, 17.500, 18.750, 1.500, 8.500],
+    box: [42.100, 49.200, 21.800, 23.250, 1.500, 7.000],
     type: 'interior_furniture',
     isStepable: false
   },
@@ -251,7 +251,7 @@ export const INTERIOR_COLLIDERS = [
     fitoutId: 'STO-02',
     name: 'Storeroom Steel Rack East',
     floor: 'ground_floor',
-    box: [42.750, 44.000, 11.125, 17.500, 1.500, 8.500],
+    box: [47.800, 49.250, 15.500, 21.700, 1.500, 7.000],
     type: 'interior_furniture',
     isStepable: false
   },
@@ -260,7 +260,7 @@ export const INTERIOR_COLLIDERS = [
     fitoutId: 'POR-01',
     name: 'Entrance Porch Shoe Rack',
     floor: 'ground_floor',
-    box: [3.750, 5.750, 6.250, 7.500, 1.500, 4.500],
+    box: [8.100, 10.900, 0.000, 0.950, 1.500, 4.500],
     type: 'interior_furniture',
     isStepable: true
   },
@@ -269,7 +269,7 @@ export const INTERIOR_COLLIDERS = [
     fitoutId: 'GAR-01',
     name: 'Garage Hatchback Car',
     floor: 'ground_floor',
-    box: [36.000, 42.500, 3.500, 13.500, 0.000, 5.000],
+    box: [40.200, 45.550, 1.100, 13.400, 0.000, 4.500],
     type: 'interior_furniture',
     isStepable: true
   },
@@ -318,7 +318,7 @@ export const INTERIOR_COLLIDERS = [
     fitoutId: 'MB-09',
     name: '1F Master Dressing Table',
     floor: 'first_floor',
-    box: [2.500, 4.000, 14.500, 17.750, 12.000, 14.600],
+    box: [0.000, 1.450, 20.100, 23.200, 12.000, 14.500],
     type: 'interior_furniture',
     isStepable: true
   },
