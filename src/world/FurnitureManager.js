@@ -7,31 +7,54 @@ export const FURNITURE_SPECS = {
       id: 'BED-GF',
       name: 'Queen Bed',
       floor: 'ground_floor',
+      floorElev: 1.50,
       center: [7.875, 15.625, 2.70],
-      pillow: [7.875, 18.25, 3.40],
+      pillow: [7.875, 18.25, 3.30],
+      foot: [7.875, 12.80, 2.70],
       standPoint: [11.20, 15.625, 1.50],
       box: [5.375, 10.375, 12.375, 18.875, 1.500, 3.200],
-      yaw: Math.PI // facing South (feet point along -Y in CAD)
+      // Bed headboard is at North (CAD +Y -> Three.js -Z), feet South (CAD -Y -> Three.js +Z)
+      sleepBasis: {
+        x: [-1, 0, 0],
+        y: [0, 0, -1],
+        z: [0, -1, 0]
+      },
+      yaw: Math.PI
     },
     {
       id: 'BED-1F-MASTER',
       name: 'Master King Bed',
       floor: 'first_floor',
+      floorElev: 12.00,
       center: [7.00, 20.00, 13.20],
-      pillow: [7.00, 22.50, 13.90],
+      pillow: [7.00, 22.50, 13.80],
+      foot: [7.00, 17.20, 13.20],
       standPoint: [10.80, 19.50, 12.00],
       box: [4.000, 10.000, 16.750, 23.250, 12.000, 13.800],
+      sleepBasis: {
+        x: [-1, 0, 0],
+        y: [0, 0, -1],
+        z: [0, -1, 0]
+      },
       yaw: Math.PI
     },
     {
       id: 'BED-1F-CHILD',
       name: 'Child Bedroom Bed',
       floor: 'first_floor',
+      floorElev: 12.00,
       center: [46.00, 15.50, 13.10],
-      pillow: [48.00, 15.50, 13.80],
+      pillow: [48.00, 15.50, 13.70],
+      foot: [43.30, 15.50, 13.10],
       standPoint: [46.00, 12.20, 12.00],
       box: [42.750, 49.250, 13.500, 17.500, 12.000, 13.700],
-      yaw: -Math.PI / 2 // head East, feet West
+      // Bed headboard is at East (CAD +X -> Three.js +X), feet West (CAD -X -> Three.js -X)
+      sleepBasis: {
+        x: [0, 0, -1],
+        y: [1, 0, 0],
+        z: [0, -1, 0]
+      },
+      yaw: Math.PI / 2
     }
   ],
 
@@ -40,71 +63,144 @@ export const FURNITURE_SPECS = {
       id: 'SOFA-GF-LIVING',
       name: 'Living Room Sofa',
       floor: 'ground_floor',
-      seatCenter: [18.55, 6.75, 2.30],
-      sitEyeElev: 4.00,
-      standPoint: [20.80, 6.75, 1.50],
-      box: [16.800, 19.550, 3.500, 10.000, 1.500, 3.500],
+      floorElev: 1.50,
+      seatCenter: [17.90, 21.10, 2.25],
+      sitEyeElev: 3.95,
+      standPoint: [20.50, 21.10, 1.50],
+      box: [16.250, 19.000, 19.000, 23.200, 1.500, 3.400],
       yaw: -Math.PI / 2 // facing East into room
     },
     {
       id: 'SOFA-1F-LOBBY',
       name: 'Lobby Sofa',
       floor: 'first_floor',
+      floorElev: 12.00,
       seatCenter: [18.55, 6.75, 12.80],
-      sitEyeElev: 14.50,
+      sitEyeElev: 14.45,
       standPoint: [20.80, 6.75, 12.00],
-      box: [16.800, 19.550, 3.500, 10.000, 12.000, 14.000],
-      yaw: -Math.PI / 2
+      box: [16.800, 19.550, 3.500, 10.000, 12.000, 14.800],
+      yaw: -Math.PI / 2 // facing East into room
     },
     {
       id: 'CHAIR-GF-DIN-1',
       name: 'Dining Chair',
       floor: 'ground_floor',
-      seatCenter: [18.75, 11.50, 2.35],
-      sitEyeElev: 4.05,
-      standPoint: [18.75, 10.20, 1.50],
-      box: [18.000, 19.500, 10.750, 12.250, 1.500, 3.500],
-      yaw: 0 // facing North
+      floorElev: 1.50,
+      seatCenter: [18.50, 15.25, 2.30],
+      sitEyeElev: 3.95,
+      standPoint: [18.50, 16.60, 1.50],
+      box: [17.750, 19.250, 14.500, 16.000, 1.500, 3.100],
+      yaw: Math.PI // facing South
     },
     {
       id: 'CHAIR-GF-DIN-2',
       name: 'Dining Chair',
       floor: 'ground_floor',
-      seatCenter: [21.25, 11.50, 2.35],
-      sitEyeElev: 4.05,
-      standPoint: [21.25, 10.20, 1.50],
-      box: [20.500, 22.000, 10.750, 12.250, 1.500, 3.500],
-      yaw: 0
+      floorElev: 1.50,
+      seatCenter: [20.50, 15.25, 2.30],
+      sitEyeElev: 3.95,
+      standPoint: [20.50, 16.60, 1.50],
+      box: [19.750, 21.250, 14.500, 16.000, 1.500, 3.100],
+      yaw: Math.PI
     },
     {
       id: 'CHAIR-GF-DIN-3',
       name: 'Dining Chair',
       floor: 'ground_floor',
-      seatCenter: [18.75, 15.35, 2.35],
-      sitEyeElev: 4.05,
-      standPoint: [18.75, 16.60, 1.50],
-      box: [18.000, 19.500, 14.750, 16.000, 1.500, 3.500],
-      yaw: Math.PI // facing South
+      floorElev: 1.50,
+      seatCenter: [18.50, 12.50, 2.30],
+      sitEyeElev: 3.95,
+      standPoint: [18.50, 11.20, 1.50],
+      box: [17.750, 19.250, 11.750, 13.250, 1.500, 3.100],
+      yaw: 0 // facing North
     },
     {
       id: 'CHAIR-GF-DIN-4',
       name: 'Dining Chair',
       floor: 'ground_floor',
-      seatCenter: [21.25, 15.35, 2.35],
-      sitEyeElev: 4.05,
-      standPoint: [21.25, 16.60, 1.50],
-      box: [20.500, 22.000, 14.750, 16.000, 1.500, 3.500],
+      floorElev: 1.50,
+      seatCenter: [20.50, 12.50, 2.30],
+      sitEyeElev: 3.95,
+      standPoint: [20.50, 11.20, 1.50],
+      box: [19.750, 21.250, 11.750, 13.250, 1.500, 3.100],
+      yaw: 0
+    },
+    {
+      id: 'CHAIR-1F-DIN-WEST',
+      name: 'Dining Chair',
+      floor: 'first_floor',
+      floorElev: 12.00,
+      seatCenter: [16.85, 13.50, 12.80],
+      sitEyeElev: 14.45,
+      standPoint: [15.30, 13.50, 12.00],
+      box: [16.000, 17.700, 12.750, 14.250, 12.000, 13.600],
+      yaw: -Math.PI / 2 // facing East
+    },
+    {
+      id: 'CHAIR-1F-DIN-EAST',
+      name: 'Dining Chair',
+      floor: 'first_floor',
+      floorElev: 12.00,
+      seatCenter: [23.15, 13.50, 12.80],
+      sitEyeElev: 14.45,
+      standPoint: [24.70, 13.50, 12.00],
+      box: [22.300, 24.000, 12.750, 14.250, 12.000, 13.600],
+      yaw: Math.PI / 2 // facing West
+    },
+    {
+      id: 'CHAIR-1F-DIN-SL',
+      name: 'Dining Chair',
+      floor: 'first_floor',
+      floorElev: 12.00,
+      seatCenter: [18.75, 11.50, 12.80],
+      sitEyeElev: 14.45,
+      standPoint: [18.75, 10.20, 12.00],
+      box: [18.000, 19.500, 10.750, 12.250, 12.000, 13.600],
+      yaw: 0 // facing North
+    },
+    {
+      id: 'CHAIR-1F-DIN-SR',
+      name: 'Dining Chair',
+      floor: 'first_floor',
+      floorElev: 12.00,
+      seatCenter: [21.25, 11.50, 12.80],
+      sitEyeElev: 14.45,
+      standPoint: [21.25, 10.20, 12.00],
+      box: [20.500, 22.000, 10.750, 12.250, 12.000, 13.600],
+      yaw: 0
+    },
+    {
+      id: 'CHAIR-1F-DIN-NL',
+      name: 'Dining Chair',
+      floor: 'first_floor',
+      floorElev: 12.00,
+      seatCenter: [18.75, 15.35, 12.80],
+      sitEyeElev: 14.45,
+      standPoint: [18.75, 16.60, 12.00],
+      box: [18.000, 19.500, 14.750, 16.000, 12.000, 13.600],
+      yaw: Math.PI // facing South
+    },
+    {
+      id: 'CHAIR-1F-DIN-NR',
+      name: 'Dining Chair',
+      floor: 'first_floor',
+      floorElev: 12.00,
+      seatCenter: [21.25, 15.35, 12.80],
+      sitEyeElev: 14.45,
+      standPoint: [21.25, 16.60, 12.00],
+      box: [20.500, 22.000, 14.750, 16.000, 12.000, 13.600],
       yaw: Math.PI
     },
     {
       id: 'CHAIR-1F-STUDY',
       name: 'Study Chair',
       floor: 'first_floor',
-      seatCenter: [43.00, 20.75, 12.85],
-      sitEyeElev: 14.55,
-      standPoint: [41.50, 20.75, 12.00],
-      box: [42.250, 43.750, 20.000, 21.500, 12.000, 13.800],
-      yaw: -Math.PI / 2 // facing West towards desk
+      floorElev: 12.00,
+      seatCenter: [43.00, 20.75, 12.80],
+      sitEyeElev: 14.45,
+      standPoint: [44.50, 20.75, 12.00],
+      box: [42.250, 43.750, 20.000, 21.500, 12.000, 13.600],
+      yaw: Math.PI / 2 // facing West towards desk
     }
   ],
 
@@ -113,21 +209,23 @@ export const FURNITURE_SPECS = {
       id: 'TOILET-GF-WEST',
       name: 'West Bathroom Toilet',
       floor: 'ground_floor',
-      bowlCenter: [8.625, 21.80, 2.15],
-      cisternPos: [8.625, 22.90, 3.20],
+      floorElev: 1.50,
+      cx: 8.625,
+      wallY: 23.25,
       standPoint: [8.625, 20.20, 1.50],
-      sitEyeElev: 3.85,
+      sitEyeElev: 3.95,
       box: [7.850, 9.400, 21.000, 23.250, 1.500, 3.400],
-      yaw: Math.PI // facing South
+      yaw: Math.PI
     },
     {
       id: 'TOILET-GF-EAST',
       name: 'East Bathroom Toilet',
       floor: 'ground_floor',
-      bowlCenter: [37.375, 21.80, 2.15],
-      cisternPos: [37.375, 22.90, 3.20],
+      floorElev: 1.50,
+      cx: 37.375,
+      wallY: 23.25,
       standPoint: [37.375, 20.20, 1.50],
-      sitEyeElev: 3.85,
+      sitEyeElev: 3.95,
       box: [36.750, 38.000, 21.000, 23.250, 1.500, 3.400],
       yaw: Math.PI
     },
@@ -135,10 +233,11 @@ export const FURNITURE_SPECS = {
       id: 'TOILET-1F-BATH1',
       name: 'Bathroom 1 Toilet',
       floor: 'first_floor',
-      bowlCenter: [21.625, 21.80, 12.65],
-      cisternPos: [21.625, 22.90, 13.70],
+      floorElev: 12.00,
+      cx: 21.625,
+      wallY: 23.25,
       standPoint: [21.625, 20.20, 12.00],
-      sitEyeElev: 14.35,
+      sitEyeElev: 14.45,
       box: [21.000, 22.250, 21.000, 23.250, 12.000, 13.900],
       yaw: Math.PI
     },
@@ -146,10 +245,11 @@ export const FURNITURE_SPECS = {
       id: 'TOILET-1F-BATH2',
       name: 'Bathroom 2 Toilet',
       floor: 'first_floor',
-      bowlCenter: [36.025, 21.80, 12.65],
-      cisternPos: [36.025, 22.90, 13.70],
+      floorElev: 12.00,
+      cx: 36.025,
+      wallY: 23.25,
       standPoint: [36.025, 20.20, 12.00],
-      sitEyeElev: 14.35,
+      sitEyeElev: 14.45,
       box: [35.400, 36.650, 21.000, 23.250, 12.000, 13.900],
       yaw: Math.PI
     }
@@ -178,35 +278,28 @@ class FurnitureAudio {
       const ctx = this.ensureContext();
       if (!ctx) return;
       const now = ctx.currentTime;
-
-      // Soft fabric / mattress rustle
-      const bufferSize = ctx.sampleRate * 0.6;
-      const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-      const output = noiseBuffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        output[i] = Math.random() * 2 - 1;
+      const bufSize = Math.floor(ctx.sampleRate * 0.45);
+      const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < bufSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.16));
       }
-
       const noise = ctx.createBufferSource();
-      noise.buffer = noiseBuffer;
-
-      const bandpass = ctx.createBiquadFilter();
-      bandpass.type = 'bandpass';
-      bandpass.frequency.setValueAtTime(550, now);
-      bandpass.Q.setValueAtTime(2.2, now);
-
+      noise.buffer = buf;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(1100, now);
+      filter.Q.setValueAtTime(1.8, now);
       const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0.001, now);
-      gain.gain.linearRampToValueAtTime(0.09, now + 0.12);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.58);
-
-      noise.connect(bandpass);
-      bandpass.connect(gain);
+      gain.gain.setValueAtTime(0.18, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+      noise.connect(filter);
+      filter.connect(gain);
       gain.connect(ctx.destination);
-
       noise.start(now);
-      noise.stop(now + 0.6);
-    } catch (_) {}
+    } catch {
+      // Audio fallback
+    }
   }
 
   playCushionSit() {
@@ -214,43 +307,27 @@ class FurnitureAudio {
       const ctx = this.ensureContext();
       if (!ctx) return;
       const now = ctx.currentTime;
-
-      // Low frequency compression thump
-      const osc = ctx.createOscillator();
-      const oscGain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(75, now);
-      osc.frequency.exponentialRampToValueAtTime(32, now + 0.22);
-      oscGain.gain.setValueAtTime(0.18, now);
-      oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-
-      // Soft cushion air puff
-      const bufferSize = ctx.sampleRate * 0.3;
-      const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-      const output = noiseBuffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        output[i] = Math.random() * 2 - 1;
+      const bufSize = Math.floor(ctx.sampleRate * 0.35);
+      const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < bufSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.10));
       }
       const noise = ctx.createBufferSource();
-      noise.buffer = noiseBuffer;
+      noise.buffer = buf;
       const filter = ctx.createBiquadFilter();
       filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(380, now);
-      const noiseGain = ctx.createGain();
-      noiseGain.gain.setValueAtTime(0.08, now);
-      noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
-
-      osc.connect(oscGain);
-      oscGain.connect(ctx.destination);
+      filter.frequency.setValueAtTime(260, now);
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.25, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
       noise.connect(filter);
-      filter.connect(noiseGain);
-      noiseGain.connect(ctx.destination);
-
-      osc.start(now);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
       noise.start(now);
-      osc.stop(now + 0.25);
-      noise.stop(now + 0.30);
-    } catch (_) {}
+    } catch {
+      // Audio fallback
+    }
   }
 
   playToiletLid(isOpen) {
@@ -258,22 +335,31 @@ class FurnitureAudio {
       const ctx = this.ensureContext();
       if (!ctx) return;
       const now = ctx.currentTime;
-
-      // Ceramic / plastic lid clack
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(isOpen ? 780 : 640, now);
-      osc.frequency.exponentialRampToValueAtTime(140, now + 0.07);
 
-      gain.gain.setValueAtTime(0.14, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+      if (isOpen) {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(240, now);
+        osc.frequency.exponentialRampToValueAtTime(160, now + 0.22);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+      } else {
+        // Ceramic lid closing clack
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(70, now + 0.12);
+        gain.gain.setValueAtTime(0.28, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+      }
 
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start(now);
-      osc.stop(now + 0.08);
-    } catch (_) {}
+      osc.stop(now + 0.25);
+    } catch {
+      // Audio fallback
+    }
   }
 
   playToiletFlush() {
@@ -281,56 +367,57 @@ class FurnitureAudio {
       const ctx = this.ensureContext();
       if (!ctx) return;
       const now = ctx.currentTime;
+      const duration = 3.4;
 
-      // 1. Initial flush trigger handle click
-      const clickOsc = ctx.createOscillator();
-      const clickGain = ctx.createGain();
-      clickOsc.frequency.setValueAtTime(1200, now);
-      clickOsc.frequency.exponentialRampToValueAtTime(300, now + 0.05);
-      clickGain.gain.setValueAtTime(0.12, now);
-      clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-      clickOsc.connect(clickGain);
-      clickGain.connect(ctx.destination);
-      clickOsc.start(now);
-      clickOsc.stop(now + 0.05);
-
-      // 2. High-energy swirling water rush
-      const duration = 3.6;
-      const bufferSize = ctx.sampleRate * duration;
-      const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-      const output = noiseBuffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        output[i] = Math.random() * 2 - 1;
+      // 1. Dual white noise swirl (whoosh of rushing water)
+      const bufSize = Math.floor(ctx.sampleRate * duration);
+      const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < bufSize; i++) {
+        data[i] = Math.random() * 2 - 1;
       }
       const noise = ctx.createBufferSource();
-      noise.buffer = noiseBuffer;
+      noise.buffer = buf;
 
-      const bandpass = ctx.createBiquadFilter();
-      bandpass.type = 'bandpass';
-      bandpass.frequency.setValueAtTime(450, now);
-      bandpass.frequency.linearRampToValueAtTime(1250, now + 0.6);
-      bandpass.frequency.linearRampToValueAtTime(350, now + 2.2);
-      bandpass.Q.setValueAtTime(2.2, now);
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(450, now);
+      filter.frequency.exponentialRampToValueAtTime(950, now + 0.8);
+      filter.frequency.exponentialRampToValueAtTime(280, now + duration);
+      filter.Q.setValueAtTime(1.5, now);
 
       const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0.01, now);
-      gain.gain.linearRampToValueAtTime(0.25, now + 0.35);
-      gain.gain.linearRampToValueAtTime(0.18, now + 2.0);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+      gain.gain.setValueAtTime(0.05, now);
+      gain.gain.linearRampToValueAtTime(0.32, now + 0.5);
+      gain.gain.exponentialRampToValueAtTime(0.005, now + duration);
 
-      noise.connect(bandpass);
-      bandpass.connect(gain);
+      noise.connect(filter);
+      filter.connect(gain);
       gain.connect(ctx.destination);
-
       noise.start(now);
-      noise.stop(now + duration);
-    } catch (_) {}
+
+      // 2. Tank refill hiss
+      const refillOsc = ctx.createOscillator();
+      const refillGain = ctx.createGain();
+      refillOsc.type = 'triangle';
+      refillOsc.frequency.setValueAtTime(190, now + 1.2);
+      refillOsc.frequency.linearRampToValueAtTime(320, now + duration);
+      refillGain.gain.setValueAtTime(0, now);
+      refillGain.gain.setValueAtTime(0.04, now + 1.2);
+      refillGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+      refillOsc.connect(refillGain);
+      refillGain.connect(ctx.destination);
+      refillOsc.start(now + 1.2);
+      refillOsc.stop(now + duration);
+    } catch {
+      // Audio fallback
+    }
   }
 }
 
 export class FurnitureManager {
-  constructor(materialManager) {
-    this.materials = materialManager;
+  constructor(materialLibrary) {
+    this.materials = materialLibrary;
     this.audio = new FurnitureAudio();
 
     this.rootGroup = new THREE.Group();
@@ -338,41 +425,41 @@ export class FurnitureManager {
 
     this.items = [];
     this.interactiveMeshes = [];
-    this.targetedItem = null;
     this.raycaster = new THREE.Raycaster();
-    this.raycaster.far = 10 * WORLD_SCALE;
+    this.raycaster.far = 12 * WORLD_SCALE;
 
-    // Player occupation state
+    this.targetedItem = null;
+    this.targetedAction = null;
+    this.targetedMesh = null;
+
     this.activeState = 'none'; // 'none' | 'sitting' | 'sleeping'
     this.activeItem = null;
 
-    // Sleep vignette transition
     this.sleepFade = 0;
     this.sleepTargetFade = 0;
-
-    this.flushTimer = 0;
   }
 
   buildFurniture(scene) {
     const s = WORLD_SCALE;
 
     const sanitaryMat = this.materials.get('M-SANITARY-WHITE') || new THREE.MeshStandardMaterial({
-      color: '#F4F6F6',
-      roughness: 0.25,
+      color: '#FFFFFF',
+      roughness: 0.18,
       metalness: 0.05
     });
 
     const chromeMat = this.materials.get('M-CHROME') || new THREE.MeshStandardMaterial({
-      color: '#E0E5E8',
-      metalness: 0.9,
-      roughness: 0.15
+      color: '#E8ECED',
+      metalness: 0.95,
+      roughness: 0.12
     });
 
     const waterMat = new THREE.MeshStandardMaterial({
-      color: '#C8EEFA',
+      color: '#5DADE2',
       roughness: 0.05,
+      metalness: 0.10,
       transparent: true,
-      opacity: 0.70,
+      opacity: 0.75,
       depthWrite: false
     });
 
@@ -386,26 +473,73 @@ export class FurnitureManager {
       const cy = ((zmin + zmax) / 2) * s;
       const cz = -((ymin + ymax) / 2) * s;
 
-      const hitGeo = new THREE.BoxGeometry(width, height * 1.2, depth);
+      const box3 = new THREE.Box3(
+        new THREE.Vector3(xmin * s, zmin * s, -ymax * s),
+        new THREE.Vector3(xmax * s, zmax * s, -ymin * s)
+      );
+
+      const hitGeo = new THREE.BoxGeometry(width, height * 1.3, depth);
       const hitMat = new THREE.MeshBasicMaterial({ visible: false });
       const hitMesh = new THREE.Mesh(hitGeo, hitMat);
       hitMesh.position.set(cx, cy, cz);
       this.rootGroup.add(hitMesh);
 
+      // Construct precomputed orientation quaternion for sleeping avatar
+      const basis = spec.sleepBasis;
+      const sleepMat = new THREE.Matrix4().makeBasis(
+        new THREE.Vector3(...basis.x),
+        new THREE.Vector3(...basis.y),
+        new THREE.Vector3(...basis.z)
+      );
+      const sleepQuat = new THREE.Quaternion().setFromRotationMatrix(sleepMat);
+
+      // Foot world position: feet rest at mattress surface
+      const footWorldPos = new THREE.Vector3(
+        spec.foot[0] * s,
+        (spec.foot[2] + 0.35) * s,
+        -spec.foot[1] * s
+      );
+
+      // Pillow world position: head rests on pillow
+      const pillowWorldPos = new THREE.Vector3(
+        spec.pillow[0] * s,
+        (spec.pillow[2] + 0.45) * s,
+        -spec.pillow[1] * s
+      );
+
+      // Center world position: for 3rd person camera look target
+      const centerWorldPos = new THREE.Vector3(
+        spec.center[0] * s,
+        (spec.center[2] + 0.60) * s,
+        -spec.center[1] * s
+      );
+
+      const standFloorElev = spec.floorElev * s;
+      const standPosition = new THREE.Vector3(
+        spec.standPoint[0] * s,
+        standFloorElev + 4.9 * s, // eye height
+        -spec.standPoint[1] * s
+      );
+
       const bedObj = {
-        spec: spec,
+        spec,
         id: spec.id,
         name: spec.name,
         type: 'bed',
         floor: spec.floor,
-        hitMesh: hitMesh,
+        hitMesh,
+        box3,
         worldCenter: new THREE.Vector3(cx, cy, cz),
-        liePosition: new THREE.Vector3(spec.pillow[0] * s, (spec.pillow[2] + 0.20) * s, -spec.pillow[1] * s),
-        standPosition: new THREE.Vector3(spec.standPoint[0] * s, spec.standPoint[2] * s, -spec.standPoint[1] * s),
+        footWorldPos,
+        pillowWorldPos,
+        centerWorldPos,
+        standPosition,
+        standFloorElev,
+        sleepQuat,
         yaw: spec.yaw
       };
 
-      hitMesh.userData = { furniture: bedObj };
+      hitMesh.userData = { furniture: bedObj, type: 'bed' };
       this.interactiveMeshes.push(hitMesh);
       this.items.push(bedObj);
     });
@@ -420,111 +554,211 @@ export class FurnitureManager {
       const cy = ((zmin + zmax) / 2) * s;
       const cz = -((ymin + ymax) / 2) * s;
 
-      const hitGeo = new THREE.BoxGeometry(width, height * 1.3, depth);
+      const box3 = new THREE.Box3(
+        new THREE.Vector3(xmin * s, zmin * s, -ymax * s),
+        new THREE.Vector3(xmax * s, zmax * s, -ymin * s)
+      );
+
+      const hitGeo = new THREE.BoxGeometry(width * 1.15, height * 1.3, depth * 1.15);
       const hitMat = new THREE.MeshBasicMaterial({ visible: false });
       const hitMesh = new THREE.Mesh(hitGeo, hitMat);
       hitMesh.position.set(cx, cy, cz);
       this.rootGroup.add(hitMesh);
 
+      const standFloorElev = spec.floorElev * s;
+      const seatWorldPos = new THREE.Vector3(
+        spec.seatCenter[0] * s,
+        standFloorElev,
+        -spec.seatCenter[1] * s
+      );
+      const sitPosition = new THREE.Vector3(
+        spec.seatCenter[0] * s,
+        spec.sitEyeElev * s,
+        -spec.seatCenter[1] * s
+      );
+      const standPosition = new THREE.Vector3(
+        spec.standPoint[0] * s,
+        standFloorElev + 4.9 * s,
+        -spec.standPoint[1] * s
+      );
+
       const seatObj = {
-        spec: spec,
+        spec,
         id: spec.id,
         name: spec.name,
         type: 'chair',
         floor: spec.floor,
-        hitMesh: hitMesh,
+        hitMesh,
+        box3,
         worldCenter: new THREE.Vector3(cx, cy, cz),
-        sitPosition: new THREE.Vector3(spec.seatCenter[0] * s, spec.sitEyeElev * s, -spec.seatCenter[1] * s),
-        feetPosition: new THREE.Vector3(spec.seatCenter[0] * s, (spec.seatCenter[2] - 0.90) * s, -spec.seatCenter[1] * s),
-        standPosition: new THREE.Vector3(spec.standPoint[0] * s, spec.standPoint[2] * s, -spec.standPoint[1] * s),
+        seatWorldPos,
+        sitPosition,
+        standPosition,
+        standFloorElev,
         yaw: spec.yaw
       };
 
-      hitMesh.userData = { furniture: seatObj };
+      hitMesh.userData = { furniture: seatObj, type: 'chair' };
       this.interactiveMeshes.push(hitMesh);
       this.items.push(seatObj);
     });
 
-    // 3. Build Interactive Toilets (WC with Animated Lid & Flush)
+    // 3. Build Realistic Interactive Toilets (Full Ceramic WC Assembly with Dual Flush & Lid)
     FURNITURE_SPECS.toilets.forEach(spec => {
       const group = new THREE.Group();
       group.name = `ToiletGroup_${spec.id}`;
 
-      const bx = spec.bowlCenter[0] * s;
-      const by = spec.bowlCenter[2] * s;
-      const bz = -spec.bowlCenter[1] * s;
-      group.position.set(bx, by, bz);
+      const standFloorElev = spec.floorElev * s;
+      const originX = spec.cx * s;
+      const originY = standFloorElev;
+      const originZ = -spec.wallY * s;
+      group.position.set(originX, originY, originZ);
 
-      // Hinged toilet seat and lid
-      const lidPivot = new THREE.Group();
-      lidPivot.position.set(0, 0.28 * s, 0.40 * s); // hinge at back of bowl
+      // In group local coords:
+      // Z=0 is back against North bathroom wall; +Z extends forward into room (South).
+      // Y=0 is bathroom floor level; +Y is UP.
 
-      // Seat ring
-      const seatGeo = new THREE.TorusGeometry(0.28 * s, 0.05 * s, 8, 16);
-      const seatMesh = new THREE.Mesh(seatGeo, sanitaryMat);
-      seatMesh.rotation.x = Math.PI / 2;
-      seatMesh.scale.set(1.0, 1.25, 1.0);
-      seatMesh.position.set(0, 0, -0.32 * s);
-      lidPivot.add(seatMesh);
+      // ── A. Cistern Tank & Lid ──
+      const cisternGeo = new THREE.BoxGeometry(1.35 * s, 1.45 * s, 0.52 * s);
+      const cisternMesh = new THREE.Mesh(cisternGeo, sanitaryMat);
+      cisternMesh.position.set(0, 1.45 * s, 0.30 * s);
+      cisternMesh.castShadow = true;
+      cisternMesh.receiveShadow = true;
+      group.add(cisternMesh);
 
-      // Top cover lid
-      const lidGeo = new THREE.CylinderGeometry(0.32 * s, 0.32 * s, 0.035 * s, 16);
-      const lidMesh = new THREE.Mesh(lidGeo, sanitaryMat);
-      lidMesh.position.set(0, 0.03 * s, -0.32 * s);
-      lidMesh.scale.set(1.0, 1.0, 1.25);
-      lidPivot.add(lidMesh);
+      const cisternLidGeo = new THREE.BoxGeometry(1.42 * s, 0.09 * s, 0.58 * s);
+      const cisternLidMesh = new THREE.Mesh(cisternLidGeo, sanitaryMat);
+      cisternLidMesh.position.set(0, 2.22 * s, 0.30 * s);
+      cisternLidMesh.castShadow = true;
+      group.add(cisternLidMesh);
 
-      group.add(lidPivot);
+      // ── B. Chrome Dual Flush Button (Top of Cistern) ──
+      const btnBezelGeo = new THREE.CylinderGeometry(0.075 * s, 0.080 * s, 0.02 * s, 16);
+      const btnBezelMesh = new THREE.Mesh(btnBezelGeo, chromeMat);
+      btnBezelMesh.position.set(0, 2.275 * s, 0.30 * s);
+      group.add(btnBezelMesh);
 
-      // Chrome cistern flush button
-      const btnGeo = new THREE.CylinderGeometry(0.045 * s, 0.045 * s, 0.02 * s, 12);
+      const btnGeo = new THREE.CylinderGeometry(0.055 * s, 0.055 * s, 0.035 * s, 16);
       const btnMesh = new THREE.Mesh(btnGeo, chromeMat);
-      btnMesh.position.set(0, (spec.cisternPos[2] - spec.bowlCenter[2]) * s + 0.50 * s, (spec.cisternPos[1] - spec.bowlCenter[1]) * -s);
+      btnMesh.position.set(0, 2.285 * s, 0.30 * s);
+      btnMesh.name = `ToiletFlushBtn_${spec.id}`;
       group.add(btnMesh);
 
-      // Swirling flush water mesh inside bowl
-      const bowlWaterGeo = new THREE.CircleGeometry(0.24 * s, 16);
-      const bowlWaterMesh = new THREE.Mesh(bowlWaterGeo, waterMat);
+      // ── C. Bowl Pedestal & Contoured Ceramic Body ──
+      const baseGeo = new THREE.BoxGeometry(0.85 * s, 0.50 * s, 1.35 * s);
+      const baseMesh = new THREE.Mesh(baseGeo, sanitaryMat);
+      baseMesh.position.set(0, 0.25 * s, 1.25 * s);
+      baseMesh.castShadow = true;
+      group.add(baseMesh);
+
+      const bowlGeo = new THREE.CylinderGeometry(0.55 * s, 0.42 * s, 0.90 * s, 20);
+      const bowlMesh = new THREE.Mesh(bowlGeo, sanitaryMat);
+      bowlMesh.scale.set(1.0, 1.0, 1.35); // oval bowl
+      bowlMesh.position.set(0, 0.90 * s, 1.35 * s);
+      bowlMesh.castShadow = true;
+      bowlMesh.receiveShadow = true;
+      group.add(bowlMesh);
+
+      // ── D. Inner Bowl Cavity & Swirling Flush Water Disc ──
+      const bowlWellGeo = new THREE.CylinderGeometry(0.42 * s, 0.26 * s, 0.60 * s, 16);
+      const bowlWellMat = new THREE.MeshStandardMaterial({
+        color: '#EBF5FB',
+        roughness: 0.15,
+        metalness: 0.05
+      });
+      const bowlWellMesh = new THREE.Mesh(bowlWellGeo, bowlWellMat);
+      bowlWellMesh.scale.set(1.0, 1.0, 1.30);
+      bowlWellMesh.position.set(0, 1.08 * s, 1.35 * s);
+      group.add(bowlWellMesh);
+
+      const waterDiscGeo = new THREE.CircleGeometry(0.26 * s, 20);
+      const bowlWaterMesh = new THREE.Mesh(waterDiscGeo, waterMat);
       bowlWaterMesh.rotation.x = -Math.PI / 2;
-      bowlWaterMesh.position.set(0, 0.05 * s, -0.32 * s);
+      bowlWaterMesh.position.set(0, 0.82 * s, 1.35 * s);
       group.add(bowlWaterMesh);
 
-      // Interactive Hit Mesh
-      const hitGeo = new THREE.BoxGeometry(1.2 * s, 1.6 * s, 1.6 * s);
+      // ── E. Chrome Hinge Pivot & Articulated Seat Ring ──
+      const hingePivot = new THREE.Group();
+      hingePivot.name = `ToiletHinge_${spec.id}`;
+      hingePivot.position.set(0, 1.40 * s, 0.68 * s);
+      group.add(hingePivot);
+
+      // Chrome hinge bracket
+      const hingeBarGeo = new THREE.CylinderGeometry(0.025 * s, 0.025 * s, 0.42 * s, 12);
+      const hingeBarMesh = new THREE.Mesh(hingeBarGeo, chromeMat);
+      hingeBarMesh.rotation.z = Math.PI / 2;
+      hingePivot.add(hingeBarMesh);
+
+      // Seat ring (oval torus attached to bowl rim)
+      const seatGeo = new THREE.TorusGeometry(0.40 * s, 0.055 * s, 10, 24);
+      const seatMesh = new THREE.Mesh(seatGeo, sanitaryMat);
+      seatMesh.rotation.x = Math.PI / 2;
+      seatMesh.scale.set(1.0, 1.30, 1.0);
+      seatMesh.position.set(0, 1.39 * s, 1.35 * s);
+      seatMesh.castShadow = true;
+      group.add(seatMesh);
+
+      // ── F. Articulated Toilet Lid Cover (Hinged at back) ──
+      const lidMeshGeo = new THREE.BoxGeometry(1.04 * s, 0.045 * s, 1.32 * s);
+      const lidMesh = new THREE.Mesh(lidMeshGeo, sanitaryMat);
+      // In hinge local space, offset forward along +Z so it rests over the bowl when rotation.x = 0
+      lidMesh.position.set(0, 0.04 * s, 0.66 * s);
+      lidMesh.castShadow = true;
+      hingePivot.add(lidMesh);
+
+      // ── G. Hit / Collision Box ──
+      const [xmin, xmax, ymin, ymax, zmin, zmax] = spec.box;
+      const box3 = new THREE.Box3(
+        new THREE.Vector3(xmin * s, zmin * s, -ymax * s),
+        new THREE.Vector3(xmax * s, zmax * s, -ymin * s)
+      );
+
+      const hitGeo = new THREE.BoxGeometry(1.45 * s, 2.5 * s, 2.3 * s);
       const hitMat = new THREE.MeshBasicMaterial({ visible: false });
       const hitMesh = new THREE.Mesh(hitGeo, hitMat);
-      hitMesh.position.set(0, 0.4 * s, 0);
+      hitMesh.position.set(0, 1.25 * s, 1.15 * s);
       group.add(hitMesh);
 
       this.rootGroup.add(group);
 
       const toiletObj = {
-        spec: spec,
+        spec,
         id: spec.id,
         name: spec.name,
         type: 'toilet',
         floor: spec.floor,
-        group: group,
-        lidPivot: lidPivot,
-        btnMesh: btnMesh,
-        bowlWaterMesh: bowlWaterMesh,
-        hitMesh: hitMesh,
+        group,
+        lidPivot: hingePivot,
+        lidMesh,
+        seatMesh,
+        btnMesh,
+        bowlWaterMesh,
+        hitMesh,
+        box3,
         isLidOpen: false,
         targetAngle: 0,
         currentAngle: 0,
         isFlushing: false,
         flushTime: 0,
-        worldCenter: new THREE.Vector3(bx, by + 0.4 * s, bz),
-        sitPosition: new THREE.Vector3(bx, spec.sitEyeElev * s, bz),
-        standPosition: new THREE.Vector3(spec.standPoint[0] * s, spec.standPoint[2] * s, -spec.standPoint[1] * s),
+        worldCenter: new THREE.Vector3(originX, originY + 1.2 * s, originZ + 1.2 * s),
+        seatWorldPos: new THREE.Vector3(originX, standFloorElev, originZ + 1.35 * s),
+        sitPosition: new THREE.Vector3(originX, spec.sitEyeElev * s, originZ + 1.35 * s),
+        standPosition: new THREE.Vector3(
+          spec.standPoint[0] * s,
+          standFloorElev + 4.9 * s,
+          -spec.standPoint[1] * s
+        ),
+        standFloorElev,
         yaw: spec.yaw
       };
 
-      hitMesh.userData = { furniture: toiletObj };
-      lidMesh.userData = { furniture: toiletObj };
-      btnMesh.userData = { furniture: toiletObj, isFlushBtn: true };
+      // Set explicit interactive metadata on each sub-mesh
+      btnMesh.userData = { furniture: toiletObj, targetType: 'toilet_flush' };
+      lidMesh.userData = { furniture: toiletObj, targetType: 'toilet_lid' };
+      seatMesh.userData = { furniture: toiletObj, targetType: 'toilet_seat' };
+      hitMesh.userData = { furniture: toiletObj, targetType: 'toilet_body' };
 
-      this.interactiveMeshes.push(hitMesh);
+      this.interactiveMeshes.push(btnMesh, lidMesh, seatMesh, hitMesh);
       this.items.push(toiletObj);
     });
 
@@ -532,10 +766,26 @@ export class FurnitureManager {
     return this.rootGroup;
   }
 
+  openToiletLid(toilet) {
+    if (toilet.isLidOpen) return;
+    toilet.isLidOpen = true;
+    toilet.targetAngle = -Math.PI * 0.58; // tilted ~104° back against cistern
+    this.audio.playToiletLid(true);
+  }
+
+  closeToiletLid(toilet) {
+    if (!toilet.isLidOpen) return;
+    toilet.isLidOpen = false;
+    toilet.targetAngle = 0;
+    this.audio.playToiletLid(false);
+  }
+
   toggleToiletLid(toilet) {
-    toilet.isLidOpen = !toilet.isLidOpen;
-    toilet.targetAngle = toilet.isLidOpen ? -Math.PI * 0.58 : 0;
-    this.audio.playToiletLid(toilet.isLidOpen);
+    if (toilet.isLidOpen) {
+      this.closeToiletLid(toilet);
+    } else {
+      this.openToiletLid(toilet);
+    }
   }
 
   flushToilet(toilet) {
@@ -552,25 +802,28 @@ export class FurnitureManager {
       this.sleepTargetFade = 1.0;
       this.audio.playBedRustle();
 
-      if (avatar) avatar.setPose('sleeping');
+      if (avatar) {
+        avatar.setSleeping(item.footWorldPos, item.sleepQuat);
+      }
 
-      // Place player at bed pillow
-      player.position.copy(item.liePosition);
-      player.feetElevation = item.spec.center[2];
+      // Position player at center of bed for camera look target
+      player.position.copy(item.centerWorldPos);
+      player.feetElevation = item.standFloorElev;
       player.velocityY = 0;
       player.isGrounded = true;
 
-      if (ui) ui.showToast('Resting in bed... Press [E] or [Space] to get up');
+      if (ui) ui.showToast('Resting in bed... Press [E] or [Space] to wake up');
     } else if (item.type === 'chair' || item.type === 'toilet') {
       this.activeState = 'sitting';
       this.activeItem = item;
       this.audio.playCushionSit();
 
-      if (avatar) avatar.setPose('sitting');
+      if (avatar) {
+        avatar.setSitting(item.seatWorldPos, item.yaw);
+      }
 
-      // Place player seated on chair
       player.position.copy(item.sitPosition);
-      player.feetElevation = item.spec.standPoint[2];
+      player.feetElevation = item.standFloorElev;
       player.velocityY = 0;
       player.isGrounded = true;
 
@@ -586,12 +839,13 @@ export class FurnitureManager {
     this.activeItem = null;
     this.sleepTargetFade = 0;
 
-    if (avatar) avatar.setPose('standing');
+    if (avatar) {
+      avatar.setStanding();
+    }
 
     // Restore player to standing point
     player.position.copy(item.standPosition);
-    player.feetElevation = item.spec.standPoint[2];
-    player.position.y = player.feetElevation + player.config.eyeHeight;
+    player.feetElevation = item.standFloorElev;
     player.velocityY = 0;
     player.isGrounded = true;
 
@@ -602,8 +856,14 @@ export class FurnitureManager {
   }
 
   interact(player, avatar, cameraCtrl, ui, showPrompt = false) {
-    // If currently occupied, any interact key leaves item
+    // If currently occupied:
     if (this.activeState !== 'none') {
+      // If seated on toilet and looking at the flush button, allow flushing while seated!
+      if (this.activeState === 'sitting' && this.activeItem?.type === 'toilet' && this.targetedAction === 'flush') {
+        this.flushToilet(this.activeItem);
+        return;
+      }
+      // Otherwise standing up / waking up
       this.leaveItem(player, avatar, cameraCtrl, ui);
       return;
     }
@@ -617,11 +877,22 @@ export class FurnitureManager {
     } else if (item.type === 'chair') {
       this.occupyItem(item, player, avatar, cameraCtrl, ui);
     } else if (item.type === 'toilet') {
-      if (!item.isLidOpen) {
-        this.toggleToiletLid(item);
-      } else {
-        // Lid open: flush or sit
+      const action = this.targetedAction;
+      if (action === 'flush') {
         this.flushToilet(item);
+      } else if (action === 'close_lid') {
+        this.closeToiletLid(item);
+      } else if (action === 'open_lid') {
+        this.openToiletLid(item);
+      } else if (action === 'sit') {
+        if (!item.isLidOpen) {
+          this.openToiletLid(item);
+        } else {
+          this.occupyItem(item, player, avatar, cameraCtrl, ui);
+        }
+      } else {
+        // Fallback toggle
+        this.toggleToiletLid(item);
       }
     }
   }
@@ -651,7 +922,7 @@ export class FurnitureManager {
   update(delta, camera, playerPosition, isFPActive, player, avatar, cameraCtrl, ui, showPrompt = false, isOtherTargeted = false) {
     const s = WORLD_SCALE;
 
-    // 1. Animate toilet lids & swirling flush water
+    // 1. Animate toilet lids & swirling flush water disc
     this.items.forEach(item => {
       if (item.type === 'toilet') {
         item.currentAngle = THREE.MathUtils.lerp(item.currentAngle, item.targetAngle, delta * 9.0);
@@ -659,14 +930,14 @@ export class FurnitureManager {
 
         if (item.isFlushing) {
           item.flushTime += delta;
-          // Swirling water rotation & dip
-          item.bowlWaterMesh.rotation.z += delta * 12.0;
-          const swirlDip = Math.sin(item.flushTime * 2.0) * 0.04 * s;
-          item.bowlWaterMesh.position.y = 0.05 * s - swirlDip;
+          // Swirling water disc rotation & suction dip
+          item.bowlWaterMesh.rotation.z += delta * 14.0;
+          const swirlDip = Math.sin(item.flushTime * 2.2) * 0.05 * s;
+          item.bowlWaterMesh.position.y = 0.82 * s - swirlDip;
 
-          if (item.flushTime > 3.6) {
+          if (item.flushTime > 3.4) {
             item.isFlushing = false;
-            item.bowlWaterMesh.position.y = 0.05 * s;
+            item.bowlWaterMesh.position.y = 0.82 * s;
           }
         }
       }
@@ -674,13 +945,27 @@ export class FurnitureManager {
 
     // 2. Occupied state updates (Sitting or Sleeping)
     if (this.activeState !== 'none' && this.activeItem) {
-      // In first-person or third-person, keep camera at occupied position
       if (this.activeState === 'sitting') {
         player.position.copy(this.activeItem.sitPosition);
       } else if (this.activeState === 'sleeping') {
-        player.position.copy(this.activeItem.liePosition);
+        player.position.copy(this.activeItem.centerWorldPos);
       }
 
+      // Check if player is seated on toilet and looking at the flush button
+      if (this.activeState === 'sitting' && this.activeItem.type === 'toilet' && camera) {
+        this.raycaster.setFromCamera({ x: 0, y: 0 }, camera);
+        const hit = this.raycaster.intersectObject(this.activeItem.btnMesh, false);
+        if (hit.length > 0 && hit[0].distance <= 5.0 * s) {
+          this.targetedItem = this.activeItem;
+          this.targetedAction = 'flush';
+          if (ui && showPrompt) {
+            ui.showInteractionPrompt(`[E] Flush ${this.activeItem.name} | [Space] Stand Up`);
+          }
+          return;
+        }
+      }
+
+      this.targetedAction = null;
       if (ui && showPrompt) {
         ui.showInteractionPrompt(`[E / Space] ${this.activeState === 'sleeping' ? 'Wake Up' : 'Stand Up'}`);
       }
@@ -691,36 +976,67 @@ export class FurnitureManager {
     if (!isFPActive || !camera || !playerPosition) {
       if (this.targetedItem) {
         this.targetedItem = null;
+        this.targetedAction = null;
         if (ui && !isOtherTargeted) ui.hideInteractionPrompt();
       }
       return;
     }
 
-    const reach = 6.8 * s;
+    // Use box3.distanceToPoint so long sofas (7-9 ft long) are detected anywhere along their length!
+    const reach = 7.5 * s;
     const activeItems = this.items.filter(item => {
-      const dDist = playerPosition.distanceTo(item.worldCenter);
-      return dDist <= reach;
+      const distToBox = item.box3.distanceToPoint(playerPosition);
+      return distToBox <= reach;
     });
 
     let bestItem = null;
+    let bestAction = null;
     let closestDist = Infinity;
 
-    // Reticle raycast
+    // Reticle raycast against all sub-meshes of nearby items
     this.raycaster.setFromCamera({ x: 0, y: 0 }, camera);
-    const candidateMeshes = activeItems.map(it => it.hitMesh);
+    const candidateMeshes = [];
+    activeItems.forEach(item => {
+      if (item.type === 'toilet') {
+        candidateMeshes.push(item.btnMesh, item.lidMesh, item.seatMesh, item.hitMesh);
+      } else {
+        candidateMeshes.push(item.hitMesh);
+      }
+    });
+
     const intersects = this.raycaster.intersectObjects(candidateMeshes, false);
 
     if (intersects.length > 0) {
-      const hitObj = intersects[0].object;
-      if (hitObj && hitObj.userData?.furniture) {
-        if (intersects[0].distance <= reach) {
-          bestItem = hitObj.userData.furniture;
+      const hit = intersects[0];
+      const hitObj = hit.object;
+      const fData = hitObj.userData;
+      if (fData && fData.furniture && hit.distance <= reach) {
+        const item = fData.furniture;
+        bestItem = item;
+        closestDist = hit.distance;
+
+        if (item.type === 'toilet') {
+          const tType = fData.targetType;
+          if (tType === 'toilet_flush') {
+            bestAction = 'flush';
+          } else if (tType === 'toilet_lid') {
+            bestAction = item.isLidOpen ? 'close_lid' : 'open_lid';
+          } else if (tType === 'toilet_seat') {
+            bestAction = item.isLidOpen ? 'sit' : 'open_lid';
+          } else {
+            // toilet_body fallback: if lid open, sit; else open lid
+            bestAction = item.isLidOpen ? 'sit' : 'open_lid';
+          }
+        } else if (item.type === 'bed') {
+          bestAction = 'sleep';
+        } else if (item.type === 'chair') {
+          bestAction = 'sit';
         }
       }
     }
 
-    // Look angle fallback
-    if (!bestItem) {
+    // Look angle fallback if raycast didn't hit a specific mesh
+    if (!bestItem && activeItems.length > 0) {
       const camDir = new THREE.Vector3();
       camera.getWorldDirection(camDir);
 
@@ -729,14 +1045,22 @@ export class FurnitureManager {
         const dist = toItem.length();
         toItem.normalize();
         const dot = camDir.dot(toItem);
-        if (dot > 0.72 && dist <= 5.8 * s && dist < closestDist) {
+        if (dot > 0.70 && dist <= 6.5 * s && dist < closestDist) {
           closestDist = dist;
           bestItem = item;
+          if (item.type === 'toilet') {
+            bestAction = item.isLidOpen ? 'sit' : 'open_lid';
+          } else if (item.type === 'bed') {
+            bestAction = 'sleep';
+          } else if (item.type === 'chair') {
+            bestAction = 'sit';
+          }
         }
       });
     }
 
     this.targetedItem = bestItem;
+    this.targetedAction = bestAction;
 
     if (ui && !isOtherTargeted) {
       if (this.targetedItem && showPrompt) {
@@ -746,9 +1070,19 @@ export class FurnitureManager {
         } else if (this.targetedItem.type === 'chair') {
           label = `[E] Sit on ${this.targetedItem.name}`;
         } else if (this.targetedItem.type === 'toilet') {
-          label = this.targetedItem.isLidOpen
-            ? `[E] Flush ${this.targetedItem.name}`
-            : `[E] Open ${this.targetedItem.name} Lid`;
+          if (this.targetedAction === 'flush') {
+            label = `[E] Flush ${this.targetedItem.name}`;
+          } else if (this.targetedAction === 'close_lid') {
+            label = `[E] Close ${this.targetedItem.name} Lid`;
+          } else if (this.targetedAction === 'open_lid') {
+            label = `[E] Open ${this.targetedItem.name} Lid`;
+          } else if (this.targetedAction === 'sit') {
+            label = `[E] Sit on ${this.targetedItem.name}`;
+          } else {
+            label = this.targetedItem.isLidOpen
+              ? `[E] Close ${this.targetedItem.name} Lid`
+              : `[E] Open ${this.targetedItem.name} Lid`;
+          }
         }
         ui.showInteractionPrompt(label);
       } else if (!isOtherTargeted) {

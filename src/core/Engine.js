@@ -242,9 +242,9 @@ export class Engine {
   }
 
   handleInteraction() {
-    // If player is currently sitting or sleeping, stand up / wake up
+    // If player is currently sitting or sleeping, delegate to furnitureManager (flush or get up)
     if (this.furnitureManager && this.furnitureManager.activeState !== 'none') {
-      this.furnitureManager.leaveItem(this.player, this.avatar, this.cameraCtrl, this.ui);
+      this.furnitureManager.interact(this.player, this.avatar, this.cameraCtrl, this.ui, this.promptsVisible);
       return;
     }
 

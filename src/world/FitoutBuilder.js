@@ -84,13 +84,17 @@ export class FitoutBuilder {
   }
 
   createFitoutMesh(item) {
-    // Skip door leaves, handles, and boundary gates because they are dynamically built and animated by DoorManager
+    // Skip door leaves, handles, boundary gates, and toilets (WCs) because they are dynamically built and animated by DoorManager & FurnitureManager
     if (
       item.type === 'door_leaf' ||
       item.type === 'door-leaf' ||
       item.id === 'D6-HANDLE' ||
       item.category === 'gates' ||
-      item.type === 'gate'
+      item.type === 'gate' ||
+      item.id === 'WW-01' ||
+      item.id === 'EW-01' ||
+      item.id === 'B1-01' ||
+      item.id === 'B2-01'
     ) {
       return null;
     }

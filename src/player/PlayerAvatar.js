@@ -257,6 +257,33 @@ export class PlayerAvatar {
     this.walkTimer = 0;
   }
 
+  setSleeping(footWorldPos, sleepQuat) {
+    this.pose = 'sleeping';
+    this.sleepFootPos = footWorldPos ? footWorldPos.clone() : null;
+    this.sleepQuat = sleepQuat ? sleepQuat.clone() : null;
+    this.walkTimer = 0;
+    this.idleTimer = 0;
+  }
+
+  setSitting(sitWorldPos, sitYaw) {
+    this.pose = 'sitting';
+    this.sitPos = sitWorldPos ? sitWorldPos.clone() : null;
+    this.sitYaw = sitYaw !== undefined ? sitYaw : 0;
+    this.walkTimer = 0;
+    this.idleTimer = 0;
+  }
+
+  setStanding() {
+    this.pose = 'standing';
+    this.sleepFootPos = null;
+    this.sleepQuat = null;
+    this.sitPos = null;
+    this.walkTimer = 0;
+    this.idleTimer = 0;
+    // Reset rootGroup rotations
+    this.rootGroup.rotation.set(0, 0, 0);
+  }
+
   // ── Helpers ───────────────────────────────────────────────────────────────
   _lerpRot(group, axis, target, dt, speed = 12) {
     group.rotation[axis] = THREE.MathUtils.lerp(group.rotation[axis], target, Math.min(1, dt * speed));
@@ -291,20 +318,35 @@ export class PlayerAvatar {
 
     const dt = Math.min(delta, 0.05);
 
-    // Root at feet / ground level, facing camera yaw
+    if (this.pose === 'sleeping') {
+      if (this.sleepFootPos && this.sleepQuat) {
+        this.rootGroup.position.copy(this.sleepFootPos);
+        this.rootGroup.quaternion.copy(this.sleepQuat);
+      }
+      this._animateSleeping(dt);
+      return;
+    }
+
+    if (this.pose === 'sitting') {
+      if (this.sitPos) {
+        this.rootGroup.position.copy(this.sitPos);
+        this.rootGroup.rotation.set(0, this.sitYaw, 0);
+      } else {
+        this.rootGroup.position.set(playerPos.x, feetElev, playerPos.z);
+        this.rootGroup.rotation.set(0, cameraYaw, 0);
+      }
+      this._animateSitting(dt);
+      return;
+    }
+
+    // Normal standing / walking: root at feet / ground level, facing camera yaw
     this.rootGroup.position.set(playerPos.x, feetElev, playerPos.z);
     this.rootGroup.rotation.set(0, cameraYaw, 0);
 
-    if (this.pose === 'sleeping') {
-      this._animateSleeping(dt);
-    } else if (this.pose === 'sitting') {
-      this._animateSitting(dt);
+    if (isMoving) {
+      this._animateWalk(dt);
     } else {
-      if (isMoving) {
-        this._animateWalk(dt);
-      } else {
-        this._animateIdle(dt);
-      }
+      this._animateIdle(dt);
     }
   }
 
@@ -369,38 +411,58 @@ export class PlayerAvatar {
   }
 
   _animateSitting(dt) {
-    // Hips drop, thighs horizontal, knees bent 90°, arms rest on thighs
-    const targetPelvisY = HIP_Y * 0.65;
+    // Drop pelvis to sit height (chair/toilet seat level)
+    const targetPelvisY = 1.45 * s;
     this.pelvisGroup.position.y = THREE.MathUtils.lerp(
       this.pelvisGroup.position.y, targetPelvisY, dt * 10
     );
-    // Legs: thigh horizontal (90°), knee bent back
-    this._lerpRot(this.leftLegGroup,   'x', -Math.PI / 2, dt, 10);
-    this._lerpRot(this.rightLegGroup,  'x', -Math.PI / 2, dt, 10);
-    this._lerpRot(this.leftKneeGroup,  'x',  Math.PI / 2, dt, 10);
-    this._lerpRot(this.rightKneeGroup, 'x',  Math.PI / 2, dt, 10);
-    // Arms: rest slightly forward / down
-    this._lerpRot(this.leftArmGroup,   'x', -0.30, dt, 10);
-    this._lerpRot(this.rightArmGroup,  'x', -0.30, dt, 10);
-    this._lerpRot(this.leftElbowGroup, 'x',  0.60, dt, 10);
-    this._lerpRot(this.rightElbowGroup,'x',  0.60, dt, 10);
-    this.bodyGroup.position.y = THREE.MathUtils.lerp(this.bodyGroup.position.y, 0, dt * 8);
-    this.bodyGroup.position.x = THREE.MathUtils.lerp(this.bodyGroup.position.x, 0, dt * 8);
+    // Legs: thigh horizontal forward (+90° / +PI/2), knee bent 90° down (-PI/2)
+    this._lerpRot(this.leftLegGroup,   'x',  Math.PI / 2, dt, 12);
+    this._lerpRot(this.rightLegGroup,  'x',  Math.PI / 2, dt, 12);
+    this._lerpRot(this.leftKneeGroup,  'x', -Math.PI / 2, dt, 12);
+    this._lerpRot(this.rightKneeGroup, 'x', -Math.PI / 2, dt, 12);
+    this._lerpRot(this.leftLegGroup,   'z',  0.08, dt, 10);
+    this._lerpRot(this.rightLegGroup,  'z', -0.08, dt, 10);
+
+    // Arms: rest forward on thighs / lap
+    this._lerpRot(this.leftArmGroup,   'x',  0.35, dt, 10);
+    this._lerpRot(this.rightArmGroup,  'x',  0.35, dt, 10);
+    this._lerpRot(this.leftArmGroup,   'z',  0.08, dt, 10);
+    this._lerpRot(this.rightArmGroup,  'z', -0.08, dt, 10);
+    this._lerpRot(this.leftElbowGroup, 'x',  0.45, dt, 10);
+    this._lerpRot(this.rightElbowGroup,'x',  0.45, dt, 10);
+
+    this.headGroup.rotation.set(0, 0, 0);
+    this.bodyGroup.position.set(0, 0, 0);
   }
 
   _animateSleeping(dt) {
-    // Rotate the whole body -90° around X (lie flat on back)
-    this.rootGroup.rotation.x = THREE.MathUtils.lerp(
-      this.rootGroup.rotation.x, -Math.PI / 2, dt * 6
-    );
-    // Arms spread slightly to sides
-    this._lerpRot(this.leftArmGroup,   'z',  0.30, dt, 8);
-    this._lerpRot(this.rightArmGroup,  'z', -0.30, dt, 8);
-    this._lerpRot(this.leftElbowGroup, 'x',  0.20, dt, 8);
-    this._lerpRot(this.rightElbowGroup,'x',  0.20, dt, 8);
-    // Reset legs straight
-    this._resetStanding(dt);
-    this.bodyGroup.position.y = THREE.MathUtils.lerp(this.bodyGroup.position.y, 0, dt * 8);
-    this.bodyGroup.position.x = THREE.MathUtils.lerp(this.bodyGroup.position.x, 0, dt * 8);
+    this.idleTimer += dt;
+    const t = this.idleTimer;
+
+    // Legs straight flat along mattress
+    this._lerpRot(this.leftLegGroup,   'x',  0, dt, 12);
+    this._lerpRot(this.rightLegGroup,  'x',  0, dt, 12);
+    this._lerpRot(this.leftKneeGroup,  'x',  0, dt, 12);
+    this._lerpRot(this.rightKneeGroup, 'x',  0, dt, 12);
+    this._lerpRot(this.leftLegGroup,   'z',  0.05, dt, 10);
+    this._lerpRot(this.rightLegGroup,  'z', -0.05, dt, 10);
+
+    // Arms relaxed on abdomen / sides
+    this._lerpRot(this.leftArmGroup,   'x', -0.18, dt, 10);
+    this._lerpRot(this.rightArmGroup,  'x', -0.18, dt, 10);
+    this._lerpRot(this.leftArmGroup,   'z',  0.22, dt, 10);
+    this._lerpRot(this.rightArmGroup,  'z', -0.22, dt, 10);
+    this._lerpRot(this.leftElbowGroup, 'x',  0.35, dt, 10);
+    this._lerpRot(this.rightElbowGroup,'x',  0.35, dt, 10);
+
+    this.pelvisGroup.position.y = HIP_Y;
+    this.pelvisGroup.rotation.set(0, 0, 0);
+    this.headGroup.rotation.set(0, 0, 0);
+    this.bodyGroup.position.set(0, 0, 0);
+
+    // Gentle breathing rise/fall (local Z is perpendicular to mattress / upward!)
+    const breathe = Math.sin(t * 1.5) * 0.012 * s;
+    this.torsoGroup.position.z = breathe;
   }
 }
