@@ -86,6 +86,7 @@ export const FURNITURE_SPECS = {
     },
     {
       id: 'CHAIR-GF-DIN-1',
+      colliderId: 'COL-LOB-14',
       name: 'Dining Chair',
       floor: 'ground_floor',
       floorElev: 1.50,
@@ -97,6 +98,7 @@ export const FURNITURE_SPECS = {
     },
     {
       id: 'CHAIR-GF-DIN-2',
+      colliderId: 'COL-LOB-15',
       name: 'Dining Chair',
       floor: 'ground_floor',
       floorElev: 1.50,
@@ -108,6 +110,7 @@ export const FURNITURE_SPECS = {
     },
     {
       id: 'CHAIR-GF-DIN-3',
+      colliderId: 'COL-LOB-16',
       name: 'Dining Chair',
       floor: 'ground_floor',
       floorElev: 1.50,
@@ -119,6 +122,7 @@ export const FURNITURE_SPECS = {
     },
     {
       id: 'CHAIR-GF-DIN-4',
+      colliderId: 'COL-LOB-17',
       name: 'Dining Chair',
       floor: 'ground_floor',
       floorElev: 1.50,
@@ -130,6 +134,7 @@ export const FURNITURE_SPECS = {
     },
     {
       id: 'CHAIR-1F-DIN-WEST',
+      colliderId: 'COL-LB-14',
       name: 'Dining Chair',
       floor: 'first_floor',
       floorElev: 12.00,
@@ -141,6 +146,7 @@ export const FURNITURE_SPECS = {
     },
     {
       id: 'CHAIR-1F-DIN-EAST',
+      colliderId: 'COL-LB-15',
       name: 'Dining Chair',
       floor: 'first_floor',
       floorElev: 12.00,
@@ -152,6 +158,7 @@ export const FURNITURE_SPECS = {
     },
     {
       id: 'CHAIR-1F-DIN-SL',
+      colliderId: 'COL-LB-16',
       name: 'Dining Chair',
       floor: 'first_floor',
       floorElev: 12.00,
@@ -163,6 +170,7 @@ export const FURNITURE_SPECS = {
     },
     {
       id: 'CHAIR-1F-DIN-SR',
+      colliderId: 'COL-LB-17',
       name: 'Dining Chair',
       floor: 'first_floor',
       floorElev: 12.00,
@@ -174,6 +182,7 @@ export const FURNITURE_SPECS = {
     },
     {
       id: 'CHAIR-1F-DIN-NL',
+      colliderId: 'COL-LB-18',
       name: 'Dining Chair',
       floor: 'first_floor',
       floorElev: 12.00,
@@ -185,6 +194,7 @@ export const FURNITURE_SPECS = {
     },
     {
       id: 'CHAIR-1F-DIN-NR',
+      colliderId: 'COL-LB-19',
       name: 'Dining Chair',
       floor: 'first_floor',
       floorElev: 12.00,
@@ -196,6 +206,7 @@ export const FURNITURE_SPECS = {
     },
     {
       id: 'CHAIR-1F-STUDY',
+      colliderId: 'COL-CH-11',
       name: 'Study Chair',
       floor: 'first_floor',
       floorElev: 12.00,
@@ -210,6 +221,7 @@ export const FURNITURE_SPECS = {
   toilets: [
     {
       id: 'TOILET-GF-WEST',
+      colliderId: 'COL-WW-01',
       name: 'West Bathroom Toilet',
       floor: 'ground_floor',
       floorElev: 1.50,
@@ -222,6 +234,7 @@ export const FURNITURE_SPECS = {
     },
     {
       id: 'TOILET-GF-EAST',
+      colliderId: 'COL-EW-01',
       name: 'East Bathroom Toilet',
       floor: 'ground_floor',
       floorElev: 1.50,
@@ -234,6 +247,7 @@ export const FURNITURE_SPECS = {
     },
     {
       id: 'TOILET-1F-BATH1',
+      colliderId: 'COL-B1-01',
       name: 'Bathroom 1 Toilet',
       floor: 'first_floor',
       floorElev: 12.00,
@@ -246,6 +260,7 @@ export const FURNITURE_SPECS = {
     },
     {
       id: 'TOILET-1F-BATH2',
+      colliderId: 'COL-B2-01',
       name: 'Bathroom 2 Toilet',
       floor: 'first_floor',
       floorElev: 12.00,
@@ -797,6 +812,7 @@ export class FurnitureManager {
       const toiletObj = {
         spec,
         id: spec.id,
+        colliderId: spec.colliderId || null,
         name: spec.name,
         type: 'toilet',
         floor: spec.floor,

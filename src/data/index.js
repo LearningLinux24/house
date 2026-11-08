@@ -131,7 +131,8 @@ export function getAllColliders() {
       type: item.type,
       floor: item.floor,
       box: item.box.map(coord => coord * WORLD_SCALE),
-      disabled: false
+      disabled: false,
+      isStepable: item.isStepable ?? true
     });
   });
 

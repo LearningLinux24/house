@@ -55,27 +55,41 @@ export class Player {
         .addScaledVector(right, moveX)
         .normalize();
 
-      const nextX = this.position.x + moveDir.x * speed * dt;
-      const nextZ = this.position.z + moveDir.z * speed * dt;
+      const totalDist = speed * dt;
+      // Substepping: ensure each step moves less than player radius * 0.4 (~0.20 ft)
+      // to completely eliminate tunneling through thin closed doors and walls during fast sprint
+      const maxSubstepDist = this.config.radius * 0.40;
+      const steps = Math.min(6, Math.max(1, Math.ceil(totalDist / maxSubstepDist)));
+      const stepDt = dt / steps;
 
-      // Sample step elevation before confirming move
-      const targetFloorElev = this.collision.getFloorElevation(nextX, nextZ, this.feetElevation);
-      const elevDiff = targetFloorElev - this.feetElevation;
+      for (let sIdx = 0; sIdx < steps; sIdx++) {
+        const nextX = this.position.x + moveDir.x * speed * stepDt;
+        const nextZ = this.position.z + moveDir.z * speed * stepDt;
 
-      // Allow stepping up risers within stepMaxHeight when grounded or jumping
-      const canStep = this.isGrounded ? (elevDiff <= this.config.stepMaxHeight) : (elevDiff <= 0.5 * this.config.stepMaxHeight);
+        // Sample step elevation before confirming move
+        const targetFloorElev = this.collision.getFloorElevation(nextX, nextZ, this.feetElevation);
+        const elevDiff = targetFloorElev - this.feetElevation;
 
-      if (canStep) {
-        // Resolve horizontal wall collisions
-        const [cleanX, cleanZ] = this.collision.resolveWallCollisions(
-          nextX,
-          nextZ,
-          this.config.radius,
-          this.feetElevation
-        );
+        // Allow stepping up risers within stepMaxHeight when grounded or jumping
+        const canStep = this.isGrounded
+          ? (elevDiff <= this.config.stepMaxHeight)
+          : (elevDiff <= 0.6 * this.config.stepMaxHeight);
 
-        this.position.x = cleanX;
-        this.position.z = cleanZ;
+        if (canStep) {
+          // Resolve horizontal wall collisions
+          const [cleanX, cleanZ] = this.collision.resolveWallCollisions(
+            nextX,
+            nextZ,
+            this.config.radius,
+            this.feetElevation
+          );
+
+          this.position.x = cleanX;
+          this.position.z = cleanZ;
+        } else {
+          // Stopped by vertical barrier higher than step clearance
+          break;
+        }
       }
     }
 

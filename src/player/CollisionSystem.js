@@ -29,104 +29,116 @@ export class CollisionSystem {
     const ys = -z / s;        // canonical spec Y
     const unscaledElev = currentElev / s;
 
+    // Base floor elevation across grounds, plinth, and stairs
+    let baseElev = 0.00;
+
     // 0. Outside plot boundary — street level
     if (xs < -0.75 || xs > 50.0 || ys < -0.75 || ys > 24.0) {
-      return 0.00;
-    }
-
-    // ═════════════════════════════════════════════════════════════════════
-    // TIER 1 · TERRACE FLOOR  (unscaledElev >= 18.0)
-    // ═════════════════════════════════════════════════════════════════════
-    if (unscaledElev >= 18.0) {
-      // Lane A stairwell opening (X=26.375–29.625, Y=4.0–11.0)
-      // When entering the staircase to descend south-to-north:
+      baseElev = 0.00;
+    } else if (unscaledElev >= 18.0) {
+      // ═════════════════════════════════════════════════════════════════════
+      // TIER 1 · TERRACE FLOOR  (unscaledElev >= 18.0)
+      // ═════════════════════════════════════════════════════════════════════
       if (xs >= 26.375 && xs <= 29.625 && ys >= 4.0 && ys <= 11.0) {
         const k = Math.min(13, Math.max(1, Math.ceil((14.01 - ys) / 0.770)));
-        return (12.00 + 0.75 * k) * s;
+        baseElev = (12.00 + 0.75 * k) * s;
+      } else {
+        baseElev = 22.50 * s;
       }
-
-      // Entire terrace floor slab & shaft ceiling grating:
-      // Includes roof slabs RF1, RF2-S, RF2-N, RF2-E, RF3, RF4-S, RF4-W, RF4-N,
-      // and the walkable stainless steel ceiling/terrace grating (X=27.625–32.375, Y=19.125–22.875).
-      return 22.50 * s;
-    }
-
-    // ═════════════════════════════════════════════════════════════════════
-    // TIER 2 · FIRST FLOOR  (6.5 <= unscaledElev < 18.0)
-    // ═════════════════════════════════════════════════════════════════════
-    if (unscaledElev >= 6.5) {
-      // 1. Upper stair flight Lane A (climbing south to terrace)
+    } else if (unscaledElev >= 6.5) {
+      // ═════════════════════════════════════════════════════════════════════
+      // TIER 2 · FIRST FLOOR  (6.5 <= unscaledElev < 18.0)
+      // ═════════════════════════════════════════════════════════════════════
       if (xs >= 26.375 && xs <= 29.625) {
         if (ys < 4.0) {
-          return 22.50 * s; // Terrace arrival landing
-        }
-        if (ys <= 14.01) {
+          baseElev = 22.50 * s;
+        } else if (ys <= 14.01) {
           const k = Math.min(13, Math.max(1, Math.ceil((14.01 - ys) / 0.770)));
-          return (12.00 + 0.75 * k) * s;
+          baseElev = (12.00 + 0.75 * k) * s;
+        } else {
+          baseElev = 12.00 * s;
         }
-        // North of stair foot: First floor plate
-        return 12.00 * s;
+      } else if (xs >= 30.125 && xs <= 33.875) {
+        if (ys >= 13.24 && ys <= 15.0) {
+          baseElev = 12.00 * s;
+        } else if (ys >= 4.0 && ys < 13.24) {
+          const treadIndex = Math.min(12, Math.max(1, Math.floor((ys - 4.0) / 0.770) + 1));
+          baseElev = (1.50 + 0.8077 * treadIndex) * s;
+        } else {
+          baseElev = 12.00 * s;
+        }
+      } else {
+        baseElev = 12.00 * s;
       }
-
-      // 2. Lower stair flight Lane B (descending south to ground floor)
+    } else {
+      // ═════════════════════════════════════════════════════════════════════
+      // TIER 3 · GROUND FLOOR  (unscaledElev < 6.5)
+      // ═════════════════════════════════════════════════════════════════════
       if (xs >= 30.125 && xs <= 33.875) {
         if (ys >= 13.24 && ys <= 15.0) {
-          return 12.00 * s; // First Floor landing
-        }
-        if (ys >= 4.0 && ys < 13.24) {
+          baseElev = 1.50 * s;
+        } else if (ys >= 4.0 && ys < 13.24) {
           const treadIndex = Math.min(12, Math.max(1, Math.floor((ys - 4.0) / 0.770) + 1));
-          return (1.50 + 0.8077 * treadIndex) * s;
+          baseElev = (1.50 + 0.8077 * treadIndex) * s;
+        } else {
+          baseElev = 1.50 * s;
         }
-        // South of flight foot (ys < 4.0): First floor slab above ground hallway
-        return 12.00 * s;
+      } else if (xs >= 34.25 && xs <= 41.25 && ys >= 14.0 && ys <= 15.0) {
+        baseElev = 1.00 * s;
+      } else if (xs >= 34.25 && xs <= 49.25 && ys >= 0.0 && ys <= 15.0) {
+        baseElev = 0.00;
+      } else if (ys >= 0.0 && ys <= 7.5) {
+        if (xs >= 3.25  && xs < 3.75)   baseElev = 0.00;
+        else if (xs >= 3.75  && xs < 4.55)   baseElev = 0.50 * s;
+        else if (xs >= 4.55  && xs < 5.35)   baseElev = 1.00 * s;
+        else if (xs >= 5.35  && xs <= 6.15)  baseElev = 1.50 * s;
+        else if (xs >  6.15  && xs <= 13.625) baseElev = 1.50 * s;
+        else baseElev = 0.00;
+      } else if (xs >= 3.25   && xs <= 34.25  && ys >= 7.5  && ys <= 23.25) {
+        baseElev = 1.50 * s;
+      } else if (xs >= 13.625 && xs <= 34.25  && ys >= 0.0  && ys <= 7.5) {
+        baseElev = 1.50 * s;
+      } else if (xs >= 6.15   && xs <= 13.625 && ys >= 0.0  && ys <= 7.5) {
+        baseElev = 1.50 * s;
+      } else if (xs >= 34.25  && xs <= 49.25  && ys >= 15.0 && ys <= 23.25) {
+        baseElev = 1.50 * s;
+      } else {
+        baseElev = 0.00;
       }
-
-      // 3. Everywhere across First Floor plate (including shaft alcove walkable floor grating)
-      return 12.00 * s;
     }
 
-    // ═════════════════════════════════════════════════════════════════════
-    // TIER 3 · GROUND FLOOR  (unscaledElev < 6.5)
-    // ═════════════════════════════════════════════════════════════════════
-    // Lower stair flight Lane B (ascending north to first floor)
-    if (xs >= 30.125 && xs <= 33.875) {
-      if (ys >= 13.24 && ys <= 15.0) {
-        return 1.50 * s; // Ground Floor under landing slab
+    // Sample stepable furniture surface elevations (beds, tables, counters, nightstands, chairs, sofas)
+    let highestSurface = baseElev;
+
+    if (this.colliders) {
+      for (const item of this.colliders) {
+        if (item.disabled) continue;
+        if (item.type !== 'interior_furniture' && !item.isStepable) continue;
+
+        const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
+
+        // Skip tall wardrobes and full-height ceiling walls
+        const obsHeight = zmax - zmin;
+        if (obsHeight > 5.5 * s) continue;
+
+        const bMinX = xmin;
+        const bMaxX = xmax;
+        const bMinZ = -ymax;
+        const bMaxZ = -ymin;
+
+        if (x >= bMinX && x <= bMaxX && z >= bMinZ && z <= bMaxZ) {
+          const surfElev = zmax;
+          // Player can stand on this surface if jumping toward it or already on it
+          if (currentElev >= surfElev - 1.8 * s && currentElev <= surfElev + 4.5 * s) {
+            if (surfElev > highestSurface) {
+              highestSurface = surfElev;
+            }
+          }
+        }
       }
-      if (ys >= 4.0 && ys < 13.24) {
-        const treadIndex = Math.min(12, Math.max(1, Math.floor((ys - 4.0) / 0.770) + 1));
-        return (1.50 + 0.8077 * treadIndex) * s;
-      }
-      return 1.50 * s; // Ground floor hallway
     }
 
-    // Garage threshold two steps (Override O4: X=34.25–41.25, Y=14.0–15.0)
-    if (xs >= 34.25 && xs <= 41.25 && ys >= 14.0 && ys <= 15.0) {
-      return 1.00 * s;
-    }
-
-    // Garage floor (flat ground level, Z = 0.00)
-    if (xs >= 34.25 && xs <= 49.25 && ys >= 0.0 && ys <= 15.0) {
-      return 0.00;
-    }
-
-    // Entrance steps (ground spec 7.1)
-    if (ys >= 0.0 && ys <= 7.5) {
-      if (xs >= 3.25  && xs < 3.75)   return 0.00;
-      if (xs >= 3.75  && xs < 4.55)   return 0.50 * s;
-      if (xs >= 4.55  && xs < 5.35)   return 1.00 * s;
-      if (xs >= 5.35  && xs <= 6.15)  return 1.50 * s;
-      if (xs >  6.15  && xs <= 13.625) return 1.50 * s;
-    }
-
-    // Ground-floor plinth raised floors (+1.50)
-    if (xs >= 3.25   && xs <= 34.25  && ys >= 7.5  && ys <= 23.25) return 1.50 * s;
-    if (xs >= 13.625 && xs <= 34.25  && ys >= 0.0  && ys <= 7.5)   return 1.50 * s;
-    if (xs >= 6.15   && xs <= 13.625 && ys >= 0.0  && ys <= 7.5)   return 1.50 * s;
-    if (xs >= 34.25  && xs <= 49.25  && ys >= 15.0 && ys <= 23.25) return 1.50 * s;
-
-    // Gate landing & garden / street
-    return 0.00;
+    return highestSurface;
   }
 
   /**
@@ -144,8 +156,18 @@ export class CollisionSystem {
 
       const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
 
+      // If this obstacle is a stepable/walkable furniture item (bed, table, chair, counter)
+      // and player's feet elevation is ON or ABOVE its top surface, player is standing on it!
+      // Skip horizontal wall collision so player can freely walk and stand on top.
+      const isStepableFurniture = (item.type === 'interior_furniture' || item.isStepable) &&
+        ((zmax - zmin) <= 5.5 * s);
+
+      if (isStepableFurniture && playerElev >= zmax - 0.20 * s) {
+        continue;
+      }
+
       // Skip boxes that don't vertically intersect the player torso
-      if (zmax <= playerElev + 0.3 * s || zmin >= playerElev + 5.0 * s) {
+      if (zmax <= playerElev + 0.25 * s || zmin >= playerElev + 5.0 * s) {
         continue;
       }
 

@@ -81,10 +81,22 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
   * **2 Interactive Kitchen Wall Cupboards**: Overhead storage cupboards in GF Kitchen with swinging cabinet doors, interior shelving, and chrome handles.
   * **6 Interactive Bedside Nightstand Drawers**: Flanking bedside tables in GF Master Bedroom, 1F Master Bedroom, and 1F Child Bedroom. Animated pull-out drawer boxes slide smoothly forward into the room with sleek metallic handles and exposed hollow storage cavities.
   * **Procedural Wood & Slide Audio**: Authentic cabinet wood hinge creak and magnetic catch latch on wardrobe/cupboard doors, paired with wooden glide runner friction on bedside drawers.
-* **Realistic Interior Furniture Collisions & Anti-Stuck Navigation**:
-  * **15 Calibrated Solid Furniture Colliders**: Physical colliders for major interior furniture (wardrobes, kitchen base counters, refrigerators, dining table, bed frames, sofas).
-  * **Obstacle Insetting for Spacious Walkways**: Insets of $0.20$ to $0.35$ ft on walking sides guarantee all room doorways, bed perimeters, and corridors remain $\ge 2.7\text{ ft}$ to $5.0\text{ ft}$ wide, completely eliminating corner snagging, player wedging, or unreachable zones.
-  * **Dynamic Seating & Sleeping Exemption**: Occupying any bed or sofa automatically bypasses that specific piece of furniture's collider, ensuring smooth transitions without physics conflicts, and seamlessly restores the collider when standing up.
+* **Realistic Interior Furniture Collisions & Dynamic Surface Physics**:
+  * **63 Comprehensive Physical Furniture Colliders**: Full physical presence for all interior objects across Ground Floor and First Floor:
+    * **Tables & Desks**: Dining tables, living coffee tables, TV media consoles, dressing tables, and study desks.
+    * **Chairs & Seating**: All dining chairs, study chairs, armchairs, and living sofas.
+    * **Cabinets & Storage**: Kitchen base counters, overhead wall cabinets, almirahs/wardrobes, bedside nightstands, storeroom racks, shoe racks, and mandir units.
+    * **Sinks & Sanitary**: All 8 kitchen and bathroom washbasins, sink counters, and all 4 flush toilets.
+    * **Vehicles**: Full collision volume for vehicles in the garage.
+  * **Stepable Surfaces (Stand & Jump on Beds, Tables, Sofas & Counters)**:
+    * Jumping onto beds, tables, study desks, chairs, sofas, or kitchen counters dynamically samples their top surface elevation.
+    * Players can jump on, land on, walk across, and stand on top of beds without getting pushed or thrown off!
+    * Walking off the edge triggers smooth gravity fall back to the room floor.
+  * **Anti-Tunneling Continuous Collision Detection (CCD)**:
+    * Substepped player movement integration ($dt$ partitioned into discrete substeps $\le 0.20$ ft) combined with full-depth doorway threshold colliders ($0.56$ - $0.70$ ft depth).
+    * Completely prevents tunneling through closed doors and gates when sprinting at full velocity.
+  * **Dynamic Seating & Sleeping Collision Bypass**:
+    * Occupying any bed, sofa, dining chair, or toilet automatically disables that specific item's collider during sitting/sleeping, preventing any physics jitter, and safely restores it upon standing up.
 * **Collapsible Sidebar (<kbd>☰</kbd> / <kbd>✕</kbd>)**: Click the toggle tab on the right edge to expand or collapse the control drawer.
 * **Floor Level View (Dollhouse Overview)**:
   * **🏢 Both Floors (<kbd>3</kbd>)**: View the full two-storey residential building.

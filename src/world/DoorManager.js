@@ -408,10 +408,27 @@ export class DoorManager {
       pivotGroup.add(leafMesh);
       this.rootGroup.add(pivotGroup);
 
-      // Register collision box in CollisionSystem
+      // Register collision box in CollisionSystem with full doorway depth to prevent sprint tunneling
+      const midX = (xmin + xmax) / 2;
+      const midY = (ymin + ymax) / 2;
+      let colXmin = xmin;
+      let colXmax = xmax;
+      let colYmin = ymin;
+      let colYmax = ymax;
+
+      if (spec.axis === 'X') {
+        const halfDepth = Math.max((ymax - ymin) / 2, 0.28);
+        colYmin = midY - halfDepth;
+        colYmax = midY + halfDepth;
+      } else {
+        const halfDepth = Math.max((xmax - xmin) / 2, 0.28);
+        colXmin = midX - halfDepth;
+        colXmax = midX + halfDepth;
+      }
+
       const colliderItem = {
         id: `${spec.id}-COL`,
-        box: [xmin * s, xmax * s, ymin * s, ymax * s, zmin * s, zmax * s],
+        box: [colXmin * s, colXmax * s, colYmin * s, colYmax * s, zmin * s, zmax * s],
         disabled: false // closed by default
       };
       if (this.collision && this.collision.colliders) {
@@ -625,10 +642,12 @@ export class DoorManager {
     this.rootGroup.add(staticGroup);
     this.rootGroup.add(movingGroup);
 
-    // Dynamic collision barrier
+    // Dynamic collision barrier with portal wall thickness
+    const midY = (ymin + ymax) / 2;
+    const halfDepth = Math.max((ymax - ymin) / 2, 0.35);
     const colliderItem = {
       id: `${spec.id}-COL`,
-      box: [xmin * s, xmax * s, ymin * s, ymax * s, zmin * s, zmax * s],
+      box: [xmin * s, xmax * s, (midY - halfDepth) * s, (midY + halfDepth) * s, zmin * s, zmax * s],
       disabled: false
     };
     if (this.collision && this.collision.colliders) {
