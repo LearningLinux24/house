@@ -87,20 +87,23 @@ export class CollisionSystem {
         baseElev = 1.00 * s;
       } else if (xs >= 34.25 && xs <= 49.25 && ys >= 0.0 && ys <= 15.0) {
         baseElev = 0.00;
-      } else if (ys >= 0.0 && ys <= 7.5) {
-        if (xs >= 3.25  && xs < 3.75)   baseElev = 0.00;
-        else if (xs >= 3.75  && xs < 4.55)   baseElev = 0.50 * s;
-        else if (xs >= 4.55  && xs < 5.35)   baseElev = 1.00 * s;
-        else if (xs >= 5.35  && xs <= 6.15)  baseElev = 1.50 * s;
-        else if (xs >  6.15  && xs <= 13.625) baseElev = 1.50 * s;
-        else baseElev = 0.00;
-      } else if (xs >= 3.25   && xs <= 34.25  && ys >= 7.5  && ys <= 23.25) {
+      } else if (xs >= 13.625 && xs <= 34.25 && ys >= 0.0 && ys <= 7.5) {
+        // P2 Plinth (South Hallway & South Porch)
         baseElev = 1.50 * s;
-      } else if (xs >= 13.625 && xs <= 34.25  && ys >= 0.0  && ys <= 7.5) {
+      } else if (xs >= 6.15 && xs <= 13.625 && ys >= 0.0 && ys <= 7.5) {
+        // P3 Plinth (Entrance Porch)
         baseElev = 1.50 * s;
-      } else if (xs >= 6.15   && xs <= 13.625 && ys >= 0.0  && ys <= 7.5) {
+      } else if (ys >= 0.0 && ys <= 7.5 && xs >= 3.25 && xs < 6.15) {
+        // Entrance steps S1, S2, S3
+        if (xs >= 3.25 && xs < 3.75) baseElev = 0.00;
+        else if (xs >= 3.75 && xs < 4.55) baseElev = 0.50 * s;
+        else if (xs >= 4.55 && xs < 5.35) baseElev = 1.00 * s;
+        else baseElev = 1.50 * s;
+      } else if (xs >= 3.25 && xs <= 34.25 && ys >= 7.5 && ys <= 23.25) {
+        // P1 Plinth (Main Ground Floor)
         baseElev = 1.50 * s;
-      } else if (xs >= 34.25  && xs <= 49.25  && ys >= 15.0 && ys <= 23.25) {
+      } else if (xs >= 34.25 && xs <= 49.25 && ys >= 15.0 && ys <= 23.25) {
+        // P4 Plinth (Kitchen Wing)
         baseElev = 1.50 * s;
       } else {
         baseElev = 0.00;
