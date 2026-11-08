@@ -401,4 +401,23 @@ export class UIManager {
       this.elements.blocker.style.display = 'flex';
     }
   }
+
+  showToast(text, duration = 1600) {
+    if (!this.toastEl) {
+      this.toastEl = document.createElement('div');
+      this.toastEl.className = 'hud-toast';
+      document.body.appendChild(this.toastEl);
+    }
+    this.toastEl.textContent = text;
+    this.toastEl.classList.remove('visible');
+    void this.toastEl.offsetWidth; // Force DOM reflow to restart CSS animation
+    this.toastEl.classList.add('visible');
+
+    clearTimeout(this.toastTimer);
+    this.toastTimer = setTimeout(() => {
+      if (this.toastEl) {
+        this.toastEl.classList.remove('visible');
+      }
+    }, duration);
+  }
 }

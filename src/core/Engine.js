@@ -10,6 +10,7 @@ import { DoorManager } from '../world/DoorManager.js';
 import { CollisionSystem } from '../player/CollisionSystem.js';
 import { InputManager } from '../player/InputManager.js';
 import { Player } from '../player/Player.js';
+import { PlayerAvatar } from '../player/PlayerAvatar.js';
 import { CameraController } from '../camera/CameraController.js';
 import { UIManager } from '../ui/UIManager.js';
 
@@ -79,7 +80,10 @@ export class Engine {
     this.spawnPoint = getSpawnPoint();
     this.player = new Player(this.spawnPoint, this.collision);
 
-    // 9. Camera Controller (FP + Orbit Dollhouse)
+    // 8b. Player Avatar
+    this.avatar = new PlayerAvatar(this.sceneManager.scene);
+
+    // 9. Camera Controller (FP + Third-Person + Orbit Dollhouse)
     this.cameraCtrl = new CameraController(
       this.sceneManager.camera,
       this.sceneManager.renderer.domElement
@@ -154,6 +158,10 @@ export class Engine {
 
     // Wire hotkeys
     this.input.on('toggleView', () => this.toggleView());
+    this.input.on('togglePOV', () => {
+      const label = this.cameraCtrl.cyclePOV();
+      this.ui.showToast(`Perspective: ${label}`);
+    });
     this.input.on('toggleRoof', () => this.toggleRoof());
     this.input.on('toggleLabels', () => this.toggleLabels());
     this.input.on('togglePrompts', () => this.togglePrompts());
@@ -245,7 +253,7 @@ export class Engine {
     if (this.cameraCtrl.isOrbitMode) {
       this.cameraCtrl.setMode(false, this.player);
     } else {
-      this.sceneManager.camera.position.copy(this.player.position);
+      this.cameraCtrl.update(this.player, 0, this.collision);
       this.cameraCtrl.fpControls.lock();
     }
   }
@@ -278,15 +286,16 @@ export class Engine {
       this.promptsVisible
     );
 
-    // Extract current camera yaw angle
-    const euler = new THREE.Euler(0, 0, 0, 'YXZ');
-    euler.setFromQuaternion(this.sceneManager.camera.quaternion);
-    const cameraYaw = euler.y;
+    // Extract current camera / look yaw angle
+    const cameraYaw = this.cameraCtrl.getYaw();
+    const isMoving = this.input.keys.forward || this.input.keys.backward || this.input.keys.left || this.input.keys.right;
 
     if (!this.cameraCtrl.isOrbitMode && this.cameraCtrl.fpControls.isLocked) {
-      // First person movement & collisions
-      this.player.update(delta, this.input, this.sceneManager.camera);
-      this.sceneManager.camera.position.copy(this.player.position);
+      // Movement & wall collisions using mouse aim forward vector
+      this.player.update(delta, this.input, this.cameraCtrl.getLookObject());
+
+      // Update camera position & boom based on POV mode (First-Person, Third-Person Back/Front)
+      this.cameraCtrl.update(this.player, delta, this.collision);
 
       const zone = this.collision.getZoneAt(this.player.position.x, this.player.position.z, this.player.feetElevation);
       this.ui.updateHUD(
@@ -303,9 +312,9 @@ export class Engine {
         cameraYaw,
         this.player.feetElevation
       );
-    } else if (this.cameraCtrl.isOrbitMode) {
-      // Orbit camera damping update
-      this.cameraCtrl.update();
+    } else {
+      // Orbit camera damping or idle camera update
+      this.cameraCtrl.update(this.player, delta, this.collision);
 
       const zone = this.collision.getZoneAt(this.player.position.x, this.player.position.z, this.player.feetElevation);
       this.ui.updateHUD(
@@ -323,6 +332,17 @@ export class Engine {
         this.player.feetElevation
       );
     }
+
+    // Update Avatar model (position, walk cycle, visibility based on POV mode)
+    this.avatar.update(
+      delta,
+      this.player.position,
+      this.player.feetElevation,
+      cameraYaw,
+      isMoving,
+      this.cameraCtrl.getPOVMode(),
+      this.cameraCtrl.isOrbitMode
+    );
 
     // Render 3D Scene
     this.sceneManager.render();

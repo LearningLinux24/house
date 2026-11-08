@@ -19,8 +19,8 @@ export class InputManager {
   }
 
   onKeyDown(e) {
-    // Prevent default scroll on arrow keys / space
-    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) {
+    // Prevent default scroll / browser refresh on key shortcuts
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'F5'].includes(e.code)) {
       e.preventDefault();
     }
 
@@ -53,6 +53,10 @@ export class InputManager {
       // Hotkey Actions
       case 'KeyV':
         this.emit('toggleView');
+        break;
+      case 'F5':
+      case 'KeyP':
+        this.emit('togglePOV');
         break;
       case 'KeyC':
         this.emit('toggleRoof');
