@@ -13,7 +13,6 @@ export const FURNITURE_SPECS = {
       foot: [7.875, 12.80, 2.70],
       standPoint: [11.20, 15.625, 1.50],
       box: [5.375, 10.375, 12.375, 18.875, 1.500, 3.200],
-      // Bed headboard is at North (CAD +Y -> Three.js -Z), feet South (CAD -Y -> Three.js +Z)
       sleepBasis: {
         x: [-1, 0, 0],
         y: [0, 0, -1],
@@ -48,7 +47,6 @@ export const FURNITURE_SPECS = {
       foot: [43.30, 15.50, 13.10],
       standPoint: [46.00, 12.20, 12.00],
       box: [42.750, 49.250, 13.500, 17.500, 12.000, 13.700],
-      // Bed headboard is at East (CAD +X -> Three.js +X), feet West (CAD -X -> Three.js -X)
       sleepBasis: {
         x: [0, 0, -1],
         y: [1, 0, 0],
@@ -256,6 +254,67 @@ export const FURNITURE_SPECS = {
   ]
 };
 
+function createContouredLidGeo(s) {
+  const w = 0.86 * s;
+  const L = 1.18 * s;
+  const r = w / 2;
+
+  const shape = new THREE.Shape();
+  shape.moveTo(-w / 2, 0);
+  shape.lineTo(w / 2, 0);
+  shape.lineTo(w / 2, L - r);
+  shape.absarc(0, L - r, r, 0, Math.PI, false);
+  shape.lineTo(-w / 2, 0);
+
+  const geo = new THREE.ExtrudeGeometry(shape, {
+    depth: 0.036 * s,
+    bevelEnabled: true,
+    bevelSegments: 4,
+    steps: 1,
+    bevelSize: 0.018 * s,
+    bevelThickness: 0.014 * s
+  });
+  geo.rotateX(Math.PI / 2);
+  return geo;
+}
+
+function createContouredSeatGeo(s) {
+  const w = 0.84 * s;
+  const L = 1.16 * s;
+  const r = w / 2;
+
+  const shape = new THREE.Shape();
+  shape.moveTo(-w / 2, 0);
+  shape.lineTo(w / 2, 0);
+  shape.lineTo(w / 2, L - r);
+  shape.absarc(0, L - r, r, 0, Math.PI, false);
+  shape.lineTo(-w / 2, 0);
+
+  const hw = 0.48 * s;
+  const hL = 0.74 * s;
+  const hr = hw / 2;
+  const holeY = 0.16 * s;
+
+  const hole = new THREE.Path();
+  hole.moveTo(-hw / 2, holeY);
+  hole.lineTo(hw / 2, holeY);
+  hole.lineTo(hw / 2, holeY + hL - hr);
+  hole.absarc(0, holeY + hL - hr, hr, 0, Math.PI, false);
+  hole.lineTo(-hw / 2, holeY);
+  shape.holes.push(hole);
+
+  const geo = new THREE.ExtrudeGeometry(shape, {
+    depth: 0.038 * s,
+    bevelEnabled: true,
+    bevelSegments: 4,
+    steps: 1,
+    bevelSize: 0.018 * s,
+    bevelThickness: 0.014 * s
+  });
+  geo.rotateX(Math.PI / 2);
+  return geo;
+}
+
 class FurnitureAudio {
   constructor() {
     this.ctx = null;
@@ -430,7 +489,9 @@ export class FurnitureManager {
 
     this.targetedItem = null;
     this.targetedAction = null;
-    this.targetedMesh = null;
+    this.isDirectHit = false;
+    this.targetedDistance = Infinity;
+    this.promptLabel = null;
 
     this.activeState = 'none'; // 'none' | 'sitting' | 'sleeping'
     this.activeItem = null;
@@ -449,9 +510,9 @@ export class FurnitureManager {
     });
 
     const chromeMat = this.materials.get('M-CHROME') || new THREE.MeshStandardMaterial({
-      color: '#E8ECED',
-      metalness: 0.95,
-      roughness: 0.12
+      color: '#F4F6F6',
+      metalness: 0.98,
+      roughness: 0.08
     });
 
     const waterMat = new THREE.MeshStandardMaterial({
@@ -484,7 +545,7 @@ export class FurnitureManager {
       hitMesh.position.set(cx, cy, cz);
       this.rootGroup.add(hitMesh);
 
-      // Construct precomputed orientation quaternion for sleeping avatar
+      // Precomputed basis matrix and quaternion for lying down horizontally flat
       const basis = spec.sleepBasis;
       const sleepMat = new THREE.Matrix4().makeBasis(
         new THREE.Vector3(...basis.x),
@@ -493,21 +554,18 @@ export class FurnitureManager {
       );
       const sleepQuat = new THREE.Quaternion().setFromRotationMatrix(sleepMat);
 
-      // Foot world position: feet rest at mattress surface
       const footWorldPos = new THREE.Vector3(
         spec.foot[0] * s,
         (spec.foot[2] + 0.35) * s,
         -spec.foot[1] * s
       );
 
-      // Pillow world position: head rests on pillow
       const pillowWorldPos = new THREE.Vector3(
         spec.pillow[0] * s,
         (spec.pillow[2] + 0.45) * s,
         -spec.pillow[1] * s
       );
 
-      // Center world position: for 3rd person camera look target
       const centerWorldPos = new THREE.Vector3(
         spec.center[0] * s,
         (spec.center[2] + 0.60) * s,
@@ -517,7 +575,7 @@ export class FurnitureManager {
       const standFloorElev = spec.floorElev * s;
       const standPosition = new THREE.Vector3(
         spec.standPoint[0] * s,
-        standFloorElev + 4.9 * s, // eye height
+        standFloorElev + 4.9 * s,
         -spec.standPoint[1] * s
       );
 
@@ -603,7 +661,7 @@ export class FurnitureManager {
       this.items.push(seatObj);
     });
 
-    // 3. Build Realistic Interactive Toilets (Full Ceramic WC Assembly with Dual Flush & Lid)
+    // 3. Build Realistic Interactive Toilets with Contoured Lid, Seat & Prominent Flush
     FURNITURE_SPECS.toilets.forEach(spec => {
       const group = new THREE.Group();
       group.name = `ToiletGroup_${spec.id}`;
@@ -618,7 +676,7 @@ export class FurnitureManager {
       // Z=0 is back against North bathroom wall; +Z extends forward into room (South).
       // Y=0 is bathroom floor level; +Y is UP.
 
-      // ── A. Cistern Tank & Lid ──
+      // ── A. Cistern Tank & Cistern Lid ──
       const cisternGeo = new THREE.BoxGeometry(1.35 * s, 1.45 * s, 0.52 * s);
       const cisternMesh = new THREE.Mesh(cisternGeo, sanitaryMat);
       cisternMesh.position.set(0, 1.45 * s, 0.30 * s);
@@ -632,17 +690,32 @@ export class FurnitureManager {
       cisternLidMesh.castShadow = true;
       group.add(cisternLidMesh);
 
-      // ── B. Chrome Dual Flush Button (Top of Cistern) ──
-      const btnBezelGeo = new THREE.CylinderGeometry(0.075 * s, 0.080 * s, 0.02 * s, 16);
+      // ── B. Prominent Chrome Dual Flush Button (Top of Cistern) ──
+      const btnBezelGeo = new THREE.CylinderGeometry(0.11 * s, 0.12 * s, 0.03 * s, 24);
       const btnBezelMesh = new THREE.Mesh(btnBezelGeo, chromeMat);
-      btnBezelMesh.position.set(0, 2.275 * s, 0.30 * s);
+      btnBezelMesh.position.set(0, 2.28 * s, 0.32 * s);
       group.add(btnBezelMesh);
 
-      const btnGeo = new THREE.CylinderGeometry(0.055 * s, 0.055 * s, 0.035 * s, 16);
+      // Dual push buttons (left half-flush, right full-flush)
+      const btnGeo = new THREE.CylinderGeometry(0.095 * s, 0.095 * s, 0.045 * s, 24);
       const btnMesh = new THREE.Mesh(btnGeo, chromeMat);
-      btnMesh.position.set(0, 2.285 * s, 0.30 * s);
+      btnMesh.position.set(0, 2.30 * s, 0.32 * s);
       btnMesh.name = `ToiletFlushBtn_${spec.id}`;
       group.add(btnMesh);
+
+      // Center divider groove line on button
+      const dividerGeo = new THREE.BoxGeometry(0.012 * s, 0.05 * s, 0.19 * s);
+      const dividerMat = new THREE.MeshBasicMaterial({ color: '#2C3E50' });
+      const dividerMesh = new THREE.Mesh(dividerGeo, dividerMat);
+      dividerMesh.position.set(0, 2.305 * s, 0.32 * s);
+      group.add(dividerMesh);
+
+      // Generous hit collider for the flush button
+      const btnHitGeo = new THREE.CylinderGeometry(0.20 * s, 0.20 * s, 0.30 * s, 16);
+      const btnHitMat = new THREE.MeshBasicMaterial({ visible: false });
+      const btnHitMesh = new THREE.Mesh(btnHitGeo, btnHitMat);
+      btnHitMesh.position.set(0, 2.31 * s, 0.32 * s);
+      group.add(btnHitMesh);
 
       // ── C. Bowl Pedestal & Contoured Ceramic Body ──
       const baseGeo = new THREE.BoxGeometry(0.85 * s, 0.50 * s, 1.35 * s);
@@ -651,7 +724,7 @@ export class FurnitureManager {
       baseMesh.castShadow = true;
       group.add(baseMesh);
 
-      const bowlGeo = new THREE.CylinderGeometry(0.55 * s, 0.42 * s, 0.90 * s, 20);
+      const bowlGeo = new THREE.CylinderGeometry(0.55 * s, 0.42 * s, 0.90 * s, 24);
       const bowlMesh = new THREE.Mesh(bowlGeo, sanitaryMat);
       bowlMesh.scale.set(1.0, 1.0, 1.35); // oval bowl
       bowlMesh.position.set(0, 0.90 * s, 1.35 * s);
@@ -660,7 +733,7 @@ export class FurnitureManager {
       group.add(bowlMesh);
 
       // ── D. Inner Bowl Cavity & Swirling Flush Water Disc ──
-      const bowlWellGeo = new THREE.CylinderGeometry(0.42 * s, 0.26 * s, 0.60 * s, 16);
+      const bowlWellGeo = new THREE.CylinderGeometry(0.42 * s, 0.26 * s, 0.60 * s, 20);
       const bowlWellMat = new THREE.MeshStandardMaterial({
         color: '#EBF5FB',
         roughness: 0.15,
@@ -677,47 +750,39 @@ export class FurnitureManager {
       bowlWaterMesh.position.set(0, 0.82 * s, 1.35 * s);
       group.add(bowlWaterMesh);
 
-      // ── E. Chrome Hinge Pivot & Articulated Seat Ring ──
+      // ── E. Chrome Hinge Pivot & Contoured Circular/D-Shaped Seat Ring ──
       const hingePivot = new THREE.Group();
       hingePivot.name = `ToiletHinge_${spec.id}`;
-      hingePivot.position.set(0, 1.40 * s, 0.68 * s);
+      hingePivot.position.set(0, 1.40 * s, 0.65 * s);
       group.add(hingePivot);
 
-      // Chrome hinge bracket
-      const hingeBarGeo = new THREE.CylinderGeometry(0.025 * s, 0.025 * s, 0.42 * s, 12);
+      // Chrome hinge bracket pin
+      const hingeBarGeo = new THREE.CylinderGeometry(0.025 * s, 0.025 * s, 0.45 * s, 16);
       const hingeBarMesh = new THREE.Mesh(hingeBarGeo, chromeMat);
       hingeBarMesh.rotation.z = Math.PI / 2;
       hingePivot.add(hingeBarMesh);
 
-      // Seat ring (oval torus attached to bowl rim)
-      const seatGeo = new THREE.TorusGeometry(0.40 * s, 0.055 * s, 10, 24);
+      // Contoured Seat Ring: smooth rounded porcelain with central oval hole
+      const seatGeo = createContouredSeatGeo(s);
       const seatMesh = new THREE.Mesh(seatGeo, sanitaryMat);
-      seatMesh.rotation.x = Math.PI / 2;
-      seatMesh.scale.set(1.0, 1.30, 1.0);
-      seatMesh.position.set(0, 1.39 * s, 1.35 * s);
+      seatMesh.position.set(0, 1.38 * s, 0.65 * s);
       seatMesh.castShadow = true;
       group.add(seatMesh);
 
-      // ── F. Articulated Toilet Lid Cover (Hinged at back) ──
-      const lidMeshGeo = new THREE.BoxGeometry(1.04 * s, 0.045 * s, 1.32 * s);
-      const lidMesh = new THREE.Mesh(lidMeshGeo, sanitaryMat);
-      // In hinge local space, offset forward along +Z so it rests over the bowl when rotation.x = 0
-      lidMesh.position.set(0, 0.04 * s, 0.66 * s);
+      // ── F. Contoured Circular/D-Shaped Toilet Lid Cover (Matches Seat) ──
+      const lidGeo = createContouredLidGeo(s);
+      const lidMesh = new THREE.Mesh(lidGeo, sanitaryMat);
+      // In hinge local space, sits above seat ring and tilts back with hinge
+      lidMesh.position.set(0, 0.038 * s, 0);
       lidMesh.castShadow = true;
       hingePivot.add(lidMesh);
 
-      // ── G. Hit / Collision Box ──
+      // Bounding box for proximity distance checking
       const [xmin, xmax, ymin, ymax, zmin, zmax] = spec.box;
       const box3 = new THREE.Box3(
         new THREE.Vector3(xmin * s, zmin * s, -ymax * s),
         new THREE.Vector3(xmax * s, zmax * s, -ymin * s)
       );
-
-      const hitGeo = new THREE.BoxGeometry(1.45 * s, 2.5 * s, 2.3 * s);
-      const hitMat = new THREE.MeshBasicMaterial({ visible: false });
-      const hitMesh = new THREE.Mesh(hitGeo, hitMat);
-      hitMesh.position.set(0, 1.25 * s, 1.15 * s);
-      group.add(hitMesh);
 
       this.rootGroup.add(group);
 
@@ -731,9 +796,12 @@ export class FurnitureManager {
         lidPivot: hingePivot,
         lidMesh,
         seatMesh,
+        bowlMesh,
         btnMesh,
+        btnHitMesh,
+        cisternMesh,
+        cisternLidMesh,
         bowlWaterMesh,
-        hitMesh,
         box3,
         isLidOpen: false,
         targetAngle: 0,
@@ -752,13 +820,17 @@ export class FurnitureManager {
         yaw: spec.yaw
       };
 
-      // Set explicit interactive metadata on each sub-mesh
+      // Set explicit interactive metadata on individual toilet meshes
+      btnHitMesh.userData = { furniture: toiletObj, targetType: 'toilet_flush' };
       btnMesh.userData = { furniture: toiletObj, targetType: 'toilet_flush' };
+      cisternLidMesh.userData = { furniture: toiletObj, targetType: 'toilet_flush' };
+      cisternMesh.userData = { furniture: toiletObj, targetType: 'toilet_tank' };
       lidMesh.userData = { furniture: toiletObj, targetType: 'toilet_lid' };
       seatMesh.userData = { furniture: toiletObj, targetType: 'toilet_seat' };
-      hitMesh.userData = { furniture: toiletObj, targetType: 'toilet_body' };
+      bowlMesh.userData = { furniture: toiletObj, targetType: 'toilet_bowl' };
 
-      this.interactiveMeshes.push(btnMesh, lidMesh, seatMesh, hitMesh);
+      // Push only direct visual sub-meshes for raycast (NO enclosing box!)
+      this.interactiveMeshes.push(btnHitMesh, btnMesh, cisternLidMesh, lidMesh, seatMesh, bowlMesh);
       this.items.push(toiletObj);
     });
 
@@ -806,7 +878,6 @@ export class FurnitureManager {
         avatar.setSleeping(item.footWorldPos, item.sleepQuat);
       }
 
-      // Position player at center of bed for camera look target
       player.position.copy(item.centerWorldPos);
       player.feetElevation = item.standFloorElev;
       player.velocityY = 0;
@@ -843,7 +914,6 @@ export class FurnitureManager {
       avatar.setStanding();
     }
 
-    // Restore player to standing point
     player.position.copy(item.standPosition);
     player.feetElevation = item.standFloorElev;
     player.velocityY = 0;
@@ -856,14 +926,12 @@ export class FurnitureManager {
   }
 
   interact(player, avatar, cameraCtrl, ui, showPrompt = false) {
-    // If currently occupied:
     if (this.activeState !== 'none') {
       // If seated on toilet and looking at the flush button, allow flushing while seated!
       if (this.activeState === 'sitting' && this.activeItem?.type === 'toilet' && this.targetedAction === 'flush') {
         this.flushToilet(this.activeItem);
         return;
       }
-      // Otherwise standing up / waking up
       this.leaveItem(player, avatar, cameraCtrl, ui);
       return;
     }
@@ -891,7 +959,6 @@ export class FurnitureManager {
           this.occupyItem(item, player, avatar, cameraCtrl, ui);
         }
       } else {
-        // Fallback toggle
         this.toggleToiletLid(item);
       }
     }
@@ -930,7 +997,6 @@ export class FurnitureManager {
 
         if (item.isFlushing) {
           item.flushTime += delta;
-          // Swirling water disc rotation & suction dip
           item.bowlWaterMesh.rotation.z += delta * 14.0;
           const swirlDip = Math.sin(item.flushTime * 2.2) * 0.05 * s;
           item.bowlWaterMesh.position.y = 0.82 * s - swirlDip;
@@ -951,23 +1017,34 @@ export class FurnitureManager {
         player.position.copy(this.activeItem.centerWorldPos);
       }
 
-      // Check if player is seated on toilet and looking at the flush button
+      // Check if player is seated on toilet and looking at the flush button / cistern
       if (this.activeState === 'sitting' && this.activeItem.type === 'toilet' && camera) {
         this.raycaster.setFromCamera({ x: 0, y: 0 }, camera);
-        const hit = this.raycaster.intersectObject(this.activeItem.btnMesh, false);
+        const flushMeshes = [
+          this.activeItem.btnHitMesh,
+          this.activeItem.btnMesh,
+          this.activeItem.cisternLidMesh
+        ];
+        const hit = this.raycaster.intersectObjects(flushMeshes, false);
         if (hit.length > 0 && hit[0].distance <= 5.0 * s) {
           this.targetedItem = this.activeItem;
           this.targetedAction = 'flush';
+          this.isDirectHit = true;
+          this.targetedDistance = hit[0].distance;
+          this.promptLabel = `[E] Flush ${this.activeItem.name} | [Space] Stand Up`;
           if (ui && showPrompt) {
-            ui.showInteractionPrompt(`[E] Flush ${this.activeItem.name} | [Space] Stand Up`);
+            ui.showInteractionPrompt(this.promptLabel);
           }
           return;
         }
       }
 
       this.targetedAction = null;
+      this.isDirectHit = true;
+      this.targetedDistance = 0;
+      this.promptLabel = `[E / Space] ${this.activeState === 'sleeping' ? 'Wake Up' : 'Stand Up'}`;
       if (ui && showPrompt) {
-        ui.showInteractionPrompt(`[E / Space] ${this.activeState === 'sleeping' ? 'Wake Up' : 'Stand Up'}`);
+        ui.showInteractionPrompt(this.promptLabel);
       }
       return;
     }
@@ -977,12 +1054,14 @@ export class FurnitureManager {
       if (this.targetedItem) {
         this.targetedItem = null;
         this.targetedAction = null;
+        this.isDirectHit = false;
+        this.targetedDistance = Infinity;
+        this.promptLabel = null;
         if (ui && !isOtherTargeted) ui.hideInteractionPrompt();
       }
       return;
     }
 
-    // Use box3.distanceToPoint so long sofas (7-9 ft long) are detected anywhere along their length!
     const reach = 7.5 * s;
     const activeItems = this.items.filter(item => {
       const distToBox = item.box3.distanceToPoint(playerPosition);
@@ -992,13 +1071,22 @@ export class FurnitureManager {
     let bestItem = null;
     let bestAction = null;
     let closestDist = Infinity;
+    let isDirectHit = false;
 
-    // Reticle raycast against all sub-meshes of nearby items
+    // Reticle raycast against all sub-meshes
     this.raycaster.setFromCamera({ x: 0, y: 0 }, camera);
     const candidateMeshes = [];
     activeItems.forEach(item => {
       if (item.type === 'toilet') {
-        candidateMeshes.push(item.btnMesh, item.lidMesh, item.seatMesh, item.hitMesh);
+        // Individual visual meshes only (NO giant enclosing hit box!)
+        candidateMeshes.push(
+          item.btnHitMesh,
+          item.btnMesh,
+          item.cisternLidMesh,
+          item.lidMesh,
+          item.seatMesh,
+          item.bowlMesh
+        );
       } else {
         candidateMeshes.push(item.hitMesh);
       }
@@ -1014,6 +1102,7 @@ export class FurnitureManager {
         const item = fData.furniture;
         bestItem = item;
         closestDist = hit.distance;
+        isDirectHit = true;
 
         if (item.type === 'toilet') {
           const tType = fData.targetType;
@@ -1021,11 +1110,10 @@ export class FurnitureManager {
             bestAction = 'flush';
           } else if (tType === 'toilet_lid') {
             bestAction = item.isLidOpen ? 'close_lid' : 'open_lid';
-          } else if (tType === 'toilet_seat') {
+          } else if (tType === 'toilet_seat' || tType === 'toilet_bowl') {
             bestAction = item.isLidOpen ? 'sit' : 'open_lid';
           } else {
-            // toilet_body fallback: if lid open, sit; else open lid
-            bestAction = item.isLidOpen ? 'sit' : 'open_lid';
+            bestAction = item.isLidOpen ? 'close_lid' : 'open_lid';
           }
         } else if (item.type === 'bed') {
           bestAction = 'sleep';
@@ -1035,7 +1123,7 @@ export class FurnitureManager {
       }
     }
 
-    // Look angle fallback if raycast didn't hit a specific mesh
+    // Look angle fallback only if raycast didn't hit any candidate directly
     if (!bestItem && activeItems.length > 0) {
       const camDir = new THREE.Vector3();
       camera.getWorldDirection(camDir);
@@ -1045,9 +1133,10 @@ export class FurnitureManager {
         const dist = toItem.length();
         toItem.normalize();
         const dot = camDir.dot(toItem);
-        if (dot > 0.70 && dist <= 6.5 * s && dist < closestDist) {
+        if (dot > 0.82 && dist <= 5.5 * s && dist < closestDist) {
           closestDist = dist;
           bestItem = item;
+          isDirectHit = false;
           if (item.type === 'toilet') {
             bestAction = item.isLidOpen ? 'sit' : 'open_lid';
           } else if (item.type === 'bed') {
@@ -1061,30 +1150,36 @@ export class FurnitureManager {
 
     this.targetedItem = bestItem;
     this.targetedAction = bestAction;
+    this.isDirectHit = isDirectHit;
+    this.targetedDistance = closestDist;
+
+    let label = null;
+    if (this.targetedItem) {
+      if (this.targetedItem.type === 'bed') {
+        label = `[E] Sleep on ${this.targetedItem.name}`;
+      } else if (this.targetedItem.type === 'chair') {
+        label = `[E] Sit on ${this.targetedItem.name}`;
+      } else if (this.targetedItem.type === 'toilet') {
+        if (this.targetedAction === 'flush') {
+          label = `[E] Flush ${this.targetedItem.name}`;
+        } else if (this.targetedAction === 'close_lid') {
+          label = `[E] Close ${this.targetedItem.name} Lid`;
+        } else if (this.targetedAction === 'open_lid') {
+          label = `[E] Open ${this.targetedItem.name} Lid`;
+        } else if (this.targetedAction === 'sit') {
+          label = `[E] Sit on ${this.targetedItem.name}`;
+        } else {
+          label = this.targetedItem.isLidOpen
+            ? `[E] Close ${this.targetedItem.name} Lid`
+            : `[E] Open ${this.targetedItem.name} Lid`;
+        }
+      }
+    }
+    this.promptLabel = label;
 
     if (ui && !isOtherTargeted) {
-      if (this.targetedItem && showPrompt) {
-        let label = `[E] Interact with ${this.targetedItem.name}`;
-        if (this.targetedItem.type === 'bed') {
-          label = `[E] Sleep on ${this.targetedItem.name}`;
-        } else if (this.targetedItem.type === 'chair') {
-          label = `[E] Sit on ${this.targetedItem.name}`;
-        } else if (this.targetedItem.type === 'toilet') {
-          if (this.targetedAction === 'flush') {
-            label = `[E] Flush ${this.targetedItem.name}`;
-          } else if (this.targetedAction === 'close_lid') {
-            label = `[E] Close ${this.targetedItem.name} Lid`;
-          } else if (this.targetedAction === 'open_lid') {
-            label = `[E] Open ${this.targetedItem.name} Lid`;
-          } else if (this.targetedAction === 'sit') {
-            label = `[E] Sit on ${this.targetedItem.name}`;
-          } else {
-            label = this.targetedItem.isLidOpen
-              ? `[E] Close ${this.targetedItem.name} Lid`
-              : `[E] Open ${this.targetedItem.name} Lid`;
-          }
-        }
-        ui.showInteractionPrompt(label);
+      if (this.promptLabel && showPrompt) {
+        ui.showInteractionPrompt(this.promptLabel);
       } else if (!isOtherTargeted) {
         ui.hideInteractionPrompt();
       }

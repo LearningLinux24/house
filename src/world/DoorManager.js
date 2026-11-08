@@ -960,6 +960,7 @@ export class DoorManager {
 
     let bestDoor = null;
     let closestDist = Infinity;
+    let isDirectHit = false;
 
     // Direct center reticle raycast (deep check through gate slats/frame/garage panels)
     this.raycaster.setFromCamera({ x: 0, y: 0 }, camera);
@@ -974,6 +975,8 @@ export class DoorManager {
         const reach = (hitDoor.spec.isGate || hitDoor.spec.isGarageOverhead) ? (11.0 * s) : (6.5 * s);
         if (intersects[0].distance <= reach) {
           bestDoor = hitDoor;
+          closestDist = intersects[0].distance;
+          isDirectHit = true;
         }
       }
     }
@@ -994,15 +997,19 @@ export class DoorManager {
         if (dot > minDot && dist <= maxDist && dist < closestDist) {
           closestDist = dist;
           bestDoor = door;
+          isDirectHit = false;
         }
       });
     }
 
     this.targetedDoor = bestDoor;
+    this.isDirectHit = isDirectHit;
+    this.targetedDistance = closestDist;
+    this.promptLabel = bestDoor ? `[E] ${bestDoor.isOpen ? 'Close' : 'Open'} ${bestDoor.name}` : null;
 
     if (ui) {
       if (this.targetedDoor && showPrompt) {
-        ui.showInteractionPrompt(`[E] ${this.targetedDoor.isOpen ? 'Close' : 'Open'} ${this.targetedDoor.name}`);
+        ui.showInteractionPrompt(this.promptLabel);
       } else {
         ui.hideInteractionPrompt();
       }

@@ -417,12 +417,16 @@ export class SinkManager {
     if (!isFPActive || !camera || !playerPosition) {
       if (this.targetedSink) {
         this.targetedSink = null;
+        this.isDirectHit = false;
+        this.targetedDistance = Infinity;
+        this.promptLabel = null;
         if (ui && !isDoorTargeted) ui.hideInteractionPrompt();
       }
       return;
     }
 
-    const reach = 6.2 * s;
+    // Realistic arm-reach to sink basin / tap (~4.8 ft)
+    const reach = 3.6 * s;
     const activeSinks = this.sinks.filter(sink => {
       if (!sink.group.visible) return false;
       const dDist = playerPosition.distanceTo(sink.worldCenter);
@@ -431,8 +435,9 @@ export class SinkManager {
 
     let bestSink = null;
     let closestDist = Infinity;
+    let isDirectHit = false;
 
-    // Center reticle raycast
+    // Center reticle raycast (strict priority)
     this.raycaster.setFromCamera({ x: 0, y: 0 }, camera);
     const candidateMeshes = activeSinks.map(s_item => s_item.hitMesh);
     const intersects = this.raycaster.intersectObjects(candidateMeshes, false);
@@ -442,11 +447,13 @@ export class SinkManager {
       if (hitObj && hitObj.userData?.sink) {
         if (intersects[0].distance <= reach) {
           bestSink = hitObj.userData.sink;
+          closestDist = intersects[0].distance;
+          isDirectHit = true;
         }
       }
     }
 
-    // Look-angle & proximity fallback
+    // Very tight look-angle fallback only when directly facing tap (cone < 20°, dist <= 2.6 * s)
     if (!bestSink) {
       const camDir = new THREE.Vector3();
       camera.getWorldDirection(camDir);
@@ -456,19 +463,23 @@ export class SinkManager {
         const dist = toSink.length();
         toSink.normalize();
         const dot = camDir.dot(toSink);
-        if (dot > 0.78 && dist <= 4.8 * s && dist < closestDist) {
+        if (dot > 0.94 && dist <= 2.6 * s && dist < closestDist) {
           closestDist = dist;
           bestSink = sink;
+          isDirectHit = false;
         }
       });
     }
 
     this.targetedSink = bestSink;
+    this.isDirectHit = isDirectHit;
+    this.targetedDistance = closestDist;
+    this.promptLabel = bestSink ? `[E] ${bestSink.isOn ? 'Turn Off' : 'Turn On'} ${bestSink.name}` : null;
 
     // Show prompt if door manager isn't currently targeting a door
     if (ui && !isDoorTargeted) {
       if (this.targetedSink && showPrompt) {
-        ui.showInteractionPrompt(`[E] ${this.targetedSink.isOn ? 'Turn Off' : 'Turn On'} ${this.targetedSink.name}`);
+        ui.showInteractionPrompt(this.promptLabel);
       } else if (!isDoorTargeted) {
         // Only hide if door manager doesn't own the prompt
         ui.hideInteractionPrompt();

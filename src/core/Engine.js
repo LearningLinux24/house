@@ -248,12 +248,13 @@ export class Engine {
       return;
     }
 
-    if (this.doorManager && this.doorManager.targetedDoor) {
-      this.doorManager.interact(this.ui, this.promptsVisible);
-    } else if (this.sinkManager && this.sinkManager.targetedSink) {
-      this.sinkManager.interact(this.ui, this.promptsVisible);
-    } else if (this.furnitureManager && this.furnitureManager.targetedItem) {
+    // Deliver interaction key to the arbitrated winner
+    if (this.activeInteractSystem === 'furniture' && this.furnitureManager) {
       this.furnitureManager.interact(this.player, this.avatar, this.cameraCtrl, this.ui, this.promptsVisible);
+    } else if (this.activeInteractSystem === 'sink' && this.sinkManager) {
+      this.sinkManager.interact(this.ui, this.promptsVisible);
+    } else if (this.activeInteractSystem === 'door' && this.doorManager) {
+      this.doorManager.interact(this.ui, this.promptsVisible);
     }
   }
 
@@ -311,43 +312,73 @@ export class Engine {
 
     // Update interactive doors (hinge swing lerping + reticle proximity targeting)
     const isFPActive = !this.cameraCtrl.isOrbitMode && this.cameraCtrl.fpControls.isLocked;
-    this.doorManager.update(
-      delta,
-      this.sceneManager.camera,
-      this.player.position,
-      isFPActive,
-      this.ui,
-      this.promptsVisible
-    );
+    // Update interactive subsystems (pass showPrompt = false so Engine arbitrates the single winning prompt)
+    if (this.doorManager) {
+      this.doorManager.update(delta, this.sceneManager.camera, this.player.position, isFPActive, this.ui, false);
+    }
+    if (this.sinkManager) {
+      this.sinkManager.update(delta, this.sceneManager.camera, this.player.position, isFPActive, this.ui, false, false);
+    }
+    if (this.furnitureManager) {
+      this.furnitureManager.update(delta, this.sceneManager.camera, this.player.position, isFPActive, this.player, this.avatar, this.cameraCtrl, this.ui, false, false);
+    }
 
-    const isDoorTargeted = !!(this.doorManager && this.doorManager.targetedDoor);
+    // Unified Target Arbitration:
+    const candidates = [];
 
-    // Update interactive sinks (water stream animation, handle lerp, audio & reticle targeting)
-    this.sinkManager.update(
-      delta,
-      this.sceneManager.camera,
-      this.player.position,
-      isFPActive,
-      this.ui,
-      this.promptsVisible,
-      isDoorTargeted
-    );
+    // If currently sitting or sleeping on furniture, furniture ALWAYS owns the interaction
+    if (this.furnitureManager && this.furnitureManager.activeState !== 'none') {
+      candidates.push({
+        system: 'furniture',
+        isDirectHit: true,
+        distance: 0,
+        prompt: this.furnitureManager.promptLabel
+      });
+    } else {
+      if (this.doorManager && this.doorManager.targetedDoor) {
+        candidates.push({
+          system: 'door',
+          isDirectHit: !!this.doorManager.isDirectHit,
+          distance: this.doorManager.targetedDistance || 999,
+          prompt: this.doorManager.promptLabel
+        });
+      }
+      if (this.sinkManager && this.sinkManager.targetedSink) {
+        candidates.push({
+          system: 'sink',
+          isDirectHit: !!this.sinkManager.isDirectHit,
+          distance: this.sinkManager.targetedDistance || 999,
+          prompt: this.sinkManager.promptLabel
+        });
+      }
+      if (this.furnitureManager && this.furnitureManager.targetedItem) {
+        candidates.push({
+          system: 'furniture',
+          isDirectHit: !!this.furnitureManager.isDirectHit,
+          distance: this.furnitureManager.targetedDistance || 999,
+          prompt: this.furnitureManager.promptLabel
+        });
+      }
+    }
 
-    const isSinkTargeted = !!(this.sinkManager && this.sinkManager.targetedSink);
+    // Direct raycast hit beats fallback; between direct hits (or between fallbacks), closest distance wins
+    candidates.sort((a, b) => {
+      if (a.isDirectHit !== b.isDirectHit) {
+        return a.isDirectHit ? -1 : 1;
+      }
+      return a.distance - b.distance;
+    });
 
-    // Update interactive furniture (beds, sofas, chairs, toilets)
-    this.furnitureManager.update(
-      delta,
-      this.sceneManager.camera,
-      this.player.position,
-      isFPActive,
-      this.player,
-      this.avatar,
-      this.cameraCtrl,
-      this.ui,
-      this.promptsVisible,
-      isDoorTargeted || isSinkTargeted
-    );
+    const winner = candidates.length > 0 ? candidates[0] : null;
+    this.activeInteractSystem = winner ? winner.system : null;
+
+    if (this.ui) {
+      if (winner && winner.prompt && this.promptsVisible) {
+        this.ui.showInteractionPrompt(winner.prompt);
+      } else {
+        this.ui.hideInteractionPrompt();
+      }
+    }
 
     // Extract current camera yaw (from actual camera, not a proxy)
     const cameraYaw = this.cameraCtrl.getYaw();
