@@ -14,24 +14,13 @@ export const CURTAIN_SPECS = [
     zmax: 8.800
   },
   {
-    id: 'CURTAIN-GF-HALL',
-    name: 'South Hallway Curtain',
-    floor: 'ground_floor',
-    axis: 'X', // runs along X (East-West) on South wall
-    wallY: 0.12,
-    xmin: 14.500,
-    xmax: 19.500,
-    zmin: 1.600,
-    zmax: 8.800
-  },
-  {
     id: 'CURTAIN-GF-LOBBY',
     name: 'Lobby North Window Curtain',
     floor: 'ground_floor',
     axis: 'X',
     wallY: 23.12,
-    xmin: 20.500,
-    xmax: 25.500,
+    xmin: 17.500,
+    xmax: 22.500,
     zmin: 1.600,
     zmax: 8.800
   },

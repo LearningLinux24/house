@@ -40,11 +40,30 @@ export const GROUND_FLOOR_DATA = {
     { id: 'S3', box: [5.350, 6.150, 0.000, 7.500, 0.000, 1.500], type: 'step' },
 
     // 4. Exterior Walls (W-EXT)
-    { id: 'W-EXT-N', box: [-0.750, 50.000, 23.250, 24.000, 0.000, 11.500], type: 'wall_ext' },
+    // 4a. North Exterior Wall with apertures for WD-4, VT-2, VT-3
+    { id: 'W-EXT-N-P1', box: [-0.750, 18.000, 23.250, 24.000, 0.000, 11.500], type: 'wall_ext' },
+    { id: 'W-EXT-N-SILL1', box: [18.000, 22.000, 23.250, 24.000, 0.000, 4.500], type: 'wall_ext' }, // WD-4 Sill
+    { id: 'W-EXT-N-LIN1', box: [18.000, 22.000, 23.250, 24.000, 8.500, 11.500], type: 'lintel' },   // WD-4 Lintel
+    { id: 'W-EXT-N-P2', box: [22.000, 37.000, 23.250, 24.000, 0.000, 11.500], type: 'wall_ext' },
+    { id: 'W-EXT-N-SILL2', box: [37.000, 39.000, 23.250, 24.000, 0.000, 7.000], type: 'wall_ext' }, // VT-2 Sill
+    { id: 'W-EXT-N-LIN2', box: [37.000, 39.000, 23.250, 24.000, 8.500, 11.500], type: 'lintel' },   // VT-2 Lintel
+    { id: 'W-EXT-N-P3', box: [39.000, 44.500, 23.250, 24.000, 0.000, 11.500], type: 'wall_ext' },
+    { id: 'W-EXT-N-SILL3', box: [44.500, 46.500, 23.250, 24.000, 0.000, 7.000], type: 'wall_ext' }, // VT-3 Sill
+    { id: 'W-EXT-N-LIN3', box: [44.500, 46.500, 23.250, 24.000, 8.500, 11.500], type: 'lintel' },   // VT-3 Lintel
+    { id: 'W-EXT-N-P4', box: [46.500, 50.000, 23.250, 24.000, 0.000, 11.500], type: 'wall_ext' },
+
     { id: 'W-EXT-E', box: [49.250, 50.000, 0.000, 23.250, 0.000, 11.500], type: 'wall_ext' },
     // O1: West boundary wall is 6.0 ft garden wall
     { id: 'W-EXT-W', box: [-0.750, 0.000, 7.500, 23.250, 0.000, 6.000], type: 'wall_ext' },
-    { id: 'W-EXT-S', box: [-0.750, 36.500, -0.750, 0.000, 0.000, 11.500], type: 'wall_ext' },
+
+    // 4b. South Exterior Wall with apertures for WD-1 and WD-2
+    { id: 'W-EXT-S-P1', box: [-0.750, 18.000, -0.750, 0.000, 0.000, 11.500], type: 'wall_ext' },
+    { id: 'W-EXT-S-SILL1', box: [18.000, 22.000, -0.750, 0.000, 0.000, 4.500], type: 'wall_ext' }, // WD-1 Sill
+    { id: 'W-EXT-S-LIN1', box: [18.000, 22.000, -0.750, 0.000, 8.500, 11.500], type: 'lintel' },   // WD-1 Lintel
+    { id: 'W-EXT-S-P2', box: [22.000, 28.000, -0.750, 0.000, 0.000, 11.500], type: 'wall_ext' },
+    { id: 'W-EXT-S-SILL2', box: [28.000, 32.000, -0.750, 0.000, 0.000, 4.500], type: 'wall_ext' }, // WD-2 Sill
+    { id: 'W-EXT-S-LIN2', box: [28.000, 32.000, -0.750, 0.000, 8.500, 11.500], type: 'lintel' },   // WD-2 Lintel
+    { id: 'W-EXT-S-P3', box: [32.000, 36.500, -0.750, 0.000, 0.000, 11.500], type: 'wall_ext' },
 
     // O3: Solid band above garage gate and south-east missing corner
     { id: 'GB', box: [36.500, 50.000, -0.750, 0.000, 8.000, 11.500], type: 'wall_ext' },
@@ -54,13 +73,26 @@ export const GROUND_FLOOR_DATA = {
     { id: 'ST-G', box: [34.250, 41.250, 14.000, 15.000, 0.000, 1.000], type: 'step' },
 
     // 5. Interior Walls (W-INT)
-    { id: 'W-INT-01', box: [3.250, 3.625, 7.500, 23.250, 0.000, 11.500], type: 'wall_int' },
+    // W-INT-01 West wall with apertures for WD-3 (bedroom window to garden) and VT-1 (west bath vent)
+    { id: 'W-INT-01-P1', box: [3.250, 3.625, 7.500, 11.375, 0.000, 11.500], type: 'wall_int' },
+    { id: 'W-INT-01-SILL1', box: [3.250, 3.625, 11.375, 15.375, 0.000, 4.500], type: 'wall_int' }, // WD-3 Sill
+    { id: 'W-INT-01-LIN1', box: [3.250, 3.625, 11.375, 15.375, 8.500, 11.500], type: 'lintel' },   // WD-3 Lintel
+    { id: 'W-INT-01-P2', box: [3.250, 3.625, 15.375, 20.250, 0.000, 11.500], type: 'wall_int' },
+    { id: 'W-INT-01-SILL2', box: [3.250, 3.625, 20.250, 22.250, 0.000, 7.000], type: 'wall_int' }, // VT-1 Sill
+    { id: 'W-INT-01-LIN2', box: [3.250, 3.625, 20.250, 22.250, 8.500, 11.500], type: 'lintel' },   // VT-1 Lintel
+    { id: 'W-INT-01-P3', box: [3.250, 3.625, 22.250, 23.250, 0.000, 11.500], type: 'wall_int' },
+
     { id: 'W-INT-02a', box: [3.625, 10.625, 7.500, 7.875, 0.000, 11.500], type: 'wall_int' },
     { id: 'W-INT-03', box: [3.625, 14.000, 18.875, 19.250, 0.000, 11.500], type: 'wall_int' },
     // O2: West washroom door is 2.5ft wide
     { id: 'W-INT-04a', box: [13.625, 14.000, 21.750, 23.250, 0.000, 11.500], type: 'wall_int' },
     { id: 'W-INT-05', box: [13.625, 14.000, 4.375, 15.000, 0.000, 11.500], type: 'wall_int' },
-    { id: 'W-INT-06', box: [13.625, 26.375, 4.000, 4.375, 0.000, 11.500], type: 'wall_int' },
+
+    // W-INT-06 Kitchen to South Hallway wall with aperture for WD-5
+    { id: 'W-INT-06-P1', box: [13.625, 16.500, 4.000, 4.375, 0.000, 11.500], type: 'wall_int' },
+    { id: 'W-INT-06-SILL', box: [16.500, 19.500, 4.000, 4.375, 0.000, 5.000], type: 'wall_int' }, // WD-5 Sill
+    { id: 'W-INT-06-LIN', box: [16.500, 19.500, 4.000, 4.375, 8.000, 11.500], type: 'lintel' },    // WD-5 Lintel
+    { id: 'W-INT-06-P2', box: [19.500, 26.375, 4.000, 4.375, 0.000, 11.500], type: 'wall_int' },
     { id: 'W-INT-07a', box: [14.000, 23.000, 11.375, 11.750, 0.000, 11.500], type: 'wall_int' },
     { id: 'W-INT-08', box: [26.000, 26.375, 4.375, 15.000, 0.000, 11.500], type: 'wall_int' },
     { id: 'W-INT-09', box: [26.000, 26.375, 18.875, 23.250, 0.000, 11.500], type: 'wall_int' },

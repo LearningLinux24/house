@@ -72,8 +72,14 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
     * **Flush Button Targeting**: Looking at the chrome flush button on top of the cistern displays `[E] Flush Toilet`. Pressing <kbd>E</kbd> triggers swirling water disc rotation, suction dip animation, and realistic procedural rushing water and refill hiss audio. Flushing can also be activated while seated!
     * **Toilet Lid Targeting**: Looking at a closed lid displays `[E] Open Toilet Lid` (swings smoothly open ~104° against cistern with ceramic clack audio); looking at an open lid displays `[E] Close Toilet Lid` (swings down flat to cover bowl).
     * **Toilet Seat Targeting**: Looking at the seat with lid open displays `[E] Sit on Toilet`, allowing the player to sit down in proper seated posture. Looking at the seat with lid closed displays `[E] Open Toilet Lid` first.
-* **Interactive Window Curtains**:
-  * **7 Dynamic Window Drapes**: Fully interactive fabric curtains across Ground Floor and First Floor (`CURTAIN-GF-BED`, `CURTAIN-GF-HALL`, `CURTAIN-GF-LOBBY`, `CURTAIN-1F-MASTER`, `CURTAIN-1F-LOBBY-L`, `CURTAIN-1F-LOBBY-R`, `CURTAIN-1F-CHILD`).
+* **Interactive Window Curtains & Realistic See-Through Windows**:
+  * **Architectural Window Apertures & Crystal-Clear Glazing**:
+    * All exterior and courtyard walls feature exact CAD-compliant window apertures with solid sill walls below, lintel walls above, and structural piers flanking each opening.
+    * Eliminates solid wall mesh overlap behind windows, providing crystal-clear see-through views from inside rooms out to the garden, street, trees, and sky (and vice versa).
+    * Centered 1-inch thin glazed window panes (`M-GLASS`, opacity 0.25, roughness 0.04) with aluminum sashes and frames.
+  * **Sensible Curated Curtain Placements**:
+    * Drapes placed strictly in primary living and sleeping spaces where privacy and sun shading make architectural sense (Ground Floor Bedroom garden window, Ground Floor Lobby north window, First Floor Master Bedroom west window, First Floor Lounge south windows, and First Floor Child Bedroom north window).
+    * Removed unnecessary hallway draperies to ensure smooth, open corridor navigation.
   * **Animated Gathering Kinematics**: Pressing <kbd>E</kbd> or clicking slides both fabric panels smoothly apart to the outer edges ($openRatio \to 1.0$), gathering into folds and exposing over 76% of the window glass to provide clear views of the outdoor gardens and street.
   * **Procedural Fabric Slide Audio**: Web Audio synthesis simulating realistic curtain fabric sliding on brass rings across the metallic curtain rod.
 * **Interactive Storage System (Almirahs, Cupboards & Drawers)**:

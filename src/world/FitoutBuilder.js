@@ -114,16 +114,21 @@ export class FitoutBuilder {
     let [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
     const s = WORLD_SCALE;
 
-    // For windows/ventilators, expand slightly on the wall-normal axis to prevent z-fighting
+    // For windows/ventilators, center a realistic thin glazed pane within the wall depth
     if (item.type === 'window' || item.type === 'ventilator') {
       const dx = xmax - xmin;
       const dy = ymax - ymin;
+      const paneThick = 0.08 * s;
       if (dx < dy) {
-        xmin -= 0.02 * s;
-        xmax += 0.02 * s;
+        // Wall runs along Y; thin along X
+        const midX = (xmin + xmax) / 2;
+        xmin = midX - paneThick / 2;
+        xmax = midX + paneThick / 2;
       } else {
-        ymin -= 0.02 * s;
-        ymax += 0.02 * s;
+        // Wall runs along X; thin along Y
+        const midY = (ymin + ymax) / 2;
+        ymin = midY - paneThick / 2;
+        ymax = midY + paneThick / 2;
       }
     }
 

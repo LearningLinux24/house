@@ -92,11 +92,11 @@ export const PALETTE = {
     metalness: 0.8
   },
   'M-GLASS': {
-    color: '#CFE3E8',
-    roughness: 0.05,
-    metalness: 0.0,
+    color: '#D4E6EB',
+    roughness: 0.04,
+    metalness: 0.1,
     transparent: true,
-    opacity: 0.45
+    opacity: 0.25
   },
   'M-GRILL-MS': {
     color: '#222222',

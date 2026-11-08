@@ -42,12 +42,43 @@ export const FIRST_FLOOR_DATA = {
     // STEP 2 · Exterior Walls  (Z = 12.00 to 22.00, T_EXT = 0.75 ft)
     // Balcony west and south perimeters are open with railings (no solid walls).
     // ─────────────────────────────────────────────────────────────────────
-    { id: 'F-EXT-N', box: [-0.750, 50.000, 23.250, 24.000, 12.000, 22.000], type: 'wall_ext' },
+    // 2a. F-EXT-N: North exterior wall with apertures for VF-1, VF-2, WF-8
+    { id: 'F-EXT-N-P1', box: [-0.750, 22.800, 23.250, 24.000, 12.000, 22.000], type: 'wall_ext' },
+    { id: 'F-EXT-N-SILL1', box: [22.800, 24.800, 23.250, 24.000, 12.000, 17.500], type: 'wall_ext' }, // VF-1 Sill
+    { id: 'F-EXT-N-LIN1', box: [22.800, 24.800, 23.250, 24.000, 19.000, 22.000], type: 'lintel' },   // VF-1 Lintel
+    { id: 'F-EXT-N-P2', box: [24.800, 35.400, 23.250, 24.000, 12.000, 22.000], type: 'wall_ext' },
+    { id: 'F-EXT-N-SILL2', box: [35.400, 37.400, 23.250, 24.000, 12.000, 17.500], type: 'wall_ext' }, // VF-2 Sill
+    { id: 'F-EXT-N-LIN2', box: [35.400, 37.400, 23.250, 24.000, 19.000, 22.000], type: 'lintel' },   // VF-2 Lintel
+    { id: 'F-EXT-N-P3', box: [37.400, 43.500, 23.250, 24.000, 12.000, 22.000], type: 'wall_ext' },
+    { id: 'F-EXT-N-SILL3', box: [43.500, 47.500, 23.250, 24.000, 12.000, 15.000], type: 'wall_ext' }, // WF-8 Sill
+    { id: 'F-EXT-N-LIN3', box: [43.500, 47.500, 23.250, 24.000, 19.000, 22.000], type: 'lintel' },   // WF-8 Lintel
+    { id: 'F-EXT-N-P4', box: [47.500, 50.000, 23.250, 24.000, 12.000, 22.000], type: 'wall_ext' },
+
     { id: 'F-EXT-E', box: [49.250, 50.000,  0.000, 23.250, 12.000, 22.000], type: 'wall_ext' },
-    // F-EXT-W: Master bedroom west wall only (Y 11.75 to 23.25). Balcony west side is open with railing.
-    { id: 'F-EXT-W', box: [-0.750,  0.000, 11.750, 23.250, 12.000, 22.000], type: 'wall_ext' },
-    // F-EXT-S: Lobby through Mandir south wall only (X 14.0 to 50.0). Balcony south side is open with railing.
-    { id: 'F-EXT-S', box: [14.000, 50.000, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
+
+    // 2b. F-EXT-W: Master bedroom west wall with aperture for WF-1
+    { id: 'F-EXT-W-P1', box: [-0.750,  0.000, 11.750, 15.500, 12.000, 22.000], type: 'wall_ext' },
+    { id: 'F-EXT-W-SILL', box: [-0.750,  0.000, 15.500, 19.500, 12.000, 15.000], type: 'wall_ext' }, // WF-1 Sill
+    { id: 'F-EXT-W-LIN', box: [-0.750,  0.000, 15.500, 19.500, 19.000, 22.000], type: 'lintel' },   // WF-1 Lintel
+    { id: 'F-EXT-W-P2', box: [-0.750,  0.000, 19.500, 23.250, 12.000, 22.000], type: 'wall_ext' },
+
+    // 2c. F-EXT-S: Lobby through Mandir south wall with apertures for WF-3, WF-4, WF-5, WF-6, WF-7
+    { id: 'F-EXT-S-P1', box: [14.000, 15.000, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
+    { id: 'F-EXT-S-SILL1', box: [15.000, 19.000, -0.750,  0.000, 12.000, 15.000], type: 'wall_ext' }, // WF-3 Sill
+    { id: 'F-EXT-S-LIN1', box: [15.000, 19.000, -0.750,  0.000, 19.000, 22.000], type: 'lintel' },   // WF-3 Lintel
+    { id: 'F-EXT-S-P2', box: [19.000, 21.000, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
+    { id: 'F-EXT-S-SILL2', box: [21.000, 25.000, -0.750,  0.000, 12.000, 15.000], type: 'wall_ext' }, // WF-4 Sill
+    { id: 'F-EXT-S-LIN2', box: [21.000, 25.000, -0.750,  0.000, 19.000, 22.000], type: 'lintel' },   // WF-4 Lintel
+    { id: 'F-EXT-S-P3', box: [25.000, 28.000, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
+    { id: 'F-EXT-S-SILL3', box: [28.000, 32.000, -0.750,  0.000, 12.000, 15.000], type: 'wall_ext' }, // WF-5 Sill
+    { id: 'F-EXT-S-LIN3', box: [28.000, 32.000, -0.750,  0.000, 19.000, 22.000], type: 'lintel' },   // WF-5 Lintel
+    { id: 'F-EXT-S-P4', box: [32.000, 34.500, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
+    { id: 'F-EXT-S-SILL4', box: [34.500, 37.500, -0.750,  0.000, 12.000, 15.500], type: 'wall_ext' }, // WF-6 Sill
+    { id: 'F-EXT-S-LIN4', box: [34.500, 37.500, -0.750,  0.000, 18.500, 22.000], type: 'lintel' },   // WF-6 Lintel
+    { id: 'F-EXT-S-P5', box: [37.500, 43.000, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
+    { id: 'F-EXT-S-SILL5', box: [43.000, 46.000, -0.750,  0.000, 12.000, 15.500], type: 'wall_ext' }, // WF-7 Sill
+    { id: 'F-EXT-S-LIN5', box: [43.000, 46.000, -0.750,  0.000, 18.500, 22.000], type: 'lintel' },   // WF-7 Lintel
+    { id: 'F-EXT-S-P6', box: [46.000, 50.000, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
 
     // ─────────────────────────────────────────────────────────────────────
     // STEP 3 · Interior Walls  (Z = 12.00 to 22.00, T_INT = 0.375 ft)
@@ -62,12 +93,18 @@ export const FIRST_FLOOR_DATA = {
     { id: 'F-INT-02-W', box: [ 0.000,  0.500, 11.375, 11.750, 12.000, 22.000], type: 'wall_int' },
     { id: 'F-INT-02-E', box: [ 3.250, 14.000, 11.375, 11.750, 12.000, 22.000], type: 'wall_int' },
 
-    // F-INT-03: Kitchen west wall / balcony east wall (Y 4.375 to 11.375)
-    { id: 'F-INT-03',  box: [ 3.250,  3.625,  4.375, 11.375, 12.000, 22.000], type: 'wall_int' },
+    // F-INT-03: Kitchen west wall / balcony east wall with aperture for WF-2
+    { id: 'F-INT-03-P1', box: [ 3.250,  3.625,  4.375,  6.750, 12.000, 22.000], type: 'wall_int' },
+    { id: 'F-INT-03-SILL', box: [ 3.250,  3.625,  6.750,  9.750, 12.000, 15.500], type: 'wall_int' }, // WF-2 Sill
+    { id: 'F-INT-03-LIN', box: [ 3.250,  3.625,  6.750,  9.750, 18.500, 22.000], type: 'lintel' },   // WF-2 Lintel
+    { id: 'F-INT-03-P2', box: [ 3.250,  3.625,  9.750, 11.375, 12.000, 22.000], type: 'wall_int' },
 
-    // F-INT-04: Kitchen south wall / south balcony north wall
+    // F-INT-04: Kitchen south wall / south balcony north wall with aperture for EF-F exhaust
     //   Doorway to south balcony: open gap at X = 11.000 to 13.625 (DF3)
-    { id: 'F-INT-04',  box: [ 3.250, 11.000,  4.000,  4.375, 12.000, 22.000], type: 'wall_int' },
+    { id: 'F-INT-04-P1', box: [ 3.250,  8.000,  4.000,  4.375, 12.000, 22.000], type: 'wall_int' },
+    { id: 'F-INT-04-SILL', box: [ 8.000,  9.000,  4.000,  4.375, 12.000, 17.500], type: 'wall_int' }, // EF-F Sill
+    { id: 'F-INT-04-LIN', box: [ 8.000,  9.000,  4.000,  4.375, 18.500, 22.000], type: 'lintel' },   // EF-F Lintel
+    { id: 'F-INT-04-P2', box: [ 9.000, 11.000,  4.000,  4.375, 12.000, 22.000], type: 'wall_int' },
 
     // F-INT-05: Lobby west wall, south part (Y 0 to 8.375). No door here.
     //   Kitchen door: gap at Y = 8.375 to 11.375

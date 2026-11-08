@@ -46,7 +46,7 @@ export const GROUND_FLOOR_FITOUT = [
     name: 'Kitchen Window to South Hallway',
     category: 'windows',
     type: 'window',
-    box: [13.625, 26.375, 4.000, 4.375, 5.000, 8.000],
+    box: [16.500, 19.500, 4.000, 4.375, 5.000, 8.000],
     material: 'M-GLASS'
   },
   {
