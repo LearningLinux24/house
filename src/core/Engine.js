@@ -8,6 +8,7 @@ import { FitoutBuilder } from '../world/FitoutBuilder.js';
 import { RoomLabelsManager } from '../world/RoomLabels.js';
 import { DoorManager } from '../world/DoorManager.js';
 import { SinkManager } from '../world/SinkManager.js';
+import { FurnitureManager } from '../world/FurnitureManager.js';
 import { CollisionSystem } from '../player/CollisionSystem.js';
 import { InputManager } from '../player/InputManager.js';
 import { Player } from '../player/Player.js';
@@ -80,6 +81,10 @@ export class Engine {
     // 7c. Interactive Sinks Manager (8 Sinks & Basins with Water Streams & Audio)
     this.sinkManager = new SinkManager(this.materials);
     this.sinkManager.buildSinks(this.sceneManager.scene);
+
+    // 7d. Interactive Furniture Manager (Beds, Seating, Toilets & Audio)
+    this.furnitureManager = new FurnitureManager(this.materials);
+    this.furnitureManager.buildFurniture(this.sceneManager.scene);
 
     // 8. FPS Player
     this.spawnPoint = getSpawnPoint();
@@ -190,6 +195,7 @@ export class Engine {
       } else if (this.cameraCtrl.isOrbitMode) {
         this.doorManager.handleOrbitClick(e, this.sceneManager.camera);
         this.sinkManager.handleOrbitClick(e, this.sceneManager.camera);
+        this.furnitureManager.handleOrbitClick(e, this.sceneManager.camera);
       }
     });
 
@@ -236,10 +242,18 @@ export class Engine {
   }
 
   handleInteraction() {
+    // If player is currently sitting or sleeping, stand up / wake up
+    if (this.furnitureManager && this.furnitureManager.activeState !== 'none') {
+      this.furnitureManager.leaveItem(this.player, this.avatar, this.cameraCtrl, this.ui);
+      return;
+    }
+
     if (this.doorManager && this.doorManager.targetedDoor) {
       this.doorManager.interact(this.ui, this.promptsVisible);
     } else if (this.sinkManager && this.sinkManager.targetedSink) {
       this.sinkManager.interact(this.ui, this.promptsVisible);
+    } else if (this.furnitureManager && this.furnitureManager.targetedItem) {
+      this.furnitureManager.interact(this.player, this.avatar, this.cameraCtrl, this.ui, this.promptsVisible);
     }
   }
 
@@ -253,6 +267,9 @@ export class Engine {
     }
     if (this.sinkManager) {
       this.sinkManager.setFloorFilter(filter);
+    }
+    if (this.furnitureManager) {
+      this.furnitureManager.setFloorFilter(filter);
     }
     this.ui.setFloorButtonState(filter);
 
@@ -303,6 +320,8 @@ export class Engine {
       this.promptsVisible
     );
 
+    const isDoorTargeted = !!(this.doorManager && this.doorManager.targetedDoor);
+
     // Update interactive sinks (water stream animation, handle lerp, audio & reticle targeting)
     this.sinkManager.update(
       delta,
@@ -311,12 +330,35 @@ export class Engine {
       isFPActive,
       this.ui,
       this.promptsVisible,
-      !!this.doorManager.targetedDoor
+      isDoorTargeted
+    );
+
+    const isSinkTargeted = !!(this.sinkManager && this.sinkManager.targetedSink);
+
+    // Update interactive furniture (beds, sofas, chairs, toilets)
+    this.furnitureManager.update(
+      delta,
+      this.sceneManager.camera,
+      this.player.position,
+      isFPActive,
+      this.player,
+      this.avatar,
+      this.cameraCtrl,
+      this.ui,
+      this.promptsVisible,
+      isDoorTargeted || isSinkTargeted
     );
 
     // Extract current camera yaw (from actual camera, not a proxy)
     const cameraYaw = this.cameraCtrl.getYaw();
     const isMoving = this.input.keys.forward || this.input.keys.backward || this.input.keys.left || this.input.keys.right;
+
+    // If currently sitting or sleeping, any movement or jump input stands up
+    if (this.furnitureManager && this.furnitureManager.activeState !== 'none') {
+      if (this.input.keys.jump || isMoving) {
+        this.furnitureManager.leaveItem(this.player, this.avatar, this.cameraCtrl, this.ui);
+      }
+    }
 
     if (!this.cameraCtrl.isOrbitMode && this.cameraCtrl.fpControls.isLocked) {
       // Player movement — pass the actual camera as source of look direction

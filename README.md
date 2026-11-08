@@ -65,6 +65,10 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
   * **Procedural Running Water Simulation**: Turning on any tap displays an animated shimmering translucent water stream with dynamic pulsing and expanding basin splash ripple rings.
   * **Web Audio Sound Synthesis**: Built-in procedural audio synthesizing tap lever clicks and realistic running water hiss/trickle using modulated bandpass noise filters without needing external audio files.
   * **Dual Interaction Support**: Approach any sink in First-Person mode and press <kbd>E</kbd> (or left-click), or click directly on any tap in Dollhouse / Orbit mode.
+* **Interactive Beds, Seating & Toilet System**:
+  * **Interactive Sleeping (Beds)**: Approach any bed (Ground Floor Bedroom Queen Bed, First Floor Master King Bed, or Child Bedroom Bed) and press <kbd>E</kbd> to sleep. Camera transitions to lie down on the mattress, avatar switches to full sleeping pose, accompanied by soft mattress/blanket rustle audio. Press <kbd>E</kbd>, <kbd>Space</kbd>, or any movement key (<kbd>W</kbd>/<kbd>A</kbd>/<kbd>S</kbd>/<kbd>D</kbd>) to get up beside the bed.
+  * **Interactive Seating (Sofas & Chairs)**: Approach any living room sofa, lobby sofa, dining chair, or study desk chair and press <kbd>E</kbd> to sit. Camera lowers to natural seated eye-level, avatar adopts articulated seated pose with 90° bent knees and resting arms, accompanied by soft cushion compression audio. Look around freely with the mouse while seated. Press <kbd>E</kbd>, <kbd>Space</kbd>, or movement keys to stand up.
+  * **Interactive Toilets (Lid & Flush)**: Toilets across all 4 bathrooms feature hinged articulated lids and seats that toggle open/closed with ceramic clack audio, along with active cistern flush buttons that trigger swirling bowl water animations and realistic procedural water rush and drain gurgle audio.
 * **Collapsible Sidebar (<kbd>☰</kbd> / <kbd>✕</kbd>)**: Click the toggle tab on the right edge to expand or collapse the control drawer.
 * **Floor Level View (Dollhouse Overview)**:
   * **🏢 Both Floors (<kbd>3</kbd>)**: View the full two-storey residential building.
@@ -114,6 +118,7 @@ house/
     │   ├── FitoutBuilder.js     # Mesh builder for doors, windows, gates, animated fans, lights
     │   ├── DoorManager.js       # Interactive doors, pedestrian gates, motorized overhead garage door & audio
     │   ├── SinkManager.js       # Interactive sinks & washbasins with animated water streams & Web Audio
+    │   ├── FurnitureManager.js  # Interactive beds, sofas, chairs, toilets with lid & flush mechanics
     │   ├── Materials.js         # Reusable Three.js PBR materials manager
     │   ├── Environment.js       # Extended terrain, street, fog, and sky dome
     │   └── RoomLabels.js        # 3D billboard canvas sprites for room labels
