@@ -497,6 +497,15 @@ export const INTERIOR_COLLIDERS = [
     isStepable: true
   },
   {
+    id: 'COL-HW-06',
+    fitoutId: 'HW-06',
+    name: '1F Washing Machine',
+    floor: 'first_floor',
+    box: [37.875, 39.875, 0.000, 2.000, 12.000, 15.000],
+    type: 'interior_furniture',
+    isStepable: true
+  },
+  {
     id: 'COL-NB-01',
     fitoutId: 'NB-01',
     name: '1F North Gallery Basin & Pedestal',
