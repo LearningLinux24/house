@@ -5,6 +5,7 @@ export const FURNITURE_SPECS = {
   beds: [
     {
       id: 'BED-GF',
+      colliderId: 'COL-BED-01',
       name: 'Queen Bed',
       floor: 'ground_floor',
       floorElev: 1.50,
@@ -22,6 +23,7 @@ export const FURNITURE_SPECS = {
     },
     {
       id: 'BED-1F-MASTER',
+      colliderId: 'COL-MB-01',
       name: 'Master King Bed',
       floor: 'first_floor',
       floorElev: 12.00,
@@ -39,6 +41,7 @@ export const FURNITURE_SPECS = {
     },
     {
       id: 'BED-1F-CHILD',
+      colliderId: 'COL-CH-01',
       name: 'Child Bedroom Bed',
       floor: 'first_floor',
       floorElev: 12.00,
@@ -59,6 +62,7 @@ export const FURNITURE_SPECS = {
   seating: [
     {
       id: 'SOFA-GF-LIVING',
+      colliderId: 'COL-LOB-01',
       name: 'Living Room Sofa',
       floor: 'ground_floor',
       floorElev: 1.50,
@@ -70,6 +74,7 @@ export const FURNITURE_SPECS = {
     },
     {
       id: 'SOFA-1F-LOBBY',
+      colliderId: 'COL-LB-01',
       name: 'Lobby Sofa',
       floor: 'first_floor',
       floorElev: 12.00,
@@ -475,8 +480,9 @@ class FurnitureAudio {
 }
 
 export class FurnitureManager {
-  constructor(materialLibrary) {
+  constructor(materialLibrary, collisionSystem = null) {
     this.materials = materialLibrary;
+    this.collision = collisionSystem;
     this.audio = new FurnitureAudio();
 
     this.rootGroup = new THREE.Group();
@@ -582,6 +588,7 @@ export class FurnitureManager {
       const bedObj = {
         spec,
         id: spec.id,
+        colliderId: spec.colliderId || null,
         name: spec.name,
         type: 'bed',
         floor: spec.floor,
@@ -643,6 +650,7 @@ export class FurnitureManager {
       const seatObj = {
         spec,
         id: spec.id,
+        colliderId: spec.colliderId || null,
         name: spec.name,
         type: 'chair',
         floor: spec.floor,
@@ -868,6 +876,10 @@ export class FurnitureManager {
   }
 
   occupyItem(item, player, avatar, cameraCtrl, ui) {
+    if (this.collision && item.colliderId) {
+      this.collision.setColliderDisabled(item.colliderId, true);
+    }
+
     if (item.type === 'bed') {
       this.activeState = 'sleeping';
       this.activeItem = item;
@@ -906,6 +918,10 @@ export class FurnitureManager {
     if (this.activeState === 'none' || !this.activeItem) return;
 
     const item = this.activeItem;
+    if (this.collision && item.colliderId) {
+      this.collision.setColliderDisabled(item.colliderId, false);
+    }
+
     this.activeState = 'none';
     this.activeItem = null;
     this.sleepTargetFade = 0;

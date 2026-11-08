@@ -185,6 +185,16 @@ export class CollisionSystem {
   }
 
   /**
+   * Enable or disable a specific collision obstacle by id (e.g. occupied bed/sofa or open door)
+   */
+  setColliderDisabled(id, disabled) {
+    const col = this.colliders.find(c => c.id === id);
+    if (col) {
+      col.disabled = disabled;
+    }
+  }
+
+  /**
    * Detects which architectural zone player is standing in.
    * Uses player elevation to disambiguate between Ground Floor (Z ~ 1.5) and First Floor (Z ~ 12.0).
    */

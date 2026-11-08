@@ -8,6 +8,7 @@ import { GROUND_FLOOR_DATA as RAW_GF_DATA } from './groundFloorData.js';
 import { GROUND_FLOOR_FITOUT as RAW_GF_FITOUT, FITOUT_FANS as RAW_FANS, FITOUT_LIGHTS as RAW_LIGHTS } from './groundFloorFitout.js';
 import { FIRST_FLOOR_DATA as RAW_FF_DATA } from './firstFloorData.js';
 import { FIRST_FLOOR_FITOUT as RAW_FF_FITOUT, FF_FANS as RAW_FF_FANS, FF_LIGHTS as RAW_FF_LIGHTS } from './firstFloorFitout.js';
+import { INTERIOR_COLLIDERS } from './interiorColliders.js';
 import { WORLD_SCALE } from '../config/constants.js';
 
 function scaleFloor(floor, s) {
@@ -120,6 +121,20 @@ export function getAllColliders() {
       }
     });
   });
+
+  // Include interior furniture colliders (scaled by WORLD_SCALE)
+  INTERIOR_COLLIDERS.forEach(item => {
+    colliders.push({
+      id: item.id,
+      fitoutId: item.fitoutId,
+      name: item.name,
+      type: item.type,
+      floor: item.floor,
+      box: item.box.map(coord => coord * WORLD_SCALE),
+      disabled: false
+    });
+  });
+
   return colliders;
 }
 

@@ -85,7 +85,7 @@ export class Engine {
     this.sinkManager.buildSinks(this.sceneManager.scene);
 
     // 7d. Interactive Furniture Manager (Beds, Seating, Toilets & Audio)
-    this.furnitureManager = new FurnitureManager(this.materials);
+    this.furnitureManager = new FurnitureManager(this.materials, this.collision);
     this.furnitureManager.buildFurniture(this.sceneManager.scene);
 
     // 7e. Interactive Curtains Manager (Window Drapes & Audio)
