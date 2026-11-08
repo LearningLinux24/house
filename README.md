@@ -16,7 +16,7 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
 | <kbd>D</kbd> or <kbd>→</kbd> | Strafe Right |
 | <kbd>Shift</kbd> (Hold) | Sprint / Walk Fast |
 | <kbd>Space</kbd> | Jump |
-| <kbd>E</kbd> | **Interact with Doors & Gates** (Open / Close targeted door or overhead garage door) |
+| <kbd>E</kbd> | **Interact** (Doors, Gates, Sinks, Beds, Seating, Toilets, Curtains, Almirahs, Cupboards, Drawers) |
 | <kbd>H</kbd> | **Toggle Interaction Prompt** (Show/hide the "[E] Interact" hint on screen) |
 | **Mouse Move** | Look around (Yaw & Pitch) |
 | **Left Click** | Lock mouse cursor & enter walk mode (or interact with doors) |
@@ -72,6 +72,19 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
     * **Flush Button Targeting**: Looking at the chrome flush button on top of the cistern displays `[E] Flush Toilet`. Pressing <kbd>E</kbd> triggers swirling water disc rotation, suction dip animation, and realistic procedural rushing water and refill hiss audio. Flushing can also be activated while seated!
     * **Toilet Lid Targeting**: Looking at a closed lid displays `[E] Open Toilet Lid` (swings smoothly open ~104° against cistern with ceramic clack audio); looking at an open lid displays `[E] Close Toilet Lid` (swings down flat to cover bowl).
     * **Toilet Seat Targeting**: Looking at the seat with lid open displays `[E] Sit on Toilet`, allowing the player to sit down in proper seated posture. Looking at the seat with lid closed displays `[E] Open Toilet Lid` first.
+* **Interactive Window Curtains**:
+  * **7 Dynamic Window Drapes**: Fully interactive fabric curtains across Ground Floor and First Floor (`CURTAIN-GF-BED`, `CURTAIN-GF-HALL`, `CURTAIN-GF-LOBBY`, `CURTAIN-1F-MASTER`, `CURTAIN-1F-LOBBY-L`, `CURTAIN-1F-LOBBY-R`, `CURTAIN-1F-CHILD`).
+  * **Animated Gathering Kinematics**: Pressing <kbd>E</kbd> or clicking slides both fabric panels smoothly apart to the outer edges ($openRatio \to 1.0$), gathering into folds and exposing over 76% of the window glass to provide clear views of the outdoor gardens and street.
+  * **Procedural Fabric Slide Audio**: Web Audio synthesis simulating realistic curtain fabric sliding on brass rings across the metallic curtain rod.
+* **Interactive Storage System (Almirahs, Cupboards & Drawers)**:
+  * **3 Interactive Wardrobes / Almirahs**: Built for Master Bedroom (GF), Master Bedroom (1F), and Child Bedroom (1F). Features dual swinging doors (left door swings $-98^\circ$, right door $+98^\circ$ out into the room), realistic chrome pull handles, upper hat shelf, lower shelf, and stainless steel clothing hanger rail.
+  * **2 Interactive Kitchen Wall Cupboards**: Overhead storage cupboards in GF Kitchen with swinging cabinet doors, interior shelving, and chrome handles.
+  * **6 Interactive Bedside Nightstand Drawers**: Flanking bedside tables in GF Master Bedroom, 1F Master Bedroom, and 1F Child Bedroom. Animated pull-out drawer boxes slide smoothly forward into the room with sleek metallic handles and exposed hollow storage cavities.
+  * **Procedural Wood & Slide Audio**: Authentic cabinet wood hinge creak and magnetic catch latch on wardrobe/cupboard doors, paired with wooden glide runner friction on bedside drawers.
+* **Realistic Interior Furniture Collisions & Anti-Stuck Navigation**:
+  * **15 Calibrated Solid Furniture Colliders**: Physical colliders for major interior furniture (wardrobes, kitchen base counters, refrigerators, dining table, bed frames, sofas).
+  * **Obstacle Insetting for Spacious Walkways**: Insets of $0.20$ to $0.35$ ft on walking sides guarantee all room doorways, bed perimeters, and corridors remain $\ge 2.7\text{ ft}$ to $5.0\text{ ft}$ wide, completely eliminating corner snagging, player wedging, or unreachable zones.
+  * **Dynamic Seating & Sleeping Exemption**: Occupying any bed or sofa automatically bypasses that specific piece of furniture's collider, ensuring smooth transitions without physics conflicts, and seamlessly restores the collider when standing up.
 * **Collapsible Sidebar (<kbd>☰</kbd> / <kbd>✕</kbd>)**: Click the toggle tab on the right edge to expand or collapse the control drawer.
 * **Floor Level View (Dollhouse Overview)**:
   * **🏢 Both Floors (<kbd>3</kbd>)**: View the full two-storey residential building.
@@ -111,6 +124,7 @@ house/
     │   ├── groundFloorFitout.js # Ground floor interior fitout (furniture, doors, windows, fans)
     │   ├── firstFloorData.js    # First floor CAD structure (cantilevers, walls, upper stair, roof, parapet)
     │   ├── firstFloorFitout.js  # First floor interior fitout (furniture, doors, windows, fans, shaft grills)
+    │   ├── interiorColliders.js # Interior furniture obstacle collision definitions with walking insets
     │   └── index.js             # Master Floors Registry aggregating floors, colliders, teleports
     ├── core/
     │   ├── Engine.js            # Main loop, time delta, FPS counter, and system orchestration
@@ -122,6 +136,8 @@ house/
     │   ├── DoorManager.js       # Interactive doors, pedestrian gates, motorized overhead garage door & audio
     │   ├── SinkManager.js       # Interactive sinks & washbasins with animated water streams & Web Audio
     │   ├── FurnitureManager.js  # Interactive beds, sofas, chairs, toilets with lid & flush mechanics
+    │   ├── CurtainManager.js    # Interactive window curtains with fabric gathering drapes & slide audio
+    │   ├── StorageManager.js    # Interactive wardrobes (almirahs), cupboards, and nightstand drawers
     │   ├── Materials.js         # Reusable Three.js PBR materials manager
     │   ├── Environment.js       # Extended terrain, street, fog, and sky dome
     │   └── RoomLabels.js        # 3D billboard canvas sprites for room labels
