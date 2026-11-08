@@ -27,6 +27,7 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
 | Shortcut | Function | Description |
 | :--- | :--- | :--- |
 | <kbd>V</kbd> | **Toggle Camera Mode** | Switch between **First-Person Walk** and **Dollhouse Orbit View** |
+| <kbd>5</kbd> or <kbd>P</kbd> | **Cycle POV Perspective** | Cycle between **First-Person**, **Third-Person (Back)**, and **Third-Person (Front)** |
 | <kbd>1</kbd> | **Isolate Ground Floor** | Isolate Ground Floor in Dollhouse overview (auto-switches to Dollhouse if in FP) |
 | <kbd>2</kbd> | **Isolate First Floor** | Isolate First Floor in Dollhouse overview (auto-switches to Dollhouse if in FP) |
 | <kbd>3</kbd> or <kbd>0</kbd> | **Show Both Floors** | Display the full two-storey residential building in Dollhouse overview |

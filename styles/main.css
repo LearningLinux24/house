@@ -727,7 +727,7 @@ html, body {
   }
 }
 
-/* HUD Notification Toast (e.g. F5 POV Switch) */
+/* HUD Notification Toast (e.g. 5 / P POV Switch) */
 .hud-toast {
   position: fixed;
   bottom: 74px;
