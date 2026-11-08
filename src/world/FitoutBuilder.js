@@ -84,7 +84,7 @@ export class FitoutBuilder {
   }
 
   createFitoutMesh(item) {
-    // Skip door leaves, handles, boundary gates, toilets (WCs), and curtains because they are dynamically built and animated by DoorManager, FurnitureManager & CurtainManager
+    // Skip door leaves, handles, boundary gates, toilets (WCs), curtains, wardrobes, cupboards, and bedside nightstands because they are dynamically built and animated by DoorManager, FurnitureManager, CurtainManager & StorageManager
     if (
       item.type === 'door_leaf' ||
       item.type === 'door-leaf' ||
@@ -95,7 +95,18 @@ export class FitoutBuilder {
       item.id === 'EW-01' ||
       item.id === 'B1-01' ||
       item.id === 'B2-01' ||
-      item.material === 'M-FABRIC-CURTAIN'
+      item.material === 'M-FABRIC-CURTAIN' ||
+      item.id === 'BED-06' ||
+      item.id === 'BED-07' ||
+      item.id === 'BED-08' ||
+      item.id === 'KIT-09' ||
+      item.id === 'KIT-10' ||
+      item.id === 'MB-06' ||
+      item.id === 'MB-07' ||
+      item.id === 'MB-08' ||
+      item.id === 'CH-05' ||
+      item.id === 'CH-06' ||
+      item.id === 'CH-07'
     ) {
       return null;
     }
