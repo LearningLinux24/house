@@ -253,7 +253,7 @@ export class Engine {
     if (this.cameraCtrl.isOrbitMode) {
       this.cameraCtrl.setMode(false, this.player);
     } else {
-      this.cameraCtrl.update(this.player, 0, this.collision);
+      this.sceneManager.camera.position.copy(this.player.position);
       this.cameraCtrl.fpControls.lock();
     }
   }
@@ -286,15 +286,15 @@ export class Engine {
       this.promptsVisible
     );
 
-    // Extract current camera / look yaw angle
+    // Extract current camera yaw (from actual camera, not a proxy)
     const cameraYaw = this.cameraCtrl.getYaw();
     const isMoving = this.input.keys.forward || this.input.keys.backward || this.input.keys.left || this.input.keys.right;
 
     if (!this.cameraCtrl.isOrbitMode && this.cameraCtrl.fpControls.isLocked) {
-      // Movement & wall collisions using mouse aim forward vector
-      this.player.update(delta, this.input, this.cameraCtrl.getLookObject());
+      // Player movement — pass the actual camera as source of look direction
+      this.player.update(delta, this.input, this.sceneManager.camera);
 
-      // Update camera position & boom based on POV mode (First-Person, Third-Person Back/Front)
+      // Camera follows player (handles all 3 POV modes)
       this.cameraCtrl.update(this.player, delta, this.collision);
 
       const zone = this.collision.getZoneAt(this.player.position.x, this.player.position.z, this.player.feetElevation);

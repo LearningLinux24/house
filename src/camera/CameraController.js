@@ -1,103 +1,112 @@
+/**
+ * CameraController — First-Person, Third-Person Back, Third-Person Front, and Orbit Dollhouse.
+ *
+ * Key design decisions:
+ *  - PointerLockControls is attached directly to the REAL camera (not a proxy).
+ *    This gives us correct pitch clamping, event handling, and lock/unlock behaviour.
+ *  - In first-person: camera IS the view — stays at player's eye position.
+ *  - In third-person: we save camera pitch/yaw before repositioning, compute boom
+ *    position behind/in front of avatar, and restore the look direction.
+ *  - In orbit: OrbitControls takes over entirely.
+ *  - Camera boom does soft collision clamping against wall colliders so it never
+ *    clips through geometry.
+ */
+
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { WORLD_SCALE } from '../config/constants.js';
 
 export const POV_MODES = {
-  FIRST_PERSON: 'first_person',
-  THIRD_PERSON_BACK: 'third_person_back',
-  THIRD_PERSON_FRONT: 'third_person_front'
+  FIRST_PERSON:       'first_person',
+  THIRD_PERSON_BACK:  'third_person_back',
+  THIRD_PERSON_FRONT: 'third_person_front',
 };
 
 export const POV_LABELS = {
-  first_person: 'First-Person',
-  third_person_back: 'Third-Person (Back)',
-  third_person_front: 'Third-Person (Front)'
+  first_person:       '🎮 First-Person',
+  third_person_back:  '📷 Third-Person (Back)',
+  third_person_front: '🤳 Third-Person (Front)',
 };
+
+const BOOM_BACK_DIST  = 5.5 * WORLD_SCALE; // Camera distance behind avatar (3rd-person back)
+const BOOM_BACK_HEIGHT = 1.5 * WORLD_SCALE; // Camera height above avatar eyes
+const BOOM_FRONT_DIST  = 4.5 * WORLD_SCALE; // Camera distance in front (selfie)
+const BOOM_FRONT_HEIGHT = 0.8 * WORLD_SCALE; // Height above eye for front view
+const BOOM_MIN_CLEARANCE = 0.4 * WORLD_SCALE; // Minimum gap from walls
 
 export class CameraController {
   constructor(camera, domElement) {
-    this.camera = camera;
+    this.camera     = camera;
     this.domElement = domElement;
     const s = WORLD_SCALE;
 
     this.isOrbitMode = false;
     this.modeChangeListeners = [];
-    this.povChangeListeners = [];
+    this.povChangeListeners  = [];
 
     this.povModes = [
       POV_MODES.FIRST_PERSON,
       POV_MODES.THIRD_PERSON_BACK,
-      POV_MODES.THIRD_PERSON_FRONT
+      POV_MODES.THIRD_PERSON_FRONT,
     ];
     this.currentPOVIndex = 0;
 
-    // Look target Object3D driven by PointerLockControls
-    this.lookTarget = new THREE.Object3D();
+    // ── PointerLockControls on the actual camera ──────────────────────────
+    const lockDom = typeof document !== 'undefined' ? document.body : domElement;
+    this.fpControls = new PointerLockControls(this.camera, lockDom);
 
-    // 1. First-person pointer lock controls (controls lookTarget)
-    const lockDom = typeof document !== 'undefined' ? document.body : this.domElement;
-    this.fpControls = new PointerLockControls(this.lookTarget, lockDom);
-
-    // 2. Orbit controls for dollhouse architectural overview
+    // ── OrbitControls for dollhouse view ─────────────────────────────────
     this.orbitControls = new OrbitControls(this.camera, this.domElement);
-    this.orbitControls.enableDamping = true;
-    this.orbitControls.dampingFactor = 0.06;
-    this.orbitControls.minDistance = 5 * s;
-    this.orbitControls.maxDistance = 160 * s;
+    this.orbitControls.enableDamping    = true;
+    this.orbitControls.dampingFactor    = 0.06;
+    this.orbitControls.minDistance      = 5  * s;
+    this.orbitControls.maxDistance      = 160 * s;
+    this.orbitControls.minPolarAngle    = 0;
+    this.orbitControls.maxPolarAngle    = Math.PI / 2 - 0.02;
+    this.orbitControls.target.set(25 * s, 10 * s, -12 * s);
+    this.orbitControls.enabled          = false;
 
-    // Allow polar angle to be 0 (looking straight down from above)
-    this.orbitControls.minPolarAngle = 0;
-    this.orbitControls.maxPolarAngle = Math.PI / 2 - 0.02;
-
-    this.orbitControls.target.set(25 * s, 10 * s, -12 * s); // Center of 2-storey house plot
-    this.orbitControls.enabled = false;
-
-    // Reusable ray and vectors for camera boom collision clamping
-    this._ray = new THREE.Ray();
-    this._box3 = new THREE.Box3();
-    this._hitVec = new THREE.Vector3();
+    // ── Reusable scratch objects ─────────────────────────────────────────
+    this._fwd   = new THREE.Vector3();
+    this._ray   = new THREE.Ray();
+    this._box3  = new THREE.Box3();
+    this._hit   = new THREE.Vector3();
   }
 
-  getPOVMode() {
-    return this.povModes[this.currentPOVIndex];
+  // ── POV accessors ─────────────────────────────────────────────────────────
+  getPOVMode()  { return this.povModes[this.currentPOVIndex]; }
+  getPOVLabel() { return POV_LABELS[this.getPOVMode()]; }
+
+  /**
+   * Returns the horizontal (yaw) angle of the camera.
+   * Used for minimap direction, avatar orientation, movement direction.
+   */
+  getYaw() {
+    const euler = new THREE.Euler(0, 0, 0, 'YXZ');
+    euler.setFromQuaternion(this.camera.quaternion);
+    return euler.y;
   }
 
-  getPOVLabel() {
-    return POV_LABELS[this.getPOVMode()];
-  }
-
+  /**
+   * Cycle through POV modes. Returns human-readable label of new mode.
+   */
   cyclePOV() {
-    // If in Orbit mode, switch to walk mode first
     if (this.isOrbitMode) {
       this.setMode(false);
       return this.getPOVLabel();
     }
-
     this.currentPOVIndex = (this.currentPOVIndex + 1) % this.povModes.length;
-    const mode = this.getPOVMode();
     const label = this.getPOVLabel();
-    this.povChangeListeners.forEach(cb => cb(mode, label));
+    this.povChangeListeners.forEach(cb => cb(this.getPOVMode(), label));
     return label;
   }
 
-  onPOVChange(callback) {
-    this.povChangeListeners.push(callback);
-  }
+  onPOVChange(cb)   { this.povChangeListeners.push(cb); }
+  onModeChange(cb)  { this.modeChangeListeners.push(cb); }
 
-  getLookObject() {
-    return this.lookTarget;
-  }
-
-  getYaw() {
-    const euler = new THREE.Euler(0, 0, 0, 'YXZ');
-    euler.setFromQuaternion(this.lookTarget.quaternion);
-    return euler.y;
-  }
-
-  toggleMode(player) {
-    this.setMode(!this.isOrbitMode, player);
-  }
+  // ── Mode switching ────────────────────────────────────────────────────────
+  toggleMode(player) { this.setMode(!this.isOrbitMode, player); }
 
   setMode(orbitMode, player) {
     this.isOrbitMode = orbitMode;
@@ -106,106 +115,102 @@ export class CameraController {
     if (this.isOrbitMode) {
       this.fpControls.unlock();
       this.orbitControls.enabled = true;
-
-      // Position camera high above plot for dollhouse / bird's-eye architectural view
       this.camera.position.set(25 * s, 60 * s, 24 * s);
       this.orbitControls.target.set(25 * s, 10 * s, -12 * s);
       this.orbitControls.update();
     } else {
       this.orbitControls.enabled = false;
-
-      // Restore camera & lookTarget to player's eye position
       if (player) {
-        this.lookTarget.position.copy(player.position);
         this.camera.position.copy(player.position);
       }
       this.fpControls.lock();
     }
-
     this.modeChangeListeners.forEach(cb => cb(this.isOrbitMode));
   }
 
+  // ── Per-frame update ──────────────────────────────────────────────────────
+  /**
+   * @param {Player}          player           — current player state
+   * @param {number}          delta            — frame delta (seconds)
+   * @param {CollisionSystem} collisionSystem  — for boom wall clamping
+   */
   update(player, delta, collisionSystem) {
     if (this.isOrbitMode) {
       this.orbitControls.update();
       return;
     }
-
     if (!player) return;
-    const s = WORLD_SCALE;
 
-    // Keep lookTarget synced to player's eye position
-    this.lookTarget.position.copy(player.position);
-
-    const mode = this.getPOVMode();
+    const mode   = this.getPOVMode();
+    const eyePos = player.position; // y = feetElev + eyeHeight
 
     if (mode === POV_MODES.FIRST_PERSON) {
-      this.camera.position.copy(player.position);
-      this.camera.quaternion.copy(this.lookTarget.quaternion);
+      // Camera sits exactly at player's eye. PointerLockControls already
+      // handles rotation — just keep position in sync.
+      this.camera.position.copy(eyePos);
+
     } else if (mode === POV_MODES.THIRD_PERSON_BACK) {
-      // Third-person chase camera (behind player looking forward)
-      const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(this.lookTarget.quaternion);
-      const boomDir = forward.clone().negate();
-      const defaultDist = 6.2 * s;
-      const heightOffset = 0.40 * s;
+      // ── Chase cam (behind + above) ──────────────────────────────────────
+      // Boom vector: start from eye, go backwards along camera's -forward (= camera's +Z)
+      this._fwd.set(0, 0, 1).applyQuaternion(this.camera.quaternion); // camera's backward
+      this._fwd.y = 0;
+      this._fwd.normalize();
 
-      const eyePos = player.position.clone();
-      const clampedDist = this.clampCameraBoom(eyePos, boomDir, defaultDist, collisionSystem, s);
+      const dist = this._clampBoom(
+        eyePos, this._fwd, BOOM_BACK_DIST, collisionSystem
+      );
 
-      this.camera.position.copy(eyePos)
-        .addScaledVector(boomDir, clampedDist)
-        .add(new THREE.Vector3(0, heightOffset, 0));
+      this.camera.position.set(
+        eyePos.x + this._fwd.x * dist,
+        eyePos.y + BOOM_BACK_HEIGHT,
+        eyePos.z + this._fwd.z * dist
+      );
+      // Look at the avatar's upper body / head level
+      const lookAt = new THREE.Vector3(eyePos.x, eyePos.y - 0.3 * WORLD_SCALE, eyePos.z);
+      this.camera.lookAt(lookAt);
 
-      this.camera.quaternion.copy(this.lookTarget.quaternion);
     } else if (mode === POV_MODES.THIRD_PERSON_FRONT) {
-      // Third-person selfie view (in front of player looking back at player)
-      const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(this.lookTarget.quaternion);
-      const boomDir = forward.clone();
-      const defaultDist = 5.2 * s;
-      const heightOffset = 0.35 * s;
+      // ── Selfie / face cam (in front of player) ───────────────────────────
+      this._fwd.set(0, 0, -1).applyQuaternion(this.camera.quaternion); // camera's forward
+      this._fwd.y = 0;
+      this._fwd.normalize();
 
-      const eyePos = player.position.clone();
-      const clampedDist = this.clampCameraBoom(eyePos, boomDir, defaultDist, collisionSystem, s);
+      const dist = this._clampBoom(
+        eyePos, this._fwd, BOOM_FRONT_DIST, collisionSystem
+      );
 
-      this.camera.position.copy(eyePos)
-        .addScaledVector(boomDir, clampedDist)
-        .add(new THREE.Vector3(0, heightOffset, 0));
-
-      // Look back at player's chest / face
-      this.camera.lookAt(player.position.x, player.position.y - 0.20 * s, player.position.z);
+      this.camera.position.set(
+        eyePos.x + this._fwd.x * dist,
+        eyePos.y + BOOM_FRONT_HEIGHT,
+        eyePos.z + this._fwd.z * dist
+      );
+      // Look back toward player face
+      this.camera.lookAt(eyePos.x, eyePos.y + 0.1 * WORLD_SCALE, eyePos.z);
     }
   }
 
-  clampCameraBoom(origin, direction, maxDistance, collisionSystem, s) {
-    if (!collisionSystem || !collisionSystem.colliders) return maxDistance;
+  // ── Boom wall-clamp ───────────────────────────────────────────────────────
+  _clampBoom(origin, direction, maxDist, collisionSystem) {
+    if (!collisionSystem?.colliders) return maxDist;
 
-    let closestDist = maxDistance;
+    let best = maxDist;
+
     this._ray.origin.copy(origin);
     this._ray.direction.copy(direction).normalize();
 
-    const minClearance = 0.45 * s; // safety margin from walls
-
     for (const item of collisionSystem.colliders) {
       if (item.disabled) continue;
-
       const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
-      // Convert CAD coordinates to Three.js Box3: (xmin, zmin, -ymax) to (xmax, zmax, -ymin)
       this._box3.min.set(xmin, zmin, -ymax);
       this._box3.max.set(xmax, zmax, -ymin);
 
-      const hit = this._ray.intersectBox(this._box3, this._hitVec);
-      if (hit) {
-        const dist = origin.distanceTo(hit);
-        if (dist < closestDist) {
-          closestDist = Math.max(minClearance, dist - minClearance);
+      if (this._ray.intersectBox(this._box3, this._hit)) {
+        const d = origin.distanceTo(this._hit);
+        if (d < best) {
+          best = Math.max(BOOM_MIN_CLEARANCE, d - BOOM_MIN_CLEARANCE);
         }
       }
     }
-
-    return closestDist;
-  }
-
-  onModeChange(callback) {
-    this.modeChangeListeners.push(callback);
+    return best;
   }
 }
