@@ -74,6 +74,17 @@ export const DOOR_SPECS = [
     dir: '-Y',
     openAngle: -Math.PI / 2  // Swings west into Lobby along north wall
   },
+  {
+    id: 'D7',
+    name: 'South Entrance Door',
+    floor: 'ground_floor',
+    material: 'M-DOOR-TEAK',
+    box: [28.690, 31.560, -0.435, -0.315, 1.540, 8.310],
+    axis: 'X',
+    hinge: [28.690, -0.375], // West edge
+    dir: '+X',
+    openAngle: Math.PI / 2   // Swings north into South Hallway along west pier
+  },
 
   // ── FIRST FLOOR DOORS ───────────────────────────────────────────────────
   {

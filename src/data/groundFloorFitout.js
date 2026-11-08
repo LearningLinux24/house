@@ -274,6 +274,41 @@ export const GROUND_FLOOR_FITOUT = [
   },
 
   // ==========================================
+  // D7: South Entrance Door in front of Stairs (Teak)
+  {
+    id: 'D7-FJ1',
+    name: 'South Entrance Door Jamb West',
+    category: 'doors',
+    type: 'door_frame',
+    box: [28.500, 28.670, -0.750, 0.000, 1.500, 8.330],
+    material: 'M-FRAME-WOOD'
+  },
+  {
+    id: 'D7-FJ2',
+    name: 'South Entrance Door Jamb East',
+    category: 'doors',
+    type: 'door_frame',
+    box: [31.580, 31.750, -0.750, 0.000, 1.500, 8.330],
+    material: 'M-FRAME-WOOD'
+  },
+  {
+    id: 'D7-FH',
+    name: 'South Entrance Door Frame Head',
+    category: 'doors',
+    type: 'door_frame',
+    box: [28.500, 31.750, -0.750, 0.000, 8.330, 8.500],
+    material: 'M-FRAME-WOOD'
+  },
+  {
+    id: 'D7-LEAF',
+    name: 'South Entrance Door Leaf',
+    category: 'doors',
+    type: 'door_leaf',
+    box: [28.690, 31.560, -0.435, -0.315, 1.540, 8.310],
+    material: 'M-DOOR-TEAK'
+  },
+
+  // ==========================================
   // 3. BOUNDARY GATES (Category: 'gates')
   // ==========================================
   // G1: Pedestrian Gate (MS)

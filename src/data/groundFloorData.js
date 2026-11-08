@@ -56,11 +56,15 @@ export const GROUND_FLOOR_DATA = {
     // O1: West boundary wall is 6.0 ft garden wall
     { id: 'W-EXT-W', box: [-0.750, 0.000, 7.500, 23.250, 0.000, 6.000], type: 'wall_ext' },
 
-    // 4b. South Exterior Wall with aperture for WD-1 (South Hallway Window)
+    // 4b. South Exterior Wall with aperture for WD-1 (South Hallway Window) and D7 (South Entrance Door)
     { id: 'W-EXT-S-P1', box: [-0.750, 18.000, -0.750, 0.000, 0.000, 11.500], type: 'wall_ext' },
     { id: 'W-EXT-S-SILL1', box: [18.000, 22.000, -0.750, 0.000, 0.000, 4.500], type: 'wall_ext' }, // WD-1 Sill
     { id: 'W-EXT-S-LIN1', box: [18.000, 22.000, -0.750, 0.000, 8.500, 11.500], type: 'lintel' },   // WD-1 Lintel
-    { id: 'W-EXT-S-P2', box: [22.000, 36.500, -0.750, 0.000, 0.000, 11.500], type: 'wall_ext' },   // Solid wall through stairs bay to garage gate
+    { id: 'W-EXT-S-P2a', box: [22.000, 28.500, -0.750, 0.000, 0.000, 11.500], type: 'wall_ext' }, // Wall west of South Entrance Door D7
+    { id: 'W-EXT-S-THR-D7', box: [28.500, 31.750, -0.750, 0.000, 0.000, 1.500], type: 'plinth' }, // Plinth threshold under D7
+    { id: 'W-EXT-S-LIN-D7', box: [28.500, 31.750, -0.750, 0.000, 8.500, 11.500], type: 'lintel' }, // Lintel above D7
+    { id: 'W-EXT-S-P2b', box: [31.750, 36.500, -0.750, 0.000, 0.000, 11.500], type: 'wall_ext' }, // Wall east of South Entrance Door D7
+    { id: 'ST-EXT-S', box: [28.000, 32.250, -2.500, -0.750, 0.000, 0.750], type: 'step' },        // Exterior landing step in front of D7
 
     // O3: Solid band above garage gate and south-east missing corner
     { id: 'GB', box: [36.500, 50.000, -0.750, 0.000, 8.000, 11.500], type: 'wall_ext' },

@@ -90,6 +90,12 @@ export class CollisionSystem {
       } else if (xs >= 13.625 && xs <= 34.25 && ys >= 0.0 && ys <= 7.5) {
         // P2 Plinth (South Hallway & South Porch)
         baseElev = 1.50 * s;
+      } else if (xs >= 28.5 && xs <= 31.75 && ys >= -0.75 && ys < 0.0) {
+        // D7 Door Threshold
+        baseElev = 1.50 * s;
+      } else if (xs >= 28.0 && xs <= 32.25 && ys >= -2.5 && ys < -0.75) {
+        // D7 Exterior Landing Step
+        baseElev = 0.75 * s;
       } else if (xs >= 6.15 && xs <= 13.625 && ys >= 0.0 && ys <= 7.5) {
         // P3 Plinth (Entrance Porch)
         baseElev = 1.50 * s;
