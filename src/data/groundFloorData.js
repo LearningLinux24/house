@@ -56,14 +56,11 @@ export const GROUND_FLOOR_DATA = {
     // O1: West boundary wall is 6.0 ft garden wall
     { id: 'W-EXT-W', box: [-0.750, 0.000, 7.500, 23.250, 0.000, 6.000], type: 'wall_ext' },
 
-    // 4b. South Exterior Wall with apertures for WD-1 and WD-2
+    // 4b. South Exterior Wall with aperture for WD-1 (South Hallway Window)
     { id: 'W-EXT-S-P1', box: [-0.750, 18.000, -0.750, 0.000, 0.000, 11.500], type: 'wall_ext' },
     { id: 'W-EXT-S-SILL1', box: [18.000, 22.000, -0.750, 0.000, 0.000, 4.500], type: 'wall_ext' }, // WD-1 Sill
     { id: 'W-EXT-S-LIN1', box: [18.000, 22.000, -0.750, 0.000, 8.500, 11.500], type: 'lintel' },   // WD-1 Lintel
-    { id: 'W-EXT-S-P2', box: [22.000, 28.000, -0.750, 0.000, 0.000, 11.500], type: 'wall_ext' },
-    { id: 'W-EXT-S-SILL2', box: [28.000, 32.000, -0.750, 0.000, 0.000, 4.500], type: 'wall_ext' }, // WD-2 Sill
-    { id: 'W-EXT-S-LIN2', box: [28.000, 32.000, -0.750, 0.000, 8.500, 11.500], type: 'lintel' },   // WD-2 Lintel
-    { id: 'W-EXT-S-P3', box: [32.000, 36.500, -0.750, 0.000, 0.000, 11.500], type: 'wall_ext' },
+    { id: 'W-EXT-S-P2', box: [22.000, 36.500, -0.750, 0.000, 0.000, 11.500], type: 'wall_ext' },   // Solid wall through stairs bay to garage gate
 
     // O3: Solid band above garage gate and south-east missing corner
     { id: 'GB', box: [36.500, 50.000, -0.750, 0.000, 8.000, 11.500], type: 'wall_ext' },
@@ -88,11 +85,8 @@ export const GROUND_FLOOR_DATA = {
     { id: 'W-INT-04a', box: [13.625, 14.000, 21.750, 23.250, 0.000, 11.500], type: 'wall_int' },
     { id: 'W-INT-05', box: [13.625, 14.000, 4.375, 15.000, 0.000, 11.500], type: 'wall_int' },
 
-    // W-INT-06 Kitchen to South Hallway wall with aperture for WD-5
-    { id: 'W-INT-06-P1', box: [13.625, 16.500, 4.000, 4.375, 0.000, 11.500], type: 'wall_int' },
-    { id: 'W-INT-06-SILL', box: [16.500, 19.500, 4.000, 4.375, 0.000, 5.000], type: 'wall_int' }, // WD-5 Sill
-    { id: 'W-INT-06-LIN', box: [16.500, 19.500, 4.000, 4.375, 8.000, 11.500], type: 'lintel' },    // WD-5 Lintel
-    { id: 'W-INT-06-P2', box: [19.500, 26.375, 4.000, 4.375, 0.000, 11.500], type: 'wall_int' },
+    // W-INT-06 Kitchen to South Hallway solid wall
+    { id: 'W-INT-06', box: [13.625, 26.375, 4.000, 4.375, 0.000, 11.500], type: 'wall_int' },
     { id: 'W-INT-07a', box: [14.000, 23.000, 11.375, 11.750, 0.000, 11.500], type: 'wall_int' },
     { id: 'W-INT-08', box: [26.000, 26.375, 4.375, 15.000, 0.000, 11.500], type: 'wall_int' },
     { id: 'W-INT-09', box: [26.000, 26.375, 18.875, 23.250, 0.000, 11.500], type: 'wall_int' },

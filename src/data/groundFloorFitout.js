@@ -18,14 +18,6 @@ export const GROUND_FLOOR_FITOUT = [
     material: 'M-GLASS'
   },
   {
-    id: 'WD-2',
-    name: 'Stairs Bay Window (4x4)',
-    category: 'windows',
-    type: 'window',
-    box: [28.000, 32.000, -0.750, 0.000, 4.500, 8.500],
-    material: 'M-GLASS'
-  },
-  {
     id: 'WD-3',
     name: 'Bedroom Window to Garden (4x4)',
     category: 'windows',
@@ -39,14 +31,6 @@ export const GROUND_FLOOR_FITOUT = [
     category: 'windows',
     type: 'window',
     box: [18.000, 22.000, 23.250, 24.000, 4.500, 8.500],
-    material: 'M-GLASS'
-  },
-  {
-    id: 'WD-5',
-    name: 'Kitchen Window to South Hallway',
-    category: 'windows',
-    type: 'window',
-    box: [16.500, 19.500, 4.000, 4.375, 5.000, 8.000],
     material: 'M-GLASS'
   },
   {

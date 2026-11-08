@@ -103,10 +103,6 @@ const WINDOWS = [
   { id: 'WF-3-GLASS', name: 'Lobby south window west glass',    category: 'windows', type: 'window',    box: [15.000, 19.000, -0.750, 0.000, 15.000, 19.000], material: 'M-GLASS' },
   // WF-4  Lobby south window east  4 × 4 ft  sill Z 15.00
   { id: 'WF-4-GLASS', name: 'Lobby south window east glass',    category: 'windows', type: 'window',    box: [21.000, 25.000, -0.750, 0.000, 15.000, 19.000], material: 'M-GLASS' },
-  // WF-5  Stair bay south window  4 × 4 ft  sill Z 15.00
-  { id: 'WF-5-GLASS', name: 'Stair bay south window glass',     category: 'windows', type: 'window',    box: [28.000, 32.000, -0.750, 0.000, 15.000, 19.000], material: 'M-GLASS' },
-  // WF-6  Hallway south window  3 × 3 ft  sill Z 15.50
-  { id: 'WF-6-GLASS', name: 'Hallway south window glass',       category: 'windows', type: 'window',    box: [34.500, 37.500, -0.750, 0.000, 15.500, 18.500], material: 'M-GLASS' },
   // WF-7  Mandir south window  3 × 3 ft  sill Z 15.50
   { id: 'WF-7-GLASS', name: 'Mandir south window glass',        category: 'windows', type: 'window',    box: [43.000, 46.000, -0.750, 0.000, 15.500, 18.500], material: 'M-GLASS' },
   // WF-8  Child bedroom north window  4 × 4 ft  sill Z 15.00

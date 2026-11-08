@@ -76,6 +76,7 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
   * **Architectural Window Apertures & Crystal-Clear Glazing**:
     * All exterior and courtyard walls feature exact CAD-compliant window apertures with solid sill walls below, lintel walls above, and structural piers flanking each opening.
     * Eliminates solid wall mesh overlap behind windows, providing crystal-clear see-through views from inside rooms out to the garden, street, trees, and sky (and vice versa).
+    * Windows are dedicated strictly to habitable rooms and daylight portals (living lounge, bedrooms, and mandir), removing superfluous windows behind the stairs and in the first-floor hallway for an authentic residential facade.
     * Centered 1-inch thin glazed window panes (`M-GLASS`, opacity 0.25, roughness 0.04) with aluminum sashes and frames.
   * **Sensible Curated Curtain Placements**:
     * Drapes placed strictly in primary living and sleeping spaces where privacy and sun shading make architectural sense (Ground Floor Bedroom garden window, Ground Floor Lobby north window, First Floor Master Bedroom west window, First Floor Lounge south windows, and First Floor Child Bedroom north window).

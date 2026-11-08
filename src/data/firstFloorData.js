@@ -62,20 +62,15 @@ export const FIRST_FLOOR_DATA = {
     { id: 'F-EXT-W-LIN', box: [-0.750,  0.000, 15.500, 19.500, 19.000, 22.000], type: 'lintel' },   // WF-1 Lintel
     { id: 'F-EXT-W-P2', box: [-0.750,  0.000, 19.500, 23.250, 12.000, 22.000], type: 'wall_ext' },
 
-    // 2c. F-EXT-S: Lobby through Mandir south wall with apertures for WF-3, WF-4, WF-5, WF-6, WF-7
+    // 2c. F-EXT-S: Lobby through Mandir south wall with room windows (WF-3, WF-4 in Lobby, WF-7 in Mandir)
     { id: 'F-EXT-S-P1', box: [14.000, 15.000, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
     { id: 'F-EXT-S-SILL1', box: [15.000, 19.000, -0.750,  0.000, 12.000, 15.000], type: 'wall_ext' }, // WF-3 Sill
     { id: 'F-EXT-S-LIN1', box: [15.000, 19.000, -0.750,  0.000, 19.000, 22.000], type: 'lintel' },   // WF-3 Lintel
     { id: 'F-EXT-S-P2', box: [19.000, 21.000, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
     { id: 'F-EXT-S-SILL2', box: [21.000, 25.000, -0.750,  0.000, 12.000, 15.000], type: 'wall_ext' }, // WF-4 Sill
     { id: 'F-EXT-S-LIN2', box: [21.000, 25.000, -0.750,  0.000, 19.000, 22.000], type: 'lintel' },   // WF-4 Lintel
-    { id: 'F-EXT-S-P3', box: [25.000, 28.000, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
-    { id: 'F-EXT-S-SILL3', box: [28.000, 32.000, -0.750,  0.000, 12.000, 15.000], type: 'wall_ext' }, // WF-5 Sill
-    { id: 'F-EXT-S-LIN3', box: [28.000, 32.000, -0.750,  0.000, 19.000, 22.000], type: 'lintel' },   // WF-5 Lintel
-    { id: 'F-EXT-S-P4', box: [32.000, 34.500, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
-    { id: 'F-EXT-S-SILL4', box: [34.500, 37.500, -0.750,  0.000, 12.000, 15.500], type: 'wall_ext' }, // WF-6 Sill
-    { id: 'F-EXT-S-LIN4', box: [34.500, 37.500, -0.750,  0.000, 18.500, 22.000], type: 'lintel' },   // WF-6 Lintel
-    { id: 'F-EXT-S-P5', box: [37.500, 43.000, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
+    // Solid wall spanning through Stairs Bay and First Floor Hallway (no windows behind stairs or in hallway)
+    { id: 'F-EXT-S-P3', box: [25.000, 43.000, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
     { id: 'F-EXT-S-SILL5', box: [43.000, 46.000, -0.750,  0.000, 12.000, 15.500], type: 'wall_ext' }, // WF-7 Sill
     { id: 'F-EXT-S-LIN5', box: [43.000, 46.000, -0.750,  0.000, 18.500, 22.000], type: 'lintel' },   // WF-7 Lintel
     { id: 'F-EXT-S-P6', box: [46.000, 50.000, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
