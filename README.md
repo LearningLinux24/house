@@ -57,6 +57,7 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
     * Realistic mechanical audio via Web Audio API featuring electric motor hum combined with chain and roller track rumble.
     * Dynamic collision integration: solid physical barrier when closed; dynamically deactivated when open for smooth walk-through / drive-through.
   * **Interactive Pedestrian Entrance Gate (<kbd>G1</kbd>)**: Dual-leaf mild steel boundary gate with solid kick plates, horizontal privacy slats, and vertical stainless steel pull handles.
+  * **Interactive Exterior South Entrance Door (<kbd>D7</kbd>)**: A solid teak entrance door on the south exterior wall directly facing the central staircase flight passage, complete with wooden jamb frame, lintel, exterior granite landing step, and dynamic collision integration for smooth outside-to-hallway entry.
   * **Interactive Glazed Balcony Doors (<kbd>DF3</kbd>, <kbd>DF8</kbd>)**: Powder-coated aluminum framed doors with full-height safety glass panels leading to exterior first-floor balconies.
   * **Interior Flush Doors**: Solid teak doors with stainless steel lever handles and realistic latch audio.
   * **Dual Interaction Support**: Walk up in First-Person mode and press <kbd>E</kbd> or click; in Dollhouse / Orbit mode, simply left-click directly on any door or gate leaf.
@@ -83,11 +84,17 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
     * Removed unnecessary hallway draperies to ensure smooth, open corridor navigation.
   * **Animated Gathering Kinematics**: Pressing <kbd>E</kbd> or clicking slides both fabric panels smoothly apart to the outer edges ($openRatio \to 1.0$), gathering into folds and exposing over 76% of the window glass to provide clear views of the outdoor gardens and street.
   * **Procedural Fabric Slide Audio**: Web Audio synthesis simulating realistic curtain fabric sliding on brass rings across the metallic curtain rod.
-* **Interactive Storage System (Almirahs, Cupboards & Drawers)**:
+* **Interactive Storage System (Almirahs, Cupboards, Drawers & 3-Tier Chests)**:
   * **3 Interactive Wardrobes / Almirahs**: Built for Master Bedroom (GF), Master Bedroom (1F), and Child Bedroom (1F). Features dual swinging doors (left door swings $-98^\circ$, right door $+98^\circ$ out into the room), realistic chrome pull handles, upper hat shelf, lower shelf, and stainless steel clothing hanger rail.
   * **2 Interactive Kitchen Wall Cupboards**: Overhead storage cupboards in GF Kitchen with swinging cabinet doors, interior shelving, and chrome handles.
   * **6 Interactive Bedside Nightstand Drawers**: Flanking bedside tables in GF Master Bedroom, 1F Master Bedroom, and 1F Child Bedroom. Animated pull-out drawer boxes slide smoothly forward into the room with sleek metallic handles and exposed hollow storage cavities.
-  * **Procedural Wood & Slide Audio**: Authentic cabinet wood hinge creak and magnetic catch latch on wardrobe/cupboard doors, paired with wooden glide runner friction on bedside drawers.
+  * **3-Tier Multi-Floor Interactive Drawer Chests (South Hallway & Garage)**:
+    * **South Hallway Walnut Chest**: 3 stacked drawers along the north wall of South Hallway (`Bottom Drawer`, `Middle Drawer`, `Top Drawer`) crafted in rich walnut laminate with horizontal brushed steel handles.
+    * **Garage Industrial Tool Chest**: 3 stacked drawers along the west wall of the Garage crafted in industrial dark charcoal steel with matte aluminum handles.
+    * **Independent Kinematic Control**: Each drawer tier is tracked independently with its own reticle hitmesh, prompt (`[E] Open Top Drawer`, etc.), hollow storage interior, and procedural slide sound, allowing any combination of drawers to be opened simultaneously.
+  * **Procedural Wood & Slide Audio**: Authentic cabinet wood hinge creak and magnetic catch latch on wardrobe/cupboard doors, paired with wooden glide runner friction on bedside drawers and chests.
+* **Realistic Appliances & Laundry Modeling**:
+  * **Front-Loading Washing Machine (`HW-06`)**: High-detail front loader positioned in the first-floor hallway corner featuring an enamel appliance chassis, top countertop slab, upper control panel with pull-out detergent drawer, rotary cycle knob with cyan indicator pip, glowing digital LED status screen, recessed stainless steel inner drum cavity, circular chrome porthole bezel, smoked dark glass window, side latch handle, and recessed kick-plate emergency drain hatch.
 * **Realistic Interior Furniture Collisions & Dynamic Surface Physics**:
   * **63 Comprehensive Physical Furniture Colliders**: Full physical presence for all interior objects across Ground Floor and First Floor:
     * **Tables & Desks**: Dining tables, living coffee tables, TV media consoles, dressing tables, and study desks.
