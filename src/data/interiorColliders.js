@@ -265,6 +265,24 @@ export const INTERIOR_COLLIDERS = [
     isStepable: true
   },
   {
+    id: 'COL-CHEST-HALL',
+    fitoutId: 'CHEST-HALL-01',
+    name: 'South Hallway 3-Tier Chest',
+    floor: 'ground_floor',
+    box: [14.000, 16.600, 2.700, 4.000, 1.500, 4.650],
+    type: 'interior_furniture',
+    isStepable: true
+  },
+  {
+    id: 'COL-CHEST-GAR',
+    fitoutId: 'CHEST-GAR-01',
+    name: 'Garage 3-Tier Tool Chest',
+    floor: 'ground_floor',
+    box: [34.250, 35.550, 9.500, 12.100, 0.000, 3.150],
+    type: 'interior_furniture',
+    isStepable: true
+  },
+  {
     id: 'COL-GAR-01',
     fitoutId: 'GAR-01',
     name: 'Garage Hatchback Car',

@@ -106,7 +106,9 @@ export class FitoutBuilder {
       item.id === 'MB-08' ||
       item.id === 'CH-05' ||
       item.id === 'CH-06' ||
-      item.id === 'CH-07'
+      item.id === 'CH-07' ||
+      item.id === 'CHEST-HALL-01' ||
+      item.id === 'CHEST-GAR-01'
     ) {
       return null;
     }

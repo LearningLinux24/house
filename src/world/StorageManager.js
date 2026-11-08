@@ -108,6 +108,37 @@ export const STORAGE_SPECS = {
       box: [47.750, 49.250, 17.500, 19.000, 12.000, 13.600],
       slideDir: [-1, 0, 0]
     }
+  ],
+
+  chests: [
+    {
+      id: 'CHEST-HALL-01',
+      name: 'South Hallway Chest',
+      floor: 'ground_floor',
+      floorElev: 1.50,
+      material: 'M-LAMINATE-WALNUT',
+      box: [14.000, 16.600, 2.700, 4.000, 1.500, 4.650],
+      slideDir: [0, 0, 1], // slides South into hallway (+Z in Three.js)
+      tiers: [
+        { id: 'CHEST-HALL-01-T1', name: 'Bottom Drawer' },
+        { id: 'CHEST-HALL-01-T2', name: 'Middle Drawer' },
+        { id: 'CHEST-HALL-01-T3', name: 'Top Drawer' }
+      ]
+    },
+    {
+      id: 'CHEST-GAR-01',
+      name: 'Garage Tool Chest',
+      floor: 'ground_floor',
+      floorElev: 0.00,
+      material: 'M-STEEL-GREY',
+      box: [34.250, 35.550, 9.500, 12.100, 0.000, 3.150],
+      slideDir: [1, 0, 0], // slides East into garage (+X in Three.js)
+      tiers: [
+        { id: 'CHEST-GAR-01-T1', name: 'Bottom Drawer' },
+        { id: 'CHEST-GAR-01-T2', name: 'Middle Drawer' },
+        { id: 'CHEST-GAR-01-T3', name: 'Top Drawer' }
+      ]
+    }
   ]
 };
 
@@ -648,6 +679,213 @@ export class StorageManager {
       this.items.push(drawerObj);
     });
 
+    // 4. Build Interactive 3-Tier Multi-Floor Drawer Chests (Bottom, Middle, Top)
+    if (STORAGE_SPECS.chests) {
+      STORAGE_SPECS.chests.forEach(chestSpec => {
+        const [xmin, xmax, ymin, ymax, zmin, zmax] = chestSpec.box;
+        const width = (xmax - xmin) * s;
+        const depth = (ymax - ymin) * s;
+        const height = (zmax - zmin) * s;
+        const cx = ((xmin + xmax) / 2) * s;
+        const cy = ((zmin + zmax) / 2) * s;
+        const cz = -((ymin + ymax) / 2) * s;
+
+        const chestGroup = new THREE.Group();
+        chestGroup.name = `Chest_${chestSpec.id}`;
+        chestGroup.position.set(cx, cy, cz);
+
+        const carcassMat = this.materials.get(chestSpec.material) || (chestSpec.material === 'M-STEEL-GREY' ? greyLaminateMat : walnutMat);
+        const wallThick = 0.035 * s;
+        const sDir = chestSpec.slideDir;
+        const isXSlide = (sDir[0] !== 0);
+
+        // --- Outer Carcass (Top, Bottom, Back, and 2 Sides) ---
+        // Top worktop / lid panel
+        const topGeo = new THREE.BoxGeometry(width + 0.02 * s, wallThick, depth + 0.02 * s);
+        const topMesh = new THREE.Mesh(topGeo, carcassMat);
+        topMesh.position.set(0, height / 2 - wallThick / 2, 0);
+        topMesh.castShadow = true;
+        topMesh.receiveShadow = true;
+        chestGroup.add(topMesh);
+
+        // Bottom plinth panel
+        const btmGeo = new THREE.BoxGeometry(width, wallThick, depth);
+        const btmMesh = new THREE.Mesh(btmGeo, carcassMat);
+        btmMesh.position.set(0, -height / 2 + wallThick / 2, 0);
+        btmMesh.receiveShadow = true;
+        chestGroup.add(btmMesh);
+
+        // Back panel & Side panels
+        if (isXSlide) {
+          const backGeo = new THREE.BoxGeometry(wallThick, height, depth);
+          const backMesh = new THREE.Mesh(backGeo, carcassMat);
+          backMesh.position.set(-sDir[0] * (width / 2 - wallThick / 2), 0, 0);
+          backMesh.castShadow = true;
+          chestGroup.add(backMesh);
+
+          [-depth / 2 + wallThick / 2, depth / 2 - wallThick / 2].forEach(pz => {
+            const sGeo = new THREE.BoxGeometry(width, height, wallThick);
+            const sMesh = new THREE.Mesh(sGeo, carcassMat);
+            sMesh.position.set(0, 0, pz);
+            sMesh.castShadow = true;
+            chestGroup.add(sMesh);
+          });
+
+          // Horizontal interior dividers between drawer tiers
+          [-height / 6, height / 6].forEach(py => {
+            const divGeo = new THREE.BoxGeometry(width - wallThick * 1.5, wallThick * 0.6, depth - wallThick * 2);
+            const divMesh = new THREE.Mesh(divGeo, interiorMat);
+            divMesh.position.set(0, py, 0);
+            chestGroup.add(divMesh);
+          });
+        } else {
+          const backGeo = new THREE.BoxGeometry(width, height, wallThick);
+          const backMesh = new THREE.Mesh(backGeo, carcassMat);
+          backMesh.position.set(0, 0, -sDir[2] * (depth / 2 - wallThick / 2));
+          backMesh.castShadow = true;
+          chestGroup.add(backMesh);
+
+          [-width / 2 + wallThick / 2, width / 2 - wallThick / 2].forEach(px => {
+            const sGeo = new THREE.BoxGeometry(wallThick, height, depth);
+            const sMesh = new THREE.Mesh(sGeo, carcassMat);
+            sMesh.position.set(px, 0, 0);
+            sMesh.castShadow = true;
+            chestGroup.add(sMesh);
+          });
+
+          // Horizontal interior dividers between drawer tiers
+          [-height / 6, height / 6].forEach(py => {
+            const divGeo = new THREE.BoxGeometry(width - wallThick * 2, wallThick * 0.6, depth - wallThick * 1.5);
+            const divMesh = new THREE.Mesh(divGeo, interiorMat);
+            divMesh.position.set(0, py, 0);
+            chestGroup.add(divMesh);
+          });
+        }
+
+        this.rootGroup.add(chestGroup);
+
+        // --- 3 Stacked Drawers (Tier 0: Bottom, Tier 1: Middle, Tier 2: Top) ---
+        const tierHeight = (height - wallThick * 2) / 3;
+        const tierYs = [
+          -height / 2 + wallThick + tierHeight * 0.5,
+          0,
+          height / 2 - wallThick - tierHeight * 0.5
+        ];
+
+        chestSpec.tiers.forEach((tier, tierIdx) => {
+          const tierY = tierYs[tierIdx];
+          const drawerW = isXSlide ? (width - wallThick * 2.2) : (width - wallThick * 2.4);
+          const drawerH = tierHeight * 0.88;
+          const drawerD = isXSlide ? (depth - wallThick * 2.4) : (depth - wallThick * 2.2);
+
+          const drawerGroup = new THREE.Group();
+          drawerGroup.name = `Drawer_${tier.id}`;
+          drawerGroup.position.set(0, tierY, 0);
+
+          // Drawer bottom
+          const boxBtmGeo = new THREE.BoxGeometry(drawerW, 0.02 * s, drawerD);
+          const boxBtm = new THREE.Mesh(boxBtmGeo, interiorMat);
+          boxBtm.position.set(0, -drawerH / 2 + 0.01 * s, 0);
+          drawerGroup.add(boxBtm);
+
+          // Drawer side walls (hollow container inside)
+          if (isXSlide) {
+            [-drawerD / 2 + 0.015 * s, drawerD / 2 - 0.015 * s].forEach(pz => {
+              const wGeo = new THREE.BoxGeometry(drawerW, drawerH, 0.02 * s);
+              const wMesh = new THREE.Mesh(wGeo, interiorMat);
+              wMesh.position.set(0, 0, pz);
+              drawerGroup.add(wMesh);
+            });
+            const backWGeo = new THREE.BoxGeometry(0.02 * s, drawerH, drawerD);
+            const backWMesh = new THREE.Mesh(backWGeo, interiorMat);
+            backWMesh.position.set(-sDir[0] * (drawerW / 2 - 0.01 * s), 0, 0);
+            drawerGroup.add(backWMesh);
+          } else {
+            [-drawerW / 2 + 0.015 * s, drawerW / 2 - 0.015 * s].forEach(px => {
+              const wGeo = new THREE.BoxGeometry(0.02 * s, drawerH, drawerD);
+              const wMesh = new THREE.Mesh(wGeo, interiorMat);
+              wMesh.position.set(px, 0, 0);
+              drawerGroup.add(wMesh);
+            });
+            const backWGeo = new THREE.BoxGeometry(drawerW, drawerH, 0.02 * s);
+            const backWMesh = new THREE.Mesh(backWGeo, interiorMat);
+            backWMesh.position.set(0, 0, -sDir[2] * (drawerD / 2 - 0.01 * s));
+            drawerGroup.add(backWMesh);
+          }
+
+          // Drawer front face panel
+          const faceGeo = new THREE.BoxGeometry(
+            isXSlide ? 0.035 * s : drawerW * 1.04,
+            drawerH * 1.02,
+            isXSlide ? drawerD * 1.04 : 0.035 * s
+          );
+          const faceMesh = new THREE.Mesh(faceGeo, carcassMat);
+          faceMesh.position.set(
+            isXSlide ? sDir[0] * (drawerW / 2) : 0,
+            0,
+            isXSlide ? 0 : sDir[2] * (drawerD / 2)
+          );
+          faceMesh.castShadow = true;
+          drawerGroup.add(faceMesh);
+
+          // Sleek horizontal drawer pull handle
+          const pullGeo = new THREE.BoxGeometry(
+            isXSlide ? 0.03 * s : 0.45 * s,
+            0.04 * s,
+            isXSlide ? 0.45 * s : 0.03 * s
+          );
+          const pullMesh = new THREE.Mesh(pullGeo, handleMat);
+          pullMesh.position.set(
+            isXSlide ? sDir[0] * (drawerW / 2 + 0.03 * s) : 0,
+            0,
+            isXSlide ? 0 : sDir[2] * (drawerD / 2 + 0.03 * s)
+          );
+          pullMesh.castShadow = true;
+          drawerGroup.add(pullMesh);
+
+          chestGroup.add(drawerGroup);
+
+          // Individual hit collider for this specific drawer tier
+          const hitGeo = new THREE.BoxGeometry(
+            isXSlide ? width * 1.15 : width * 1.05,
+            tierHeight * 0.98,
+            isXSlide ? depth * 1.05 : depth * 1.15
+          );
+          const hitMat = new THREE.MeshBasicMaterial({ visible: false });
+          const hitMesh = new THREE.Mesh(hitGeo, hitMat);
+          hitMesh.position.set(0, tierY, 0);
+          chestGroup.add(hitMesh);
+
+          const drawerWorldCenter = new THREE.Vector3(cx, cy + tierY, cz);
+          const drawerObj = {
+            spec: chestSpec,
+            tier,
+            id: tier.id,
+            name: `${chestSpec.name} ${tier.name}`,
+            type: 'drawer',
+            floor: chestSpec.floor,
+            group: chestGroup,
+            drawerGroup,
+            hitMesh,
+            faceMesh,
+            baseY: tierY,
+            slideDir: sDir,
+            maxSlide: 0.80 * s,
+            slideDist: 0,
+            targetSlide: 0,
+            isOpen: false,
+            worldCenter: drawerWorldCenter
+          };
+
+          hitMesh.userData = { storage: drawerObj };
+          faceMesh.userData = { storage: drawerObj };
+
+          this.interactiveMeshes.push(hitMesh, faceMesh);
+          this.items.push(drawerObj);
+        });
+      });
+    }
+
     scene.add(this.rootGroup);
     return this.rootGroup;
   }
@@ -716,9 +954,10 @@ export class StorageManager {
           const t = Math.min(1.0, delta * 8.0);
           item.slideDist = THREE.MathUtils.lerp(item.slideDist, item.targetSlide, t);
           const dir = item.slideDir;
+          const baseY = (item.baseY !== undefined) ? item.baseY : item.drawerGroup.position.y;
           item.drawerGroup.position.set(
             dir[0] * item.slideDist,
-            item.drawerGroup.position.y,
+            baseY,
             dir[2] * item.slideDist
           );
         }
