@@ -60,6 +60,11 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
   * **Interactive Glazed Balcony Doors (<kbd>DF3</kbd>, <kbd>DF8</kbd>)**: Powder-coated aluminum framed doors with full-height safety glass panels leading to exterior first-floor balconies.
   * **Interior Flush Doors**: Solid teak doors with stainless steel lever handles and realistic latch audio.
   * **Dual Interaction Support**: Walk up in First-Person mode and press <kbd>E</kbd> or click; in Dollhouse / Orbit mode, simply left-click directly on any door or gate leaf.
+* **Interactive Sinks & Running Water System**:
+  * **8 Interactive Sinks & Basins**: Operating taps across Ground Floor and First Floor (Ground Floor Kitchen, West Bathroom, East Bathroom, First Floor Kitchen, Basin Niche, Bathrooms 1 & 2, and North Gallery).
+  * **Procedural Running Water Simulation**: Turning on any tap displays an animated shimmering translucent water stream with dynamic pulsing and expanding basin splash ripple rings.
+  * **Web Audio Sound Synthesis**: Built-in procedural audio synthesizing tap lever clicks and realistic running water hiss/trickle using modulated bandpass noise filters without needing external audio files.
+  * **Dual Interaction Support**: Approach any sink in First-Person mode and press <kbd>E</kbd> (or left-click), or click directly on any tap in Dollhouse / Orbit mode.
 * **Collapsible Sidebar (<kbd>☰</kbd> / <kbd>✕</kbd>)**: Click the toggle tab on the right edge to expand or collapse the control drawer.
 * **Floor Level View (Dollhouse Overview)**:
   * **🏢 Both Floors (<kbd>3</kbd>)**: View the full two-storey residential building.
@@ -108,6 +113,7 @@ house/
     │   ├── HouseBuilder.js      # Procedural mesh builder for structural solids and stairs
     │   ├── FitoutBuilder.js     # Mesh builder for doors, windows, gates, animated fans, lights
     │   ├── DoorManager.js       # Interactive doors, pedestrian gates, motorized overhead garage door & audio
+    │   ├── SinkManager.js       # Interactive sinks & washbasins with animated water streams & Web Audio
     │   ├── Materials.js         # Reusable Three.js PBR materials manager
     │   ├── Environment.js       # Extended terrain, street, fog, and sky dome
     │   └── RoomLabels.js        # 3D billboard canvas sprites for room labels

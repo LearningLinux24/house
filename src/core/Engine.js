@@ -7,6 +7,7 @@ import { HouseBuilder } from '../world/HouseBuilder.js';
 import { FitoutBuilder } from '../world/FitoutBuilder.js';
 import { RoomLabelsManager } from '../world/RoomLabels.js';
 import { DoorManager } from '../world/DoorManager.js';
+import { SinkManager } from '../world/SinkManager.js';
 import { CollisionSystem } from '../player/CollisionSystem.js';
 import { InputManager } from '../player/InputManager.js';
 import { Player } from '../player/Player.js';
@@ -75,6 +76,10 @@ export class Engine {
     // 7b. Interactive Doors Manager (12 Residential Doors with Dynamic Colliders)
     this.doorManager = new DoorManager(this.materials, this.collision);
     this.doorManager.buildDoors(this.sceneManager.scene);
+
+    // 7c. Interactive Sinks Manager (8 Sinks & Basins with Water Streams & Audio)
+    this.sinkManager = new SinkManager(this.materials);
+    this.sinkManager.buildSinks(this.sceneManager.scene);
 
     // 8. FPS Player
     this.spawnPoint = getSpawnPoint();
@@ -166,11 +171,11 @@ export class Engine {
     this.input.on('toggleLabels', () => this.toggleLabels());
     this.input.on('togglePrompts', () => this.togglePrompts());
     this.input.on('toggleFurniture', () => this.toggleFurniture());
-    this.input.on('interact', () => this.doorManager.interact(this.ui, this.promptsVisible));
+    this.input.on('interact', () => this.handleInteraction());
     this.input.on('resetPlayer', () => this.resetPlayer());
     this.input.on('filterFloor', (filter) => this.setFloorFilter(filter));
 
-    // Mouse click door interaction (FP click + Orbit raycast click)
+    // Mouse click interaction (FP click + Orbit raycast click)
     let pointerDownPos = { x: 0, y: 0 };
     window.addEventListener('pointerdown', (e) => {
       pointerDownPos = { x: e.clientX, y: e.clientY };
@@ -181,9 +186,10 @@ export class Engine {
       if (dist > 5) return; // Ignore drag operations (e.g. orbit rotation)
 
       if (this.cameraCtrl.fpControls.isLocked) {
-        this.doorManager.interact(this.ui, this.promptsVisible);
+        this.handleInteraction();
       } else if (this.cameraCtrl.isOrbitMode) {
         this.doorManager.handleOrbitClick(e, this.sceneManager.camera);
+        this.sinkManager.handleOrbitClick(e, this.sceneManager.camera);
       }
     });
 
@@ -229,6 +235,14 @@ export class Engine {
     this.ui.setFurnitureButtonState(this.furnitureVisible);
   }
 
+  handleInteraction() {
+    if (this.doorManager && this.doorManager.targetedDoor) {
+      this.doorManager.interact(this.ui, this.promptsVisible);
+    } else if (this.sinkManager && this.sinkManager.targetedSink) {
+      this.sinkManager.interact(this.ui, this.promptsVisible);
+    }
+  }
+
   setFloorFilter(filter, autoSwitchToOrbit = true) {
     this.currentFloorFilter = filter;
     this.houseBuilder.setFloorFilter(filter);
@@ -236,6 +250,9 @@ export class Engine {
     this.labels.setFloorFilter(filter);
     if (this.doorManager) {
       this.doorManager.setFloorFilter(filter);
+    }
+    if (this.sinkManager) {
+      this.sinkManager.setFloorFilter(filter);
     }
     this.ui.setFloorButtonState(filter);
 
@@ -284,6 +301,17 @@ export class Engine {
       isFPActive,
       this.ui,
       this.promptsVisible
+    );
+
+    // Update interactive sinks (water stream animation, handle lerp, audio & reticle targeting)
+    this.sinkManager.update(
+      delta,
+      this.sceneManager.camera,
+      this.player.position,
+      isFPActive,
+      this.ui,
+      this.promptsVisible,
+      !!this.doorManager.targetedDoor
     );
 
     // Extract current camera yaw (from actual camera, not a proxy)
