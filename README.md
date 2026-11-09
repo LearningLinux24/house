@@ -63,6 +63,11 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
   * **Dual Interaction Support**: Walk up in First-Person mode and press <kbd>E</kbd> or click; in Dollhouse / Orbit mode, simply left-click directly on any door or gate leaf.
 * **Interactive Sinks & Running Water System**:
   * **8 Interactive Sinks & Basins**: Operating taps across Ground Floor and First Floor (Ground Floor Kitchen, West Bathroom, East Bathroom, First Floor Kitchen, Basin Niche, Bathrooms 1 & 2, and North Gallery).
+  * **Enhanced 3D Sink & Basin Architectures**:
+    * **Kitchen Stainless Steel Sinks (`KIT-05`, `KF-05`)**: Dual deep hollow basins recessed into the granite counter with perimeter mounting rim lip, center saddle, chrome basket strainers with drain perforations, and fluted drainer run-off grooves.
+    * **Bathroom Ceramic Washbasins (`WW-02`, `EW-02`, etc.)**: Sculpted sanitary white ceramic bowls with hollow recessed cavity, chrome pop-up drain stopper disc, rear overflow drain hole with chrome escutcheon, and soap deck indents.
+    * **Ceramic Pedestal Columns (`WW-03`, `EW-03`, etc.)**: Tapered architectural pedestals with flared floor plinth footing and fluted column styling.
+  * **Orientation-Aware Mixer Taps**: Gooseneck spouts curve gracefully into the center of each hollow basin based on wall orientation (North, South, or East), aligning the animated water stream and expanding splash ripples directly over the drain strainer.
   * **Procedural Running Water Simulation**: Turning on any tap displays an animated shimmering translucent water stream with dynamic pulsing and expanding basin splash ripple rings.
   * **Web Audio Sound Synthesis**: Built-in procedural audio synthesizing tap lever clicks and realistic running water hiss/trickle using modulated bandpass noise filters without needing external audio files.
   * **Dual Interaction Support**: Approach any sink in First-Person mode and press <kbd>E</kbd> (or left-click), or click directly on any tap in Dollhouse / Orbit mode.
@@ -86,10 +91,13 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
   * **Procedural Fabric Slide Audio**: Web Audio synthesis simulating realistic curtain fabric sliding on brass rings across the metallic curtain rod.
 * **Interactive Storage System (Almirahs, Cupboards, Drawers & 3-Tier Chests)**:
   * **3 Interactive Wardrobes / Almirahs**: Built for Master Bedroom (GF), Master Bedroom (1F), and Child Bedroom (1F). Features dual swinging doors (left door swings $-98^\circ$, right door $+98^\circ$ out into the room), flush chrome pull handles with mounting standoffs aligned to the center meeting stiles, upper hat shelf, lower shelf, and stainless steel clothing hanger rail.
-  * **2 Interactive Kitchen Wall Cupboards**: Overhead storage cupboards in GF Kitchen with swinging cabinet doors, interior shelving, and chrome handles flush to the opening edges.
+  * **7 Interactive Kitchen Cupboards (Overhead Wall & Under-Platform Base Units)**:
+    * **2 Overhead Wall Cupboards**: Wall units in GF Kitchen with swinging cabinet doors, interior shelving, and chrome handles flush to the opening edges.
+    * **5 Under-Platform Base Cupboards**: Replacing solid dummy blocks beneath the granite counters with functional double-door cabinets featuring interior storage shelves and ergonomic top-edge handles: GF Under-Sink Double Cupboard, GF Pantry Base Cupboard, GF West Counter Base Cupboard, 1F Under-Sink Double Cupboard, and 1F South Base Cupboard.
   * **6 Interactive Bedside Nightstand Drawers**: Flanking bedside tables in GF Master Bedroom, 1F Master Bedroom, and 1F Child Bedroom. Animated pull-out drawer boxes slide smoothly forward into the room with sleek metallic handles and exposed hollow storage cavities.
-  * **3-Tier Multi-Floor Interactive Drawer Chests (Direct Replacements for South Hallway & Garage Placeholder Boxes)**:
-    * **South Hallway Walnut Chest (`POR-01`)**: Directly replaces the South Hallway placeholder box with 3 vertically stacked drawers along the south wall (`Bottom Drawer`, `Middle Drawer`, `Top Drawer`) crafted in rich walnut laminate with horizontal brushed steel handles, pulling North into the hallway.
+  * **4 Multi-Floor Interactive 3-Tier Drawer Chests (Hallway, Garage & Kitchen Base Units)**:
+    * **Kitchen Base 3-Tier Utensil Chests**: Modular 3-tier sliding drawer units built below the platform in GF Kitchen (`Cutlery Drawer`, `Utensil Drawer`, `Pot Drawer`) and 1F Kitchen, sliding North into the room with horizontal brushed steel handles.
+    * **South Hallway Walnut Chest (`POR-01`)**: Directly replaces the South Hallway placeholder box with 3 vertically stacked drawers along the south wall (`Bottom Drawer`, `Middle Drawer`, `Top Drawer`) crafted in rich walnut laminate, pulling North into the hallway.
     * **Garage Industrial Tool Chest (`GAR-03`)**: Directly replaces the Garage placeholder box with 3 stacked heavy-duty drawers along the west wall crafted in industrial dark charcoal steel with matte aluminum handles, pulling East into the garage.
     * **Independent Kinematic Control**: Each drawer tier is tracked independently with its own reticle hitmesh, prompt (`[E] Open Top Drawer`, etc.), hollow storage interior, and procedural slide sound, allowing any combination of drawers to be opened simultaneously.
   * **Procedural Wood & Slide Audio**: Authentic cabinet wood hinge creak and magnetic catch latch on wardrobe/cupboard doors, paired with wooden glide runner friction on bedside drawers and chests.
