@@ -40,6 +40,7 @@ export class FitoutBuilder {
     this.lightUpdateTimer = 0;
 
     this.furnitureVisible = true;
+    this.televisions = [];
   }
 
   buildFitout(fitoutData, fansData = [], lightsData = []) {
@@ -1576,15 +1577,18 @@ export class FitoutBuilder {
     const screenBorder = 0.02 * s;
     const screenH = sizeY - screenBorder * 2;
     const screenW = sizeZ - screenBorder * 2;
-    const screenGeo = new THREE.BoxGeometry(0.005 * s, screenH, screenW);
+    const screenGeo = new THREE.PlaneGeometry(screenW, screenH);
+    screenGeo.rotateY(-Math.PI / 2);
     const screenMesh = new THREE.Mesh(screenGeo, oledGlassMat);
-    screenMesh.position.set(panelPosX - panelThick / 2 - 0.002 * s, 0, 0);
+    screenMesh.name = `TVScreen_${item.id}`;
+    screenMesh.position.set(panelPosX - panelThick / 2 - 0.003 * s, 0, 0);
     group.add(screenMesh);
 
     // 5. Integrated Bottom Soundbar / Speaker Grille
     const barH = 0.035 * s;
     const soundbarGeo = new THREE.BoxGeometry(panelThick * 1.1, barH, sizeZ * 0.98);
     const soundbarMesh = new THREE.Mesh(soundbarGeo, speakerMat);
+    soundbarMesh.name = `TVSoundbar_${item.id}`;
     soundbarMesh.position.set(panelPosX, -sizeY / 2 + barH / 2, 0);
     group.add(soundbarMesh);
 
@@ -1597,8 +1601,20 @@ export class FitoutBuilder {
     // 7. Glowing Standby LED Pip (Cyan)
     const ledGeo = new THREE.SphereGeometry(0.006 * s, 8, 8);
     const ledMesh = new THREE.Mesh(ledGeo, ledMat);
+    ledMesh.name = `TVLED_${item.id}`;
     ledMesh.position.set(panelPosX - panelThick / 2 - 0.003 * s, -sizeY / 2 + barH / 2, sizeZ / 2 - 0.06 * s);
     group.add(ledMesh);
+
+    group.userData = {
+      isTV: true,
+      tvId: item.id,
+      floor: item.floor || (item.id === 'LOB-08' ? 'ground_floor' : 'first_floor'),
+      screenMesh,
+      soundbarMesh,
+      ledMesh
+    };
+    if (!this.televisions) this.televisions = [];
+    this.televisions.push(group);
 
     return group;
   }
@@ -1772,6 +1788,10 @@ export class FitoutBuilder {
     });
 
     return group;
+  }
+
+  getTelevisions() {
+    return this.televisions || [];
   }
 
   getRoot() {

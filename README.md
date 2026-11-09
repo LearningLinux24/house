@@ -101,6 +101,22 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
     * **Garage Industrial Tool Chest (`GAR-03`)**: Directly replaces the Garage placeholder box with 3 stacked heavy-duty drawers along the west wall crafted in industrial dark charcoal steel with matte aluminum handles, pulling East into the garage.
     * **Independent Kinematic Control**: Each drawer chest tier and cupboard/almirah unit is tracked with its own reticle hitmesh, prompt (`[E] Open ...`, `[E] Close ...`), hollow storage interior, and procedural audio.
   * **Procedural Wood & Slide Audio**: Authentic cabinet wood hinge creak and magnetic catch latch on wardrobe/cupboard/almirah doors, paired with wooden glide runner friction on bedside drawers and tool chests.
+* **Interactive Smart Television System (GF & 1F Dedicated Video Folders & 3D Spatial Audio)**:
+  * **Interactive 55-inch OLED Displays (`LOB-08` GF, `LB-08` 1F)**: Full interactive TV system in both Ground Floor and First Floor living lobbies. Approach in First-Person mode to see `[E] Turn On ...` / `[E] Turn Off ...` prompts, or click directly on the TV in Orbit / Dollhouse mode.
+  * **Dedicated Folders for Each TV**:
+    * Ground Floor TV: `public/videos/gf-tv/`
+    * First Floor TV: `public/videos/1f-tv/` (also aliased via `public/videos/2f-tv/`)
+  * **Standby Screen ("Nothing to play")**:
+    * If no `.mp4` video is present in the respective folder, turning on the TV displays a clean 16:9 dark obsidian standby screen with "Nothing to play", displaying the target folder path and instructions. No random videos will ever play.
+  * **Automatic Video Detection & Loop Playback**:
+    * Exclusively filters and plays `.mp4` video files.
+    * If multiple `.mp4` videos are present, automatically detects and plays the latest one (sorted by modification time `mtimeMs`).
+    * Seamlessly loops video playback on the TV screen using `THREE.VideoTexture`.
+  * **Physical 3D Positional Audio Dynamics**:
+    * Integrated Web Audio `THREE.PositionalAudio` streaming from the video element into the 3D room.
+    * Directional sound projection cone oriented Westward into the living room seating area.
+    * Inverse-distance acoustic roll-off (`refDistance: 5.0 ft`, `maxDistance: 35.0 ft`).
+    * Authentic concrete slab floor muffling: volume plays at 100% on the active floor and drops to 12% muffled acoustic bleed when transitioning to the other floor.
 * **Architectural Furniture, Entertainment & Sanitary Upgrades**:
   * **High-Detail Dining Tables (`LOB-09`, `LB-09`)**: Rich walnut tabletop slabs with beveled perimeter profiles, recessed apron rails, and 4 tapered square legs with polished brass tip ferrules across both Ground Floor and First Floor.
   * **Ergonomic Dining Chairs (`LOB-14`..`LOB-17`, `LB-14`..`LB-19`)**: Standard ergonomic seat height ($1.45$ ft / $17.4$ inches above floor), providing optimal $12.6$ inches clearance below the $30$-inch tabletop. Fitted with tapered legs with brass glides, cross-stretchers, upholstered padded cushions (`#efeae1`), and curved ergonomic backrests with upright stiles and lumbar slats oriented facing toward their respective tables.
@@ -181,6 +197,7 @@ house/
     │   ├── FurnitureManager.js  # Interactive beds, sofas, chairs, toilets with lid & flush mechanics
     │   ├── CurtainManager.js    # Interactive window curtains with fabric gathering drapes & slide audio
     │   ├── StorageManager.js    # Interactive wardrobes (almirahs), cupboards, and nightstand drawers
+    │   ├── TVManager.js         # Interactive Smart TVs with dedicated folders, .mp4 loop playback & 3D audio
     │   ├── Materials.js         # Reusable Three.js PBR materials manager
     │   ├── Environment.js       # Extended terrain, street, fog, and sky dome
     │   └── RoomLabels.js        # 3D billboard canvas sprites for room labels

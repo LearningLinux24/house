@@ -11,6 +11,7 @@ import { SinkManager } from '../world/SinkManager.js';
 import { FurnitureManager } from '../world/FurnitureManager.js';
 import { CurtainManager } from '../world/CurtainManager.js';
 import { StorageManager } from '../world/StorageManager.js';
+import { TVManager } from '../world/TVManager.js';
 import { CollisionSystem } from '../player/CollisionSystem.js';
 import { InputManager } from '../player/InputManager.js';
 import { Player } from '../player/Player.js';
@@ -95,6 +96,14 @@ export class Engine {
     // 7f. Interactive Storage Manager (Wardrobes, Cupboards, Drawers & Audio)
     this.storageManager = new StorageManager(this.materials);
     this.storageManager.buildStorage(this.sceneManager.scene);
+
+    // 7g. Interactive Television Manager (Dedicated GF & 1F Folders, .MP4 Playback, Standby Screen & 3D Spatial Audio)
+    this.tvManager = new TVManager(this.materials);
+    this.tvManager.init(
+      this.fitoutBuilder.getTelevisions(),
+      this.sceneManager.camera,
+      this.sceneManager.scene
+    );
 
     // 8. FPS Player
     this.spawnPoint = getSpawnPoint();
@@ -208,6 +217,7 @@ export class Engine {
         this.furnitureManager.handleOrbitClick(e, this.sceneManager.camera);
         this.curtainManager.handleOrbitClick(e, this.sceneManager.camera);
         this.storageManager.handleOrbitClick(e, this.sceneManager.camera);
+        this.tvManager.handleOrbitClick(e, this.sceneManager.camera, this.ui);
       }
     });
 
@@ -267,6 +277,8 @@ export class Engine {
       this.curtainManager.interact(this.ui, this.promptsVisible);
     } else if (this.activeInteractSystem === 'storage' && this.storageManager) {
       this.storageManager.interact(this.ui, this.promptsVisible);
+    } else if (this.activeInteractSystem === 'tv' && this.tvManager) {
+      this.tvManager.interact(this.ui, this.promptsVisible);
     } else if (this.activeInteractSystem === 'sink' && this.sinkManager) {
       this.sinkManager.interact(this.ui, this.promptsVisible);
     } else if (this.activeInteractSystem === 'door' && this.doorManager) {
@@ -293,6 +305,9 @@ export class Engine {
     }
     if (this.storageManager) {
       this.storageManager.setFloorFilter(filter);
+    }
+    if (this.tvManager) {
+      this.tvManager.setFloorFilter(filter);
     }
     this.ui.setFloorButtonState(filter);
 
@@ -350,6 +365,9 @@ export class Engine {
     if (this.storageManager) {
       this.storageManager.update(delta, this.sceneManager.camera, this.player.position, isFPActive, this.ui, false);
     }
+    if (this.tvManager) {
+      this.tvManager.update(delta, this.sceneManager.camera, this.player.position, isFPActive, this.ui, false);
+    }
 
     // Unified Target Arbitration:
     const candidates = [];
@@ -401,6 +419,14 @@ export class Engine {
           isDirectHit: !!this.storageManager.isDirectHit,
           distance: this.storageManager.targetedDistance || 999,
           prompt: this.storageManager.promptLabel
+        });
+      }
+      if (this.tvManager && this.tvManager.targetedTV) {
+        candidates.push({
+          system: 'tv',
+          isDirectHit: !!this.tvManager.isDirectHit,
+          distance: this.tvManager.targetedDistance || 999,
+          prompt: this.tvManager.promptLabel
         });
       }
     }
