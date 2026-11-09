@@ -120,6 +120,10 @@ export class FitoutBuilder {
       item.id === 'DIN-03' ||
       item.id === 'DIN-04' ||
       item.id === 'DIN-05' ||
+      item.id === 'LOB-10' ||
+      item.id === 'LOB-11' ||
+      item.id === 'LOB-12' ||
+      item.id === 'LOB-13' ||
       item.id === 'LB-10' ||
       item.id === 'LB-11' ||
       item.id === 'LB-12' ||
@@ -142,8 +146,18 @@ export class FitoutBuilder {
       return this.createRefrigerator(item);
     }
 
+    // Specialized 55-inch Ultra-Slim Smart TVs (OLED Panel, Bezel, Soundbar, Wall Mount)
+    if (item.id === 'LOB-08' || item.id === 'LB-08') {
+      return this.createTelevision(item);
+    }
+
+    // Specialized Modern TV Media Consoles (Elevated Tapered Legs, Open AV Cubby, Brass Pulls)
+    if (item.id === 'LOB-07' || item.id === 'LB-07') {
+      return this.createTVCabinet(item);
+    }
+
     // Specialized Modern Dining Tables
-    if (item.id === 'DIN-01' || item.id === 'LB-09') {
+    if (item.id === 'DIN-01' || item.id === 'LOB-09' || item.id === 'LB-09') {
       return this.createDiningTable(item);
     }
 
@@ -153,6 +167,10 @@ export class FitoutBuilder {
       item.id === 'DIN-07' ||
       item.id === 'DIN-08' ||
       item.id === 'DIN-09' ||
+      item.id === 'LOB-14' ||
+      item.id === 'LOB-15' ||
+      item.id === 'LOB-16' ||
+      item.id === 'LOB-17' ||
       item.id === 'LB-14' ||
       item.id === 'LB-15' ||
       item.id === 'LB-16' ||
@@ -164,7 +182,7 @@ export class FitoutBuilder {
     }
 
     // Specialized Modern Coffee Tables
-    if (item.id === 'LOB-02' || item.id === 'LB-06') {
+    if (item.id === 'LOB-06' || item.id === 'LB-06') {
       return this.createCoffeeTable(item);
     }
 
@@ -1090,9 +1108,9 @@ export class FitoutBuilder {
     const sizeZ = ymax - ymin; // CAD Y -> Three.js Z
 
     const posX = (xmin + xmax) / 2;
-    const isGF = item.id === 'DIN-01';
+    const isGF = item.id === 'DIN-01' || item.id === 'LOB-09';
     const floorY = (isGF ? 1.50 : 12.00) * WORLD_SCALE;
-    const tableTopY = zmax;
+    const tableTopY = isGF ? (4.00 * WORLD_SCALE) : (14.50 * WORLD_SCALE);
     const totalH = tableTopY - floorY;
     const posY = floorY + totalH / 2;
     const posZ = -((ymin + ymax) / 2);
@@ -1171,11 +1189,18 @@ export class FitoutBuilder {
   createDiningChair(item) {
     const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
     const sizeX = xmax - xmin;
-    const sizeY = zmax - zmin; // CAD Z -> Three.js Y
     const sizeZ = ymax - ymin; // CAD Y -> Three.js Z
 
+    const s = WORLD_SCALE;
+    const floorY = zmin; // Floor elevation (1.50*s on GF, 12.00*s on 1F)
+
+    // Standard ergonomic dining chair dimensions:
+    // Seat cushion height: 1.45 ft (17.4 inches) above floor
+    // Total chair height: 2.90 ft (34.8 inches) to top of backrest crest
+    const totalH = 2.90 * s;
+    const seatElev = 1.45 * s;
     const posX = (xmin + xmax) / 2;
-    const posY = (zmin + zmax) / 2;
+    const posY = floorY + totalH / 2;
     const posZ = -((ymin + ymax) / 2);
 
     const group = new THREE.Group();
@@ -1199,9 +1224,23 @@ export class FitoutBuilder {
     });
 
     let backrestSide = '-Z';
-    if (item.id === 'DIN-06' || item.id === 'DIN-07' || item.id === 'LB-18' || item.id === 'LB-19') {
+    if (
+      item.id === 'LOB-14' ||
+      item.id === 'LOB-15' ||
+      item.id === 'DIN-06' ||
+      item.id === 'DIN-07' ||
+      item.id === 'LB-18' ||
+      item.id === 'LB-19'
+    ) {
       backrestSide = '-Z'; // North chairs face South (+Z)
-    } else if (item.id === 'DIN-08' || item.id === 'DIN-09' || item.id === 'LB-16' || item.id === 'LB-17') {
+    } else if (
+      item.id === 'LOB-16' ||
+      item.id === 'LOB-17' ||
+      item.id === 'DIN-08' ||
+      item.id === 'DIN-09' ||
+      item.id === 'LB-16' ||
+      item.id === 'LB-17'
+    ) {
       backrestSide = '+Z'; // South chairs face North (-Z)
     } else if (item.id === 'LB-14') {
       backrestSide = '-X'; // West chair faces East (+X)
@@ -1209,8 +1248,9 @@ export class FitoutBuilder {
       backrestSide = '+X'; // East chair faces West (-X)
     }
 
-    const seatH = sizeY * 0.48;
-    const legH = seatH;
+    const cushionH = 0.09 * s;
+    const seatFrameH = 0.07 * s;
+    const legH = seatElev - cushionH;
     const legW = sizeX * 0.08;
 
     // 1. Four Tapered Wooden Legs with Brass Glides
@@ -1219,13 +1259,13 @@ export class FitoutBuilder {
     [[-lx, -lz], [lx, -lz], [-lx, lz], [lx, lz]].forEach(([px, pz]) => {
       const legGeo = new THREE.CylinderGeometry(legW * 0.45, legW * 0.30, legH, 8);
       const legMesh = new THREE.Mesh(legGeo, woodMat);
-      legMesh.position.set(px, -sizeY / 2 + legH / 2, pz);
+      legMesh.position.set(px, -totalH / 2 + legH / 2, pz);
       legMesh.castShadow = true;
       group.add(legMesh);
 
       const glideGeo = new THREE.CylinderGeometry(legW * 0.32, legW * 0.32, legH * 0.06, 12);
       const glideMesh = new THREE.Mesh(glideGeo, brassMat);
-      glideMesh.position.set(px, -sizeY / 2 + legH * 0.03, pz);
+      glideMesh.position.set(px, -totalH / 2 + legH * 0.03, pz);
       group.add(glideMesh);
     });
 
@@ -1233,30 +1273,28 @@ export class FitoutBuilder {
     [-lz, lz].forEach(pz => {
       const rGeo = new THREE.BoxGeometry(sizeX * 0.70, legW * 0.5, legW * 0.4);
       const rMesh = new THREE.Mesh(rGeo, woodMat);
-      rMesh.position.set(0, -sizeY / 2 + legH * 0.35, pz);
+      rMesh.position.set(0, -totalH / 2 + legH * 0.40, pz);
       group.add(rMesh);
     });
 
-    // 2. Seat Frame & Padded Cushion
-    const seatFrameH = legW * 0.7;
+    // 2. Seat Frame & Padded Cushion (Top surface sits at seatElev = 1.45*s above floor)
     const seatGeo = new THREE.BoxGeometry(sizeX * 0.94, seatFrameH, sizeZ * 0.94);
     const seatMesh = new THREE.Mesh(seatGeo, woodMat);
-    seatMesh.position.set(0, -sizeY / 2 + legH - seatFrameH / 2, 0);
+    seatMesh.position.set(0, -totalH / 2 + legH - seatFrameH / 2, 0);
     seatMesh.castShadow = true;
     group.add(seatMesh);
 
-    const cushionH = sizeY * 0.09;
     const cushionGeo = new THREE.BoxGeometry(sizeX * 0.92, cushionH, sizeZ * 0.92);
     const cushionMesh = new THREE.Mesh(cushionGeo, cushionMat);
-    cushionMesh.position.set(0, -sizeY / 2 + legH + cushionH / 2, 0);
+    cushionMesh.position.set(0, -totalH / 2 + legH + cushionH / 2, 0);
     cushionMesh.castShadow = true;
     cushionMesh.receiveShadow = true;
     group.add(cushionMesh);
 
     // 3. Ergonomic Backrest
-    const backH = sizeY - seatH;
+    const backH = totalH - seatElev;
     const backThick = sizeX * 0.08;
-    const backY = -sizeY / 2 + seatH + backH / 2;
+    const backY = -totalH / 2 + seatElev + backH / 2;
 
     if (backrestSide === '-Z' || backrestSide === '+Z') {
       const bz = (backrestSide === '-Z') ? (-sizeZ / 2 + backThick / 2) : (sizeZ / 2 - backThick / 2);
@@ -1271,7 +1309,7 @@ export class FitoutBuilder {
 
       const crestGeo = new THREE.BoxGeometry(sizeX * 0.94, backH * 0.22, backThick * 1.1);
       const crestMesh = new THREE.Mesh(crestGeo, woodMat);
-      crestMesh.position.set(0, -sizeY / 2 + seatH + backH - backH * 0.11, bz);
+      crestMesh.position.set(0, -totalH / 2 + seatElev + backH - backH * 0.11, bz);
       crestMesh.castShadow = true;
       group.add(crestMesh);
 
@@ -1294,7 +1332,7 @@ export class FitoutBuilder {
 
       const crestGeo = new THREE.BoxGeometry(backThick * 1.1, backH * 0.22, sizeZ * 0.94);
       const crestMesh = new THREE.Mesh(crestGeo, woodMat);
-      crestMesh.position.set(bx, -sizeY / 2 + seatH + backH - backH * 0.11, 0);
+      crestMesh.position.set(bx, -totalH / 2 + seatElev + backH - backH * 0.11, 0);
       crestMesh.castShadow = true;
       group.add(crestMesh);
 
@@ -1456,6 +1494,282 @@ export class FitoutBuilder {
     const spineMesh = new THREE.Mesh(spineGeo, chromeMat);
     spineMesh.position.set(-sizeX * 0.42, seatRelY + backH * 0.45, 0);
     group.add(spineMesh);
+
+    return group;
+  }
+
+  createTelevision(item) {
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
+    const sizeX = xmax - xmin;
+    const sizeY = zmax - zmin; // CAD Z -> Three.js Y
+    const sizeZ = ymax - ymin; // CAD Y -> Three.js Z
+
+    const posX = (xmin + xmax) / 2;
+    const posY = (zmin + zmax) / 2;
+    const posZ = -((ymin + ymax) / 2);
+
+    const s = WORLD_SCALE;
+    const group = new THREE.Group();
+    group.name = `Television_${item.id}`;
+    group.position.set(posX, posY, posZ);
+
+    const metalFrameMat = new THREE.MeshStandardMaterial({
+      color: 0x141416,
+      metalness: 0.85,
+      roughness: 0.25
+    });
+    const chassisMat = new THREE.MeshStandardMaterial({
+      color: 0x1c1c1f,
+      metalness: 0.30,
+      roughness: 0.65
+    });
+    const oledGlassMat = new THREE.MeshPhysicalMaterial({
+      color: 0x07090d,
+      roughness: 0.04,
+      metalness: 0.15,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.04
+    });
+    const speakerMat = new THREE.MeshStandardMaterial({
+      color: 0x18181c,
+      roughness: 0.70
+    });
+    const chromeMat = new THREE.MeshStandardMaterial({
+      color: 0xdedede,
+      metalness: 0.95,
+      roughness: 0.10
+    });
+    const ledMat = new THREE.MeshBasicMaterial({
+      color: 0x00e5ff
+    });
+
+    // 1. Heavy-duty Dual-Arm Articulating Wall Mount (Back at +sizeX / 2 against East wall)
+    const wallPlateGeo = new THREE.BoxGeometry(0.015 * s, sizeY * 0.40, sizeZ * 0.35);
+    const wallPlate = new THREE.Mesh(wallPlateGeo, chassisMat);
+    wallPlate.position.set(sizeX / 2 - 0.01 * s, 0, 0);
+    group.add(wallPlate);
+
+    const armGeo = new THREE.BoxGeometry(sizeX * 0.50, 0.035 * s, 0.035 * s);
+    [-sizeZ * 0.10, sizeZ * 0.10].forEach(az => {
+      const armMesh = new THREE.Mesh(armGeo, chassisMat);
+      armMesh.position.set(sizeX * 0.20, 0, az);
+      group.add(armMesh);
+    });
+
+    // 2. Tapered Rear Electronics Pack (Chassis)
+    const rearChassisGeo = new THREE.BoxGeometry(sizeX * 0.45, sizeY * 0.60, sizeZ * 0.65);
+    const rearChassis = new THREE.Mesh(rearChassisGeo, chassisMat);
+    rearChassis.position.set(sizeX * 0.05, -sizeY * 0.05, 0);
+    group.add(rearChassis);
+
+    // 3. Ultra-Slim Bezel Display Panel
+    const panelThick = 0.025 * s;
+    const panelPosX = -sizeX / 2 + panelThick / 2;
+
+    const bezelGeo = new THREE.BoxGeometry(panelThick, sizeY, sizeZ);
+    const bezelMesh = new THREE.Mesh(bezelGeo, metalFrameMat);
+    bezelMesh.position.set(panelPosX, 0, 0);
+    bezelMesh.castShadow = true;
+    group.add(bezelMesh);
+
+    // 4. Glossy Deep OLED Screen (Facing West into the room, -X)
+    const screenBorder = 0.02 * s;
+    const screenH = sizeY - screenBorder * 2;
+    const screenW = sizeZ - screenBorder * 2;
+    const screenGeo = new THREE.BoxGeometry(0.005 * s, screenH, screenW);
+    const screenMesh = new THREE.Mesh(screenGeo, oledGlassMat);
+    screenMesh.position.set(panelPosX - panelThick / 2 - 0.002 * s, 0, 0);
+    group.add(screenMesh);
+
+    // 5. Integrated Bottom Soundbar / Speaker Grille
+    const barH = 0.035 * s;
+    const soundbarGeo = new THREE.BoxGeometry(panelThick * 1.1, barH, sizeZ * 0.98);
+    const soundbarMesh = new THREE.Mesh(soundbarGeo, speakerMat);
+    soundbarMesh.position.set(panelPosX, -sizeY / 2 + barH / 2, 0);
+    group.add(soundbarMesh);
+
+    // 6. Chrome Brand Badge
+    const badgeGeo = new THREE.BoxGeometry(0.004 * s, 0.012 * s, 0.07 * s);
+    const badgeMesh = new THREE.Mesh(badgeGeo, chromeMat);
+    badgeMesh.position.set(panelPosX - panelThick / 2 - 0.003 * s, -sizeY / 2 + barH / 2, 0);
+    group.add(badgeMesh);
+
+    // 7. Glowing Standby LED Pip (Cyan)
+    const ledGeo = new THREE.SphereGeometry(0.006 * s, 8, 8);
+    const ledMesh = new THREE.Mesh(ledGeo, ledMat);
+    ledMesh.position.set(panelPosX - panelThick / 2 - 0.003 * s, -sizeY / 2 + barH / 2, sizeZ / 2 - 0.06 * s);
+    group.add(ledMesh);
+
+    return group;
+  }
+
+  createTVCabinet(item) {
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
+    const sizeX = xmax - xmin; // Depth across room (X: ~1.25 ft)
+    const sizeY = zmax - zmin; // Height (Y: ~1.30 ft)
+    const sizeZ = ymax - ymin; // Width along wall (Z: ~4.00 ft)
+
+    const posX = (xmin + xmax) / 2;
+    const posY = (zmin + zmax) / 2;
+    const posZ = -((ymin + ymax) / 2);
+
+    const s = WORLD_SCALE;
+    const group = new THREE.Group();
+    group.name = `TVCabinet_${item.id}`;
+    group.position.set(posX, posY, posZ);
+
+    const woodMat = this.materials.get('M-LAMINATE-WALNUT') || new THREE.MeshStandardMaterial({
+      color: 0x3d281a,
+      roughness: 0.40,
+      metalness: 0.05
+    });
+    const darkWoodMat = new THREE.MeshStandardMaterial({
+      color: 0x22160e,
+      roughness: 0.50,
+      metalness: 0.05
+    });
+    const brassMat = new THREE.MeshStandardMaterial({
+      color: 0xd4af37,
+      metalness: 0.85,
+      roughness: 0.20
+    });
+    const consoleAccMat = new THREE.MeshStandardMaterial({
+      color: 0x161618,
+      roughness: 0.35,
+      metalness: 0.40
+    });
+    const ledMat = new THREE.MeshBasicMaterial({
+      color: 0x00ff88
+    });
+
+    const legH = sizeY * 0.24;
+    const bodyH = sizeY - legH;
+    const bodyY = -sizeY / 2 + legH + bodyH / 2;
+    const wallThick = 0.035 * s;
+
+    // 1. Four Tapered Mid-Century Legs with Brass Ferrules
+    const legTopW = 0.05 * s;
+    const legBtmW = 0.03 * s;
+    const legPosX = sizeX / 2 - legTopW * 1.5;
+    const legPosZ = sizeZ / 2 - legTopW * 1.5;
+
+    [[-legPosX, -legPosZ], [legPosX, -legPosZ], [-legPosX, legPosZ], [legPosX, legPosZ]].forEach(([lx, lz]) => {
+      const legGeo = new THREE.CylinderGeometry(legTopW * 0.5, legBtmW * 0.5, legH, 8);
+      const legMesh = new THREE.Mesh(legGeo, darkWoodMat);
+      legMesh.position.set(lx, -sizeY / 2 + legH / 2, lz);
+      legMesh.castShadow = true;
+      group.add(legMesh);
+
+      const ferruleH = legH * 0.25;
+      const ferruleGeo = new THREE.CylinderGeometry(legBtmW * 0.55, legBtmW * 0.52, ferruleH, 16);
+      const ferruleMesh = new THREE.Mesh(ferruleGeo, brassMat);
+      ferruleMesh.position.set(lx, -sizeY / 2 + ferruleH / 2, lz);
+      group.add(ferruleMesh);
+    });
+
+    // Lower Leg Cross-Stretchers
+    [-legPosZ, legPosZ].forEach(lz => {
+      const railGeo = new THREE.BoxGeometry(sizeX * 0.65, 0.025 * s, 0.025 * s);
+      const railMesh = new THREE.Mesh(railGeo, darkWoodMat);
+      railMesh.position.set(0, -sizeY / 2 + legH * 0.55, lz);
+      group.add(railMesh);
+    });
+
+    // 2. Beveled Top Worktop Slab with Front Overhang
+    const topOverhang = 0.025 * s;
+    const topThick = 0.04 * s;
+    const topGeo = new THREE.BoxGeometry(sizeX + topOverhang, topThick, sizeZ + 0.02 * s);
+    const topMesh = new THREE.Mesh(topGeo, woodMat);
+    topMesh.position.set(-topOverhang / 2, sizeY / 2 - topThick / 2, 0);
+    topMesh.castShadow = true;
+    topMesh.receiveShadow = true;
+    group.add(topMesh);
+
+    // 3. Bottom Base Panel
+    const btmGeo = new THREE.BoxGeometry(sizeX, wallThick, sizeZ);
+    const btmMesh = new THREE.Mesh(btmGeo, woodMat);
+    btmMesh.position.set(0, -sizeY / 2 + legH + wallThick / 2, 0);
+    btmMesh.receiveShadow = true;
+    group.add(btmMesh);
+
+    // 4. Back Panel (East wall, +sizeX / 2)
+    const backGeo = new THREE.BoxGeometry(wallThick, bodyH - topThick - wallThick, sizeZ);
+    const backMesh = new THREE.Mesh(backGeo, darkWoodMat);
+    backMesh.position.set(sizeX / 2 - wallThick / 2, bodyY, 0);
+    group.add(backMesh);
+
+    // 5. Left & Right Exterior End Panels (along Z)
+    [-sizeZ / 2 + wallThick / 2, sizeZ / 2 - wallThick / 2].forEach(pz => {
+      const sideGeo = new THREE.BoxGeometry(sizeX, bodyH - topThick - wallThick, wallThick);
+      const sideMesh = new THREE.Mesh(sideGeo, woodMat);
+      sideMesh.position.set(0, bodyY, pz);
+      sideMesh.castShadow = true;
+      group.add(sideMesh);
+    });
+
+    // 6. Partition Layout (Left & Right Drawer Bays + Center Open AV Cubby)
+    const centerW = sizeZ * 0.40;
+    const sideW = (sizeZ - centerW - wallThick * 4) / 2;
+
+    // Vertical Bay Dividers
+    [-centerW / 2 - wallThick / 2, centerW / 2 + wallThick / 2].forEach(divZ => {
+      const divGeo = new THREE.BoxGeometry(sizeX - wallThick, bodyH - topThick - wallThick, wallThick);
+      const divMesh = new THREE.Mesh(divGeo, woodMat);
+      divMesh.position.set(-wallThick / 2, bodyY, divZ);
+      group.add(divMesh);
+    });
+
+    // Center Open AV Component Divider Shelf
+    const shelfGeo = new THREE.BoxGeometry(sizeX - wallThick * 1.5, wallThick * 0.7, centerW);
+    const shelfMesh = new THREE.Mesh(shelfGeo, darkWoodMat);
+    shelfMesh.position.set(-wallThick / 2, bodyY, 0);
+    group.add(shelfMesh);
+
+    // Center Back Cable Pass-Through Port
+    const portGeo = new THREE.CylinderGeometry(0.04 * s, 0.04 * s, wallThick * 1.2, 16);
+    portGeo.rotateZ(Math.PI / 2);
+    const portMesh = new THREE.Mesh(portGeo, consoleAccMat);
+    portMesh.position.set(sizeX / 2 - wallThick / 2, bodyY + bodyH * 0.16, 0);
+    group.add(portMesh);
+
+    // Sleek 4K Media Streaming Console Box on lower shelf
+    const mediaBoxGeo = new THREE.BoxGeometry(sizeX * 0.35, 0.035 * s, 0.32 * s);
+    const mediaBox = new THREE.Mesh(mediaBoxGeo, consoleAccMat);
+    mediaBox.position.set(-sizeX * 0.15, bodyY + wallThick * 0.5 + 0.0175 * s, 0);
+    group.add(mediaBox);
+
+    const boxLedGeo = new THREE.SphereGeometry(0.005 * s, 8, 8);
+    const boxLed = new THREE.Mesh(boxLedGeo, ledMat);
+    boxLed.position.set(-sizeX * 0.15 - (sizeX * 0.35) / 2, bodyY + wallThick * 0.5 + 0.0175 * s, 0.12 * s);
+    group.add(boxLed);
+
+    // Left & Right Drawer Fronts with Horizontal Brushed Brass Handles
+    [-centerW / 2 - wallThick - sideW / 2, centerW / 2 + wallThick + sideW / 2].forEach(pz => {
+      const drawerGeo = new THREE.BoxGeometry(wallThick, bodyH - topThick - wallThick * 1.4, sideW * 0.96);
+      const drawerMesh = new THREE.Mesh(drawerGeo, woodMat);
+      drawerMesh.position.set(-sizeX / 2 + wallThick / 2, bodyY, pz);
+      drawerMesh.castShadow = true;
+      group.add(drawerMesh);
+
+      // Fluted accent trim on drawer face
+      const trimGeo = new THREE.BoxGeometry(0.008 * s, (bodyH - topThick) * 0.85, sideW * 0.88);
+      const trimMesh = new THREE.Mesh(trimGeo, darkWoodMat);
+      trimMesh.position.set(-sizeX / 2 - 0.004 * s, bodyY, pz);
+      group.add(trimMesh);
+
+      // Horizontal brushed brass pull bar
+      const handleBarGeo = new THREE.BoxGeometry(0.02 * s, 0.02 * s, sideW * 0.45);
+      const handleMesh = new THREE.Mesh(handleBarGeo, brassMat);
+      handleMesh.position.set(-sizeX / 2 - 0.025 * s, bodyY, pz);
+      handleMesh.castShadow = true;
+      [-sideW * 0.16, sideW * 0.16].forEach(oz => {
+        const standoffGeo = new THREE.BoxGeometry(0.02 * s, 0.015 * s, 0.015 * s);
+        const standoff = new THREE.Mesh(standoffGeo, brassMat);
+        standoff.position.set(0.01 * s, 0, oz);
+        handleMesh.add(standoff);
+      });
+      group.add(handleMesh);
+    });
 
     return group;
   }
