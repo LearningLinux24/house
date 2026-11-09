@@ -33,23 +33,82 @@ export const STORAGE_SPECS = {
   ],
 
   cupboards: [
+    // Upper Wall Cupboards (Ground Floor Kitchen)
     {
       id: 'CUPBOARD-GF-KITCHEN-SW',
       fitoutId: 'KIT-09',
-      name: 'Kitchen Cupboard SW',
+      name: 'Kitchen Upper Cupboard SW',
       floor: 'ground_floor',
       floorElev: 1.50,
       box: [14.000, 16.250, 4.375, 5.375, 6.250, 8.500],
-      faceDir: 'North'
+      faceDir: 'North',
+      isDoubleDoor: false,
+      isBase: false
     },
     {
       id: 'CUPBOARD-GF-KITCHEN-SE',
       fitoutId: 'KIT-10',
-      name: 'Kitchen Cupboard SE',
+      name: 'Kitchen Upper Cupboard SE',
       floor: 'ground_floor',
       floorElev: 1.50,
       box: [22.750, 24.000, 4.375, 5.375, 6.250, 8.500],
-      faceDir: 'North'
+      faceDir: 'North',
+      isDoubleDoor: false,
+      isBase: false
+    },
+
+    // Base Cupboards Below Platform (Ground Floor Kitchen)
+    {
+      id: 'CUPBOARD-GF-KIT-SINK',
+      name: 'Under-Sink Double Cupboard',
+      floor: 'ground_floor',
+      floorElev: 1.50,
+      box: [16.550, 19.450, 4.400, 6.350, 1.500, 4.080],
+      faceDir: 'North',
+      isDoubleDoor: true,
+      isBase: true
+    },
+    {
+      id: 'CUPBOARD-GF-KIT-PANTRY',
+      name: 'Kitchen Base Pantry Cupboard',
+      floor: 'ground_floor',
+      floorElev: 1.50,
+      box: [19.500, 23.950, 4.400, 6.350, 1.500, 4.080],
+      faceDir: 'North',
+      isDoubleDoor: true,
+      isBase: true
+    },
+    {
+      id: 'CUPBOARD-GF-KIT-WEST',
+      name: 'Kitchen West Base Cupboard',
+      floor: 'ground_floor',
+      floorElev: 1.50,
+      box: [14.050, 15.950, 6.400, 11.300, 1.500, 4.080],
+      faceDir: 'East',
+      isDoubleDoor: true,
+      isBase: true
+    },
+
+    // Base Cupboards Below Platform (First Floor Kitchen)
+    {
+      id: 'CUPBOARD-1F-KIT-SINK',
+      name: '1F Under-Sink Double Cupboard',
+      floor: 'first_floor',
+      floorElev: 12.00,
+      box: [3.650, 5.600, 6.800, 9.700, 12.000, 14.580],
+      faceDir: 'East',
+      isDoubleDoor: true,
+      isBase: true
+    },
+    {
+      id: 'CUPBOARD-1F-KIT-SOUTH',
+      name: '1F Kitchen Base Cupboard',
+      floor: 'first_floor',
+      floorElev: 12.00,
+      box: [5.650, 8.450, 4.400, 6.600, 12.000, 14.580],
+      faceDir: 'North',
+      isDoubleDoor: true,
+      isBase: true
     }
   ],
 
@@ -139,6 +198,38 @@ export const STORAGE_SPECS = {
         { id: 'GAR-03-T1', name: 'Bottom Drawer' },
         { id: 'GAR-03-T2', name: 'Middle Drawer' },
         { id: 'GAR-03-T3', name: 'Top Drawer' }
+      ]
+    },
+
+    // Ground Floor Kitchen Base 3-Tier Utensil Drawer Chest
+    {
+      id: 'CHEST-GF-KIT-BASE',
+      name: 'Kitchen Drawer Chest',
+      floor: 'ground_floor',
+      floorElev: 1.50,
+      material: 'M-LAMINATE-GREY',
+      box: [14.050, 16.500, 4.400, 6.350, 1.500, 4.080],
+      slideDir: [0, 0, -1], // slides North into kitchen
+      tiers: [
+        { id: 'KIT-BASE-T1', name: 'Pot Drawer' },
+        { id: 'KIT-BASE-T2', name: 'Utensil Drawer' },
+        { id: 'KIT-BASE-T3', name: 'Cutlery Drawer' }
+      ]
+    },
+
+    // First Floor Kitchen Base 3-Tier Drawer Chest
+    {
+      id: 'CHEST-1F-KIT-BASE',
+      name: '1F Kitchen Drawer Chest',
+      floor: 'first_floor',
+      floorElev: 12.00,
+      material: 'M-LAMINATE-GREY',
+      box: [8.500, 10.950, 4.400, 6.600, 12.000, 14.580],
+      slideDir: [0, 0, -1], // slides North into kitchen
+      tiers: [
+        { id: '1F-KIT-BASE-T1', name: 'Bottom Drawer' },
+        { id: '1F-KIT-BASE-T2', name: 'Middle Drawer' },
+        { id: '1F-KIT-BASE-T3', name: 'Top Drawer' }
       ]
     }
   ]
@@ -438,8 +529,9 @@ export class StorageManager {
     // 2. Build Interactive Kitchen Cupboards
     STORAGE_SPECS.cupboards.forEach(spec => {
       const [xmin, xmax, ymin, ymax, zmin, zmax] = spec.box;
-      const width = (xmax - xmin) * s;
-      const depth = (ymax - ymin) * s;
+      const isXFacing = (spec.faceDir === 'East' || spec.faceDir === 'West');
+      const width = (isXFacing ? (ymax - ymin) : (xmax - xmin)) * s;
+      const depth = (isXFacing ? (xmax - xmin) : (ymax - ymin)) * s;
       const height = (zmax - zmin) * s;
       const cx = ((xmin + xmax) / 2) * s;
       const cy = ((zmin + zmax) / 2) * s;
@@ -448,6 +540,14 @@ export class StorageManager {
       const group = new THREE.Group();
       group.name = `Cupboard_${spec.id}`;
       group.position.set(cx, cy, cz);
+
+      if (spec.faceDir === 'East') {
+        group.rotation.y = -Math.PI / 2;
+      } else if (spec.faceDir === 'West') {
+        group.rotation.y = Math.PI / 2;
+      } else if (spec.faceDir === 'South') {
+        group.rotation.y = Math.PI;
+      }
 
       const wallThick = 0.03 * s;
 
@@ -478,36 +578,67 @@ export class StorageManager {
       group.add(shelfMesh);
 
       // Hinged cupboard door(s)
-      const doorW = width - wallThick * 2;
+      const isDouble = spec.isDoubleDoor || (width > 2.0 * s);
+      const totalDoorW = width - wallThick * 2;
+      const doorW = isDouble ? totalDoorW / 2 : totalDoorW;
       const doorH = height - wallThick * 2;
       const doorThick = 0.035 * s;
       const frontZ = -depth / 2 + doorThick / 2;
+      const handleY = spec.isBase ? (height * 0.22) : (-height * 0.15);
 
+      // Left Door & Pivot
       const leftPivot = new THREE.Group();
       leftPivot.position.set(-width / 2 + wallThick, 0, frontZ);
       group.add(leftPivot);
 
       const doorGeo = new THREE.BoxGeometry(doorW, doorH, doorThick);
-      const doorMesh = new THREE.Mesh(doorGeo, greyLaminateMat);
-      doorMesh.position.set(doorW / 2, 0, 0);
-      doorMesh.castShadow = true;
-      leftPivot.add(doorMesh);
+      const leftDoorMesh = new THREE.Mesh(doorGeo, greyLaminateMat);
+      leftDoorMesh.position.set(doorW / 2, 0, 0);
+      leftDoorMesh.castShadow = true;
+      leftPivot.add(leftDoorMesh);
 
-      // Cupboard metallic handle flush on door meeting stile
+      // Handle on left door near right meeting stile
       const handleBarGeo = new THREE.BoxGeometry(0.02 * s, 0.32 * s, 0.03 * s);
-      const handleMesh = new THREE.Mesh(handleBarGeo, handleMat);
-      handleMesh.position.set(doorW / 2 - 0.08 * s, -height * 0.15, -doorThick / 2 - 0.02 * s);
-      handleMesh.castShadow = true;
+      const leftHandle = new THREE.Mesh(handleBarGeo, handleMat);
+      leftHandle.position.set(doorW / 2 - 0.08 * s, handleY, -doorThick / 2 - 0.02 * s);
+      leftHandle.castShadow = true;
       [-0.12 * s, 0.12 * s].forEach(oy => {
         const standoffGeo = new THREE.BoxGeometry(0.015 * s, 0.015 * s, 0.02 * s);
         const standoff = new THREE.Mesh(standoffGeo, handleMat);
         standoff.position.set(0, oy, 0.02 * s / 2 + 0.03 * s / 2);
-        handleMesh.add(standoff);
+        leftHandle.add(standoff);
       });
-      doorMesh.add(handleMesh);
+      leftDoorMesh.add(leftHandle);
+
+      // Right Door & Pivot (if double door)
+      let rightPivot = null;
+      let rightDoorMesh = null;
+      if (isDouble) {
+        rightPivot = new THREE.Group();
+        rightPivot.position.set(width / 2 - wallThick, 0, frontZ);
+        group.add(rightPivot);
+
+        const rDoorGeo = new THREE.BoxGeometry(doorW, doorH, doorThick);
+        rightDoorMesh = new THREE.Mesh(rDoorGeo, greyLaminateMat);
+        rightDoorMesh.position.set(-doorW / 2, 0, 0);
+        rightDoorMesh.castShadow = true;
+        rightPivot.add(rightDoorMesh);
+
+        // Handle on right door near left meeting stile
+        const rightHandle = new THREE.Mesh(handleBarGeo, handleMat);
+        rightHandle.position.set(-doorW / 2 + 0.08 * s, handleY, -doorThick / 2 - 0.02 * s);
+        rightHandle.castShadow = true;
+        [-0.12 * s, 0.12 * s].forEach(oy => {
+          const standoffGeo = new THREE.BoxGeometry(0.015 * s, 0.015 * s, 0.02 * s);
+          const standoff = new THREE.Mesh(standoffGeo, handleMat);
+          standoff.position.set(0, oy, 0.02 * s / 2 + 0.03 * s / 2);
+          rightHandle.add(standoff);
+        });
+        rightDoorMesh.add(rightHandle);
+      }
 
       // Hit collider
-      const hitGeo = new THREE.BoxGeometry(width * 1.1, height * 1.1, depth * 1.15);
+      const hitGeo = new THREE.BoxGeometry(width * 1.05, height * 1.05, depth * 1.15);
       const hitMat = new THREE.MeshBasicMaterial({ visible: false });
       const hitMesh = new THREE.Mesh(hitGeo, hitMat);
       group.add(hitMesh);
@@ -522,8 +653,10 @@ export class StorageManager {
         floor: spec.floor,
         group,
         leftPivot,
+        rightPivot,
         hitMesh,
-        doorMesh,
+        doorMesh: leftDoorMesh,
+        rightDoorMesh,
         worldCenter: new THREE.Vector3(cx, cy, cz),
         isOpen: false,
         openAngle: 0,
@@ -531,9 +664,13 @@ export class StorageManager {
       };
 
       hitMesh.userData = { storage: cupboardObj };
-      doorMesh.userData = { storage: cupboardObj };
+      leftDoorMesh.userData = { storage: cupboardObj };
+      this.interactiveMeshes.push(hitMesh, leftDoorMesh);
+      if (rightDoorMesh) {
+        rightDoorMesh.userData = { storage: cupboardObj };
+        this.interactiveMeshes.push(rightDoorMesh);
+      }
 
-      this.interactiveMeshes.push(hitMesh, doorMesh);
       this.items.push(cupboardObj);
     });
 
@@ -971,6 +1108,7 @@ export class StorageManager {
           const t = Math.min(1.0, delta * 7.0);
           item.openAngle = THREE.MathUtils.lerp(item.openAngle, item.targetAngle, t);
           item.leftPivot.rotation.y = item.openAngle;
+          if (item.rightPivot) item.rightPivot.rotation.y = -item.openAngle;
         }
       } else if (item.type === 'drawer') {
         if (Math.abs(item.slideDist - item.targetSlide) > 0.001) {

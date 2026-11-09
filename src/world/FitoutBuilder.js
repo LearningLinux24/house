@@ -111,7 +111,11 @@ export class FitoutBuilder {
       item.id === 'GAR-03' ||
       item.id === 'KIT-06' ||
       item.id === 'KF-06' ||
-      item.id === 'HW-04'
+      item.id === 'HW-04' ||
+      item.id === 'KIT-01' ||
+      item.id === 'KIT-03' ||
+      item.id === 'KF-01' ||
+      item.id === 'KF-03'
     ) {
       return null;
     }
