@@ -169,7 +169,7 @@ export const STORAGE_SPECS = {
     }
   ],
 
-  tierAlmirahs: [
+  almirahs: [
     {
       id: 'ALMIRAH-HALL-01',
       fitoutId: 'POR-01',
@@ -178,12 +178,7 @@ export const STORAGE_SPECS = {
       floorElev: 1.50,
       material: 'M-LAMINATE-WALNUT',
       box: [8.000, 11.000, 0.000, 1.200, 1.500, 4.500],
-      faceDir: 'North',
-      tiers: [
-        { id: 'POR-01-T1', name: 'Bottom Door' },
-        { id: 'POR-01-T2', name: 'Middle Door' },
-        { id: 'POR-01-T3', name: 'Top Door' }
-      ]
+      faceDir: 'North'
     }
   ],
 
@@ -1049,10 +1044,10 @@ export class StorageManager {
       });
     }
 
-    // 5. Build Interactive 3-Tier Multi-Compartment Almirahs (Independent Swinging Doors)
-    if (STORAGE_SPECS.tierAlmirahs) {
-      STORAGE_SPECS.tierAlmirahs.forEach(almirahSpec => {
-        const [xmin, xmax, ymin, ymax, zmin, zmax] = almirahSpec.box;
+    // 5. Build Interactive Unified Double-Door Almirahs (3-Tier Interior Shelving)
+    if (STORAGE_SPECS.almirahs) {
+      STORAGE_SPECS.almirahs.forEach(spec => {
+        const [xmin, xmax, ymin, ymax, zmin, zmax] = spec.box;
         const width = (xmax - xmin) * s;
         const depth = (ymax - ymin) * s;
         const height = (zmax - zmin) * s;
@@ -1060,34 +1055,34 @@ export class StorageManager {
         const cy = ((zmin + zmax) / 2) * s;
         const cz = -((ymin + ymax) / 2) * s;
 
-        const almirahGroup = new THREE.Group();
-        almirahGroup.name = `TierAlmirah_${almirahSpec.id}`;
-        almirahGroup.position.set(cx, cy, cz);
+        const group = new THREE.Group();
+        group.name = `Almirah_${spec.id}`;
+        group.position.set(cx, cy, cz);
 
-        const carcassMat = this.materials.get(almirahSpec.material) || walnutMat;
+        const carcassMat = this.materials.get(spec.material) || walnutMat;
         const wallThick = 0.035 * s;
 
-        // Top worktop / lid panel
+        // Top worktop / cornice panel
         const topGeo = new THREE.BoxGeometry(width + 0.03 * s, wallThick * 1.1, depth + 0.03 * s);
         const topMesh = new THREE.Mesh(topGeo, carcassMat);
         topMesh.position.set(0, height / 2 - wallThick * 0.55, 0);
         topMesh.castShadow = true;
         topMesh.receiveShadow = true;
-        almirahGroup.add(topMesh);
+        group.add(topMesh);
 
         // Bottom plinth panel
         const btmGeo = new THREE.BoxGeometry(width, wallThick, depth);
         const btmMesh = new THREE.Mesh(btmGeo, carcassMat);
         btmMesh.position.set(0, -height / 2 + wallThick / 2, 0);
         btmMesh.receiveShadow = true;
-        almirahGroup.add(btmMesh);
+        group.add(btmMesh);
 
         // Back panel (faces +Z, against South wall)
         const backGeo = new THREE.BoxGeometry(width, height, wallThick);
         const backMesh = new THREE.Mesh(backGeo, carcassMat);
         backMesh.position.set(0, 0, depth / 2 - wallThick / 2);
         backMesh.castShadow = true;
-        almirahGroup.add(backMesh);
+        group.add(backMesh);
 
         // Side panels (Left & Right)
         [-width / 2 + wallThick / 2, width / 2 - wallThick / 2].forEach(px => {
@@ -1095,99 +1090,112 @@ export class StorageManager {
           const sMesh = new THREE.Mesh(sGeo, carcassMat);
           sMesh.position.set(px, 0, 0);
           sMesh.castShadow = true;
-          almirahGroup.add(sMesh);
+          group.add(sMesh);
         });
 
-        // 2 Horizontal interior shelves dividing into 3 tiers
+        // 2 Horizontal interior shelves creating 3 equal interior storage tiers
         [-height / 6, height / 6].forEach(py => {
           const shelfGeo = new THREE.BoxGeometry(width - wallThick * 2, wallThick * 0.7, depth - wallThick * 1.5);
           const shelfMesh = new THREE.Mesh(shelfGeo, interiorMat);
           shelfMesh.position.set(0, py, 0);
-          almirahGroup.add(shelfMesh);
+          shelfMesh.receiveShadow = true;
+          group.add(shelfMesh);
         });
 
-        this.rootGroup.add(almirahGroup);
-
-        // 3 Stacked Compartments & Doors
-        const tierHeight = (height - wallThick * 2) / 3;
-        const tierYs = [
-          -height / 2 + wallThick + tierHeight * 0.5,
-          0,
-          height / 2 - wallThick - tierHeight * 0.5
-        ];
-
-        const doorW = width - wallThick * 2.2;
-        const doorH = tierHeight * 0.94;
+        // ── Unified Full-Height Double Doors (Opens from middle, one on each side) ──
+        const doorW = (width - wallThick * 2) / 2;
+        const doorH = height - wallThick * 2;
         const doorThick = 0.035 * s;
         const frontZ = -depth / 2 + doorThick / 2;
 
-        almirahSpec.tiers.forEach((tier, tierIdx) => {
-          const tierY = tierYs[tierIdx];
+        const doorGeo = new THREE.BoxGeometry(doorW, doorH, doorThick);
+        const trimGeo = new THREE.BoxGeometry(doorW * 0.86, doorH * 0.90, 0.008 * s);
+        const handleBarGeo = new THREE.BoxGeometry(0.02 * s, 0.45 * s, 0.03 * s);
 
-          // Left hinge pivot for swinging door
-          const pivot = new THREE.Group();
-          pivot.name = `Pivot_${tier.id}`;
-          pivot.position.set(-width / 2 + wallThick * 1.1, tierY, frontZ);
-          almirahGroup.add(pivot);
+        // Left Door & Pivot (hinged on left edge, swings outward to the left)
+        const leftPivot = new THREE.Group();
+        leftPivot.name = `LeftPivot_${spec.id}`;
+        leftPivot.position.set(-width / 2 + wallThick, 0, frontZ);
+        group.add(leftPivot);
 
-          // Door leaf (extends right from left hinge)
-          const doorGeo = new THREE.BoxGeometry(doorW, doorH, doorThick);
-          const doorMesh = new THREE.Mesh(doorGeo, carcassMat);
-          doorMesh.position.set(doorW / 2, 0, 0);
-          doorMesh.castShadow = true;
-          pivot.add(doorMesh);
+        const leftDoorMesh = new THREE.Mesh(doorGeo, carcassMat);
+        leftDoorMesh.position.set(doorW / 2, 0, 0);
+        leftDoorMesh.castShadow = true;
+        leftPivot.add(leftDoorMesh);
 
-          // Beveled accent frame / trim on door face for architectural detail
-          const trimGeo = new THREE.BoxGeometry(doorW * 0.92, doorH * 0.88, 0.008 * s);
-          const trimMesh = new THREE.Mesh(trimGeo, carcassMat);
-          trimMesh.position.set(0, 0, -doorThick / 2 - 0.004 * s);
-          doorMesh.add(trimMesh);
+        const leftTrim = new THREE.Mesh(trimGeo, carcassMat);
+        leftTrim.position.set(doorW / 2, 0, -doorThick / 2 - 0.004 * s);
+        leftPivot.add(leftTrim);
 
-          // Vertical chrome handle near right edge
-          const handleBarGeo = new THREE.BoxGeometry(0.02 * s, Math.min(0.28 * s, doorH * 0.55), 0.03 * s);
-          const handleBar = new THREE.Mesh(handleBarGeo, handleMat);
-          handleBar.position.set(doorW / 2 - 0.08 * s, 0, -doorThick / 2 - 0.02 * s);
-          handleBar.castShadow = true;
-          [-0.08 * s, 0.08 * s].forEach(oy => {
-            const standoffGeo = new THREE.BoxGeometry(0.015 * s, 0.015 * s, 0.02 * s);
-            const standoff = new THREE.Mesh(standoffGeo, handleMat);
-            standoff.position.set(0, oy, 0.02 * s / 2 + 0.03 * s / 2);
-            handleBar.add(standoff);
-          });
-          doorMesh.add(handleBar);
-
-          // Hit collider for reticle raycasting this tier
-          const hitGeo = new THREE.BoxGeometry(width * 1.05, tierHeight * 0.98, depth * 1.15);
-          const hitMat = new THREE.MeshBasicMaterial({ visible: false });
-          const hitMesh = new THREE.Mesh(hitGeo, hitMat);
-          hitMesh.position.set(0, tierY, 0);
-          almirahGroup.add(hitMesh);
-
-          const tierWorldCenter = new THREE.Vector3(cx, cy + tierY, cz);
-          const almirahTierObj = {
-            spec: almirahSpec,
-            tier,
-            id: tier.id,
-            name: `${almirahSpec.name} ${tier.name}`,
-            type: 'almirah_tier',
-            floor: almirahSpec.floor,
-            group: almirahGroup,
-            pivot,
-            hitMesh,
-            doorMesh,
-            baseY: tierY,
-            isOpen: false,
-            openAngle: 0,
-            targetAngle: 0,
-            worldCenter: tierWorldCenter
-          };
-
-          hitMesh.userData = { storage: almirahTierObj };
-          doorMesh.userData = { storage: almirahTierObj };
-
-          this.interactiveMeshes.push(hitMesh, doorMesh);
-          this.items.push(almirahTierObj);
+        const leftHandle = new THREE.Mesh(handleBarGeo, handleMat);
+        leftHandle.position.set(doorW - 0.06 * s, 0, -doorThick / 2 - 0.02 * s);
+        leftHandle.castShadow = true;
+        [-0.15 * s, 0.15 * s].forEach(oy => {
+          const standoffGeo = new THREE.BoxGeometry(0.015 * s, 0.015 * s, 0.02 * s);
+          const standoff = new THREE.Mesh(standoffGeo, handleMat);
+          standoff.position.set(0, oy, 0.02 * s / 2 + 0.03 * s / 2);
+          leftHandle.add(standoff);
         });
+        leftPivot.add(leftHandle);
+
+        // Right Door & Pivot (hinged on right edge, swings outward to the right)
+        const rightPivot = new THREE.Group();
+        rightPivot.name = `RightPivot_${spec.id}`;
+        rightPivot.position.set(width / 2 - wallThick, 0, frontZ);
+        group.add(rightPivot);
+
+        const rightDoorMesh = new THREE.Mesh(doorGeo, carcassMat);
+        rightDoorMesh.position.set(-doorW / 2, 0, 0);
+        rightDoorMesh.castShadow = true;
+        rightPivot.add(rightDoorMesh);
+
+        const rightTrim = new THREE.Mesh(trimGeo, carcassMat);
+        rightTrim.position.set(-doorW / 2, 0, -doorThick / 2 - 0.004 * s);
+        rightPivot.add(rightTrim);
+
+        const rightHandle = new THREE.Mesh(handleBarGeo, handleMat);
+        rightHandle.position.set(-doorW + 0.06 * s, 0, -doorThick / 2 - 0.02 * s);
+        rightHandle.castShadow = true;
+        [-0.15 * s, 0.15 * s].forEach(oy => {
+          const standoffGeo = new THREE.BoxGeometry(0.015 * s, 0.015 * s, 0.02 * s);
+          const standoff = new THREE.Mesh(standoffGeo, handleMat);
+          standoff.position.set(0, oy, 0.02 * s / 2 + 0.03 * s / 2);
+          rightHandle.add(standoff);
+        });
+        rightPivot.add(rightHandle);
+
+        // Unified Hit Collider
+        const hitGeo = new THREE.BoxGeometry(width * 1.05, height * 1.05, depth * 1.15);
+        const hitMat = new THREE.MeshBasicMaterial({ visible: false });
+        const hitMesh = new THREE.Mesh(hitGeo, hitMat);
+        group.add(hitMesh);
+
+        this.rootGroup.add(group);
+
+        const almirahObj = {
+          spec,
+          id: spec.id,
+          name: spec.name,
+          type: 'almirah',
+          floor: spec.floor,
+          group,
+          leftPivot,
+          rightPivot,
+          hitMesh,
+          leftDoorMesh,
+          rightDoorMesh,
+          worldCenter: new THREE.Vector3(cx, cy, cz),
+          isOpen: false,
+          openAngle: 0,
+          targetAngle: 0
+        };
+
+        hitMesh.userData = { storage: almirahObj };
+        leftDoorMesh.userData = { storage: almirahObj };
+        rightDoorMesh.userData = { storage: almirahObj };
+
+        this.interactiveMeshes.push(hitMesh, leftDoorMesh, rightDoorMesh);
+        this.items.push(almirahObj);
       });
     }
 
@@ -1197,13 +1205,10 @@ export class StorageManager {
 
   toggleStorage(item) {
     item.isOpen = !item.isOpen;
-    if (item.type === 'wardrobe') {
+    if (item.type === 'wardrobe' || item.type === 'almirah') {
       item.targetAngle = item.isOpen ? 1.70 : 0.0; // ~98° swing open
       this.audio.playWardrobeDoor(item.isOpen);
     } else if (item.type === 'cupboard') {
-      item.targetAngle = item.isOpen ? 1.70 : 0.0;
-      this.audio.playWardrobeDoor(item.isOpen);
-    } else if (item.type === 'almirah_tier') {
       item.targetAngle = item.isOpen ? 1.70 : 0.0;
       this.audio.playWardrobeDoor(item.isOpen);
     } else if (item.type === 'drawer') {
@@ -1244,7 +1249,7 @@ export class StorageManager {
 
     // 1. Animate wardrobe doors & sliding drawers
     this.items.forEach(item => {
-      if (item.type === 'wardrobe') {
+      if (item.type === 'wardrobe' || item.type === 'almirah') {
         if (Math.abs(item.openAngle - item.targetAngle) > 0.001) {
           const t = Math.min(1.0, delta * 7.0);
           item.openAngle = THREE.MathUtils.lerp(item.openAngle, item.targetAngle, t);
@@ -1257,12 +1262,6 @@ export class StorageManager {
           item.openAngle = THREE.MathUtils.lerp(item.openAngle, item.targetAngle, t);
           item.leftPivot.rotation.y = item.openAngle;
           if (item.rightPivot) item.rightPivot.rotation.y = -item.openAngle;
-        }
-      } else if (item.type === 'almirah_tier') {
-        if (Math.abs(item.openAngle - item.targetAngle) > 0.001) {
-          const t = Math.min(1.0, delta * 7.0);
-          item.openAngle = THREE.MathUtils.lerp(item.openAngle, item.targetAngle, t);
-          item.pivot.rotation.y = item.openAngle;
         }
       } else if (item.type === 'drawer') {
         if (Math.abs(item.slideDist - item.targetSlide) > 0.001) {
@@ -1306,13 +1305,11 @@ export class StorageManager {
     this.raycaster.setFromCamera({ x: 0, y: 0 }, camera);
     const candidateMeshes = [];
     activeItems.forEach(it => {
-      if (it.type === 'wardrobe') {
+      if (it.type === 'wardrobe' || it.type === 'almirah') {
         candidateMeshes.push(it.hitMesh, it.leftDoorMesh, it.rightDoorMesh);
       } else if (it.type === 'cupboard') {
         candidateMeshes.push(it.hitMesh, it.doorMesh);
         if (it.rightDoorMesh) candidateMeshes.push(it.rightDoorMesh);
-      } else if (it.type === 'almirah_tier') {
-        candidateMeshes.push(it.hitMesh, it.doorMesh);
       } else {
         candidateMeshes.push(it.hitMesh, it.faceMesh);
       }
