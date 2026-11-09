@@ -549,8 +549,10 @@ export class Engine {
         this.player.feetElevation
       );
     } else {
-      // Orbit camera damping or idle camera update
-      this.cameraCtrl.update(this.player, delta, this.collision);
+      // Orbit camera damping or idle camera update — only when NOT driving vehicle
+      if (!this.vehicleManager || !this.vehicleManager.isDriving) {
+        this.cameraCtrl.update(this.player, delta, this.collision);
+      }
 
       const zone = this.collision.getZoneAt(this.player.position.x, this.player.position.z, this.player.feetElevation);
       this.ui.updateHUD(
@@ -570,15 +572,19 @@ export class Engine {
     }
 
     // Update Avatar model (position, walk cycle, visibility based on POV mode)
+    const isDrivingCockpit = this.vehicleManager && this.vehicleManager.isDriving && this.vehicleManager.cameraMode === 'cockpit';
     this.avatar.update(
       delta,
       this.player.position,
       this.player.feetElevation,
       cameraYaw,
       isMoving,
-      this.cameraCtrl.getPOVMode(),
+      isDrivingCockpit ? 'first_person' : this.cameraCtrl.getPOVMode(),
       this.cameraCtrl.isOrbitMode
     );
+    if (isDrivingCockpit) {
+      this.avatar.rootGroup.visible = false;
+    }
 
     // Render 3D Scene
     this.sceneManager.render();

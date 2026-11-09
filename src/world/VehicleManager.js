@@ -893,6 +893,13 @@ export class VehicleManager {
 
   toggleCameraPOV(ui) {
     this.cameraMode = (this.cameraMode === 'cockpit') ? 'chase' : 'cockpit';
+    if (this.cameraMode === 'cockpit' && this.cameraCtrl && this.cameraCtrl.camera) {
+      const s = WORLD_SCALE;
+      const eyeWorldPos = this.carGroup.localToWorld(new THREE.Vector3(-1.15 * s, 3.05 * s, 0.35 * s));
+      this.cameraCtrl.camera.position.copy(eyeWorldPos);
+      const forwardTarget = this.carGroup.localToWorld(new THREE.Vector3(-1.15 * s, 3.05 * s, 30.0 * s));
+      this.cameraCtrl.camera.lookAt(forwardTarget);
+    }
     if (ui) {
       ui.showToast(`🎥 Camera: ${this.cameraMode === 'cockpit' ? 'Cockpit Driver View (India RHD)' : 'Third-Person Chase Cam'}`);
     }
@@ -918,10 +925,24 @@ export class VehicleManager {
       avatar.setSitting(driverSeatPos, this.yaw);
     }
 
+    // Ensure First-Person mode is active if player entered from Orbit mode
+    if (cameraCtrl) {
+      this.cameraCtrl = cameraCtrl;
+      if (cameraCtrl.isOrbitMode) {
+        cameraCtrl.setMode(false, player);
+      }
+    }
+
     // Default to Cockpit view upon entering
     this.cameraMode = 'cockpit';
+
+    // Position camera directly at FRONT DRIVER'S EYE LEVEL (India RHD: X = -1.15s, Y = 3.05s, Z = +0.35s)
+    const eyeWorldPos = this.carGroup.localToWorld(new THREE.Vector3(-1.15 * s, 3.05 * s, 0.35 * s));
     if (cameraCtrl && cameraCtrl.camera) {
-      cameraCtrl.camera.rotation.set(0, this.yaw, 0);
+      cameraCtrl.camera.position.copy(eyeWorldPos);
+      // Point camera straight FORWARD along car heading (+Z local) looking past steering wheel over hood
+      const forwardTarget = this.carGroup.localToWorld(new THREE.Vector3(-1.15 * s, 3.05 * s, 30.0 * s));
+      cameraCtrl.camera.lookAt(forwardTarget);
     }
 
     if (ui) {
@@ -1055,33 +1076,40 @@ export class VehicleManager {
         }
       }
 
-      // If car is inside garage (Z < 0):
+      // If car is inside garage (Z < 0.2 * s):
       if (this.posZ < 0.2 * s) {
-        if (nextX < 36.6 * s) nextX = 36.6 * s;
-        if (nextX > 47.0 * s) nextX = 47.0 * s;
+        // Lateral garage walls
+        if (nextX < 37.0 * s) nextX = 37.0 * s;
+        if (nextX > 46.5 * s) nextX = 46.5 * s;
+        // Rear garage wall
         if (nextZ < -11.5 * s) nextZ = -11.5 * s;
 
         // Front garage door threshold
-        if (!isGarageDoorOpen && nextZ > -0.8 * s) {
-          nextZ = -0.8 * s;
+        if (!isGarageDoorOpen && nextZ > -0.6 * s) {
+          nextZ = -0.6 * s;
           this.velocity = 0;
           if (ui) ui.showToast('🛑 Garage Door is Closed! Press [G] to Open', 1200);
         }
       } else {
         // Outside drive area (driveway, ramp, front street)
-        if (nextX < 0.0 * s) nextX = 0.0 * s;
-        if (nextX > 70.0 * s) nextX = 70.0 * s;
-        if (nextZ > 45.0 * s) nextZ = 45.0 * s;
+        // Expansive 410-foot driving corridor along the roadway!
+        if (nextX < -165.0 * s) nextX = -165.0 * s;
+        if (nextX > +245.0 * s) nextX = +245.0 * s;
+        if (nextZ > 58.0 * s) nextZ = 58.0 * s;
 
-        // Re-entering garage through doorway
+        // Approaching house front from outside
         if (nextZ < 0.2 * s) {
-          if (!isGarageDoorOpen) {
+          if (nextX >= 37.2 * s && nextX <= 46.3 * s) {
+            // Re-entering garage through doorway
+            if (!isGarageDoorOpen) {
+              nextZ = 0.2 * s;
+              this.velocity = 0;
+              if (ui) ui.showToast('🛑 Garage Door is Closed! Press [G] to Open', 1200);
+            }
+            // If open, car freely drives inside (nextZ < 0.2s allowed!)
+          } else {
+            // House exterior wall/plinth boundary — smoothly slide along curb without locking velocity
             nextZ = 0.2 * s;
-            this.velocity = 0;
-            if (ui) ui.showToast('🛑 Garage Door is Closed! Press [G] to Open', 1200);
-          } else if (nextX < 37.0 * s || nextX > 46.5 * s) {
-            nextZ = 0.2 * s;
-            this.velocity = 0;
           }
         }
       }
@@ -1135,10 +1163,11 @@ export class VehicleManager {
 
       // Camera Positioning (Cockpit Driver View vs Chase Cam)
       if (cameraCtrl && cameraCtrl.camera) {
+        this.cameraCtrl = cameraCtrl;
         if (this.cameraMode === 'cockpit') {
-          // Camera placed directly at FRONT DRIVER'S EYE LEVEL (India RHD: X = -1.15s, Z = +0.15s, Y = 2.95s)
+          // Camera placed directly at FRONT DRIVER'S EYE LEVEL (India RHD: X = -1.15s, Z = +0.35s, Y = 3.05s)
           // Looking directly through the OPEN front windshield with ZERO glass occlusion!
-          const eyeWorldPos = this.carGroup.localToWorld(new THREE.Vector3(-1.15 * s, 2.95 * s, 0.15 * s));
+          const eyeWorldPos = this.carGroup.localToWorld(new THREE.Vector3(-1.15 * s, 3.05 * s, 0.35 * s));
           cameraCtrl.camera.position.copy(eyeWorldPos);
 
           // Rotate camera yaw with car turn while preserving mouse pitch/yaw freelook
