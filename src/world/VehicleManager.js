@@ -1083,8 +1083,8 @@ export class VehicleManager {
         }
       }
 
-      // If car is inside garage (Z < 0.2 * s):
-      if (this.posZ < 0.2 * s) {
+      // If car is inside garage (Z < 0.2 * s and inside garage bay X bounds):
+      if (this.posZ < 0.2 * s && this.posX >= 36.5 * s && this.posX <= 47.0 * s) {
         // Lateral garage walls
         if (nextX < 37.0 * s) nextX = 37.0 * s;
         if (nextX > 46.5 * s) nextX = 46.5 * s;
@@ -1098,35 +1098,48 @@ export class VehicleManager {
           if (ui) ui.showToast('🛑 Garage Door is Closed! Press [G] to Open', 1200);
         }
       } else {
-        // Outside drive area (driveway, ramp, front street)
-        // Expansive 410-foot driving corridor along the roadway!
-        if (nextX < -165.0 * s) nextX = -165.0 * s;
-        if (nextX > +245.0 * s) nextX = +245.0 * s;
-        if (nextZ > 58.0 * s) nextZ = 58.0 * s;
+        // Outside drive area — Expansive colony road network till world borders!
+        if (nextX < -430.0 * s) nextX = -430.0 * s;
+        if (nextX > +480.0 * s) nextX = +480.0 * s;
+        if (nextZ > 275.0 * s) nextZ = 275.0 * s;
+        if (nextZ < -140.0 * s) nextZ = -140.0 * s;
 
-        // Approaching house front from outside
-        if (nextZ < 0.2 * s) {
-          if (nextX >= 37.2 * s && nextX <= 46.3 * s) {
-            // Re-entering garage through doorway
+        // Approaching house plot boundary from outside (house footprint: X in [-1.0s, 51.0s], Z in [-25.0s, 0.5s])
+        const inHouseX = (nextX >= -1.0 * s && nextX <= 51.0 * s);
+        const inHouseZ = (nextZ >= -25.0 * s && nextZ <= 0.5 * s);
+
+        if (inHouseX && inHouseZ) {
+          const isEnteringGarage = (nextX >= 37.0 * s && nextX <= 46.5 * s && nextZ <= 0.2 * s && this.posZ >= 0.0);
+          if (isEnteringGarage) {
             if (!isGarageDoorOpen) {
-              nextZ = 0.2 * s;
+              nextZ = 0.5 * s;
               this.velocity = 0;
               if (ui) ui.showToast('🛑 Garage Door is Closed! Press [G] to Open', 1200);
             }
-            // If open, car freely drives inside (nextZ < 0.2s allowed!)
           } else {
-            // House exterior wall/plinth boundary — smoothly slide along curb without locking velocity
-            nextZ = 0.2 * s;
+            // Push out along nearest exterior boundary so car slides smoothly around house
+            const dFront = Math.abs(nextZ - 0.5 * s);
+            const dRear  = Math.abs(nextZ - (-25.0 * s));
+            const dWest  = Math.abs(nextX - (-1.0 * s));
+            const dEast  = Math.abs(nextX - 51.0 * s);
+            const minD = Math.min(dFront, dRear, dWest, dEast);
+
+            if (minD === dFront) nextZ = 0.5 * s;
+            else if (minD === dRear) nextZ = -25.0 * s;
+            else if (minD === dWest) nextX = -1.0 * s;
+            else nextX = 51.0 * s;
           }
         }
       }
 
       // Ground Elevation Sampling
-      let groundY = 0.25 * s;
-      if (nextZ > 0 && nextZ <= 4.0 * s) {
-        groundY = (1.0 - (nextZ / (4.0 * s))) * 0.25 * s;
-      } else if (nextZ > 4.0 * s) {
-        groundY = 0.0;
+      let groundY = 0.0;
+      if (this.posZ <= 0 && this.posX >= 36.5 * s && this.posX <= 47.0 * s) {
+        groundY = 0.25 * s; // Inside garage plinth
+      } else if (this.posZ > 0 && this.posZ <= 3.5 * s && this.posX >= 36.5 * s && this.posX <= 47.0 * s) {
+        groundY = (1.0 - (this.posZ / (3.5 * s))) * 0.25 * s; // Driveway ramp
+      } else {
+        groundY = 0.0; // Street & colony level
       }
 
       this.posX = nextX;
