@@ -364,10 +364,17 @@ export class StorageManager {
       leftDoorMesh.castShadow = true;
       leftPivot.add(leftDoorMesh);
 
-      // Left Door Handle (vertical chrome bar)
-      const handleGeo = new THREE.BoxGeometry(0.025 * s, 0.65 * s, 0.04 * s);
-      const leftHandle = new THREE.Mesh(handleGeo, handleMat);
-      leftHandle.position.set(doorW - 0.12 * s, 0, -doorThick);
+      // Left Door Handle (vertical chrome bar with standoffs flush to door face)
+      const handleBarGeo = new THREE.BoxGeometry(0.025 * s, 0.65 * s, 0.035 * s);
+      const leftHandle = new THREE.Mesh(handleBarGeo, handleMat);
+      leftHandle.position.set(doorW / 2 - 0.08 * s, -height * 0.02, -doorThick / 2 - 0.025 * s);
+      leftHandle.castShadow = true;
+      [-0.26 * s, 0.26 * s].forEach(oy => {
+        const standoffGeo = new THREE.BoxGeometry(0.02 * s, 0.02 * s, 0.025 * s);
+        const standoff = new THREE.Mesh(standoffGeo, handleMat);
+        standoff.position.set(0, oy, 0.025 * s / 2 + 0.035 * s / 2);
+        leftHandle.add(standoff);
+      });
       leftDoorMesh.add(leftHandle);
 
       // Right Door Pivot (hinge at right edge: x = width/2 - wallThick)
@@ -380,9 +387,16 @@ export class StorageManager {
       rightDoorMesh.castShadow = true;
       rightPivot.add(rightDoorMesh);
 
-      // Right Door Handle
-      const rightHandle = new THREE.Mesh(handleGeo, handleMat);
-      rightHandle.position.set(-doorW + 0.12 * s, 0, -doorThick);
+      // Right Door Handle (vertical chrome bar with standoffs flush to door face)
+      const rightHandle = new THREE.Mesh(handleBarGeo, handleMat);
+      rightHandle.position.set(-doorW / 2 + 0.08 * s, -height * 0.02, -doorThick / 2 - 0.025 * s);
+      rightHandle.castShadow = true;
+      [-0.26 * s, 0.26 * s].forEach(oy => {
+        const standoffGeo = new THREE.BoxGeometry(0.02 * s, 0.02 * s, 0.025 * s);
+        const standoff = new THREE.Mesh(standoffGeo, handleMat);
+        standoff.position.set(0, oy, 0.025 * s / 2 + 0.035 * s / 2);
+        rightHandle.add(standoff);
+      });
       rightDoorMesh.add(rightHandle);
 
       // Hit mesh for reticle raycast
@@ -477,10 +491,17 @@ export class StorageManager {
       doorMesh.castShadow = true;
       leftPivot.add(doorMesh);
 
-      // Cupboard metallic handle
-      const handleGeo = new THREE.BoxGeometry(0.02 * s, 0.30 * s, 0.03 * s);
-      const handleMesh = new THREE.Mesh(handleGeo, handleMat);
-      handleMesh.position.set(doorW - 0.10 * s, 0, -doorThick);
+      // Cupboard metallic handle flush on door meeting stile
+      const handleBarGeo = new THREE.BoxGeometry(0.02 * s, 0.32 * s, 0.03 * s);
+      const handleMesh = new THREE.Mesh(handleBarGeo, handleMat);
+      handleMesh.position.set(doorW / 2 - 0.08 * s, -height * 0.15, -doorThick / 2 - 0.02 * s);
+      handleMesh.castShadow = true;
+      [-0.12 * s, 0.12 * s].forEach(oy => {
+        const standoffGeo = new THREE.BoxGeometry(0.015 * s, 0.015 * s, 0.02 * s);
+        const standoff = new THREE.Mesh(standoffGeo, handleMat);
+        standoff.position.set(0, oy, 0.02 * s / 2 + 0.03 * s / 2);
+        handleMesh.add(standoff);
+      });
       doorMesh.add(handleMesh);
 
       // Hit collider
