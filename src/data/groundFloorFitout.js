@@ -823,7 +823,7 @@ export const GROUND_FLOOR_FITOUT = [
   // ==========================================
   {
     id: 'POR-01',
-    name: 'South Hallway 3-Tier Chest of Drawers',
+    name: 'South Hallway 3-Tier Almirah',
     category: 'furniture',
     type: 'furniture',
     box: [8.000, 11.000, 0.000, 1.200, 1.500, 4.500],

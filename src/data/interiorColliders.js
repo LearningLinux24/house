@@ -258,7 +258,7 @@ export const INTERIOR_COLLIDERS = [
   {
     id: 'COL-POR-01',
     fitoutId: 'POR-01',
-    name: 'South Hallway 3-Tier Chest',
+    name: 'South Hallway 3-Tier Almirah',
     floor: 'ground_floor',
     box: [8.000, 11.000, 0.000, 1.200, 1.500, 4.500],
     type: 'interior_furniture',
