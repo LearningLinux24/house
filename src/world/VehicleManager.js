@@ -254,15 +254,6 @@ export class VehicleManager {
       roughness: 0.25
     });
 
-    const straightGlassMat = new THREE.MeshPhysicalMaterial({
-      color: 0x0a101d,
-      metalness: 0.10,
-      roughness: 0.04,
-      transmission: 0.60,
-      transparent: true,
-      opacity: 0.80
-    });
-
     const tireRubberMat = new THREE.MeshStandardMaterial({
       color: 0x18181b,
       roughness: 0.90,
@@ -330,10 +321,10 @@ export class VehicleManager {
     });
 
     // ── 2. Muscular Lower Body Shell & Waist Rub-Strip ────────────────────────
-    // Main lower body solid (watertight block)
-    const lowerBodyGeo = new THREE.BoxGeometry(5.4 * s, 1.55 * s, 12.8 * s);
+    // Main lower body solid (plinth up to window sill level)
+    const lowerBodyGeo = new THREE.BoxGeometry(5.4 * s, 1.35 * s, 12.8 * s);
     const lowerBodyMesh = new THREE.Mesh(lowerBodyGeo, bodyPaintMat);
-    lowerBodyMesh.position.set(0, 1.72 * s, 0);
+    lowerBodyMesh.position.set(0, 1.62 * s, 0);
     lowerBodyMesh.castShadow = true;
     lowerBodyMesh.receiveShadow = true;
     this.carGroup.add(lowerBodyMesh);
@@ -342,12 +333,12 @@ export class VehicleManager {
     [-2.73 * s, 2.73 * s].forEach(wx => {
       const rubStripGeo = new THREE.BoxGeometry(0.08 * s, 0.12 * s, 12.4 * s);
       const rubStrip = new THREE.Mesh(rubStripGeo, darkTrimMat);
-      rubStrip.position.set(wx, 2.45 * s, 0);
+      rubStrip.position.set(wx, 2.30 * s, 0);
       this.carGroup.add(rubStrip);
 
       const chromeInsertGeo = new THREE.BoxGeometry(0.09 * s, 0.03 * s, 12.2 * s);
       const chromeInsert = new THREE.Mesh(chromeInsertGeo, chromeMat);
-      chromeInsert.position.set(wx, 2.45 * s, 0);
+      chromeInsert.position.set(wx, 2.30 * s, 0);
       this.carGroup.add(chromeInsert);
     });
 
@@ -359,9 +350,9 @@ export class VehicleManager {
       [2.82 * s, -3.8 * s]
     ];
     fenderCoords.forEach(([fx, fz]) => {
-      const flareGeo = new THREE.BoxGeometry(0.28 * s, 1.35 * s, 2.8 * s);
+      const flareGeo = new THREE.BoxGeometry(0.28 * s, 1.25 * s, 2.8 * s);
       const flareMesh = new THREE.Mesh(flareGeo, bodyPaintMat);
-      flareMesh.position.set(fx, 1.72 * s, fz);
+      flareMesh.position.set(fx, 1.62 * s, fz);
       this.carGroup.add(flareMesh);
 
       // Black protective wheel arch liner
@@ -372,50 +363,50 @@ export class VehicleManager {
     });
 
     // ── 4. Muscular Flat Hood with Power Bulge & Fender Indicators ────────────
-    const hoodGeo = new THREE.BoxGeometry(5.2 * s, 0.16 * s, 4.8 * s);
+    const hoodGeo = new THREE.BoxGeometry(5.2 * s, 0.16 * s, 4.6 * s);
     const hoodMesh = new THREE.Mesh(hoodGeo, bodyPaintMat);
-    hoodMesh.position.set(0, 2.58 * s, 4.0 * s);
+    hoodMesh.position.set(0, 2.38 * s, 4.1 * s);
     hoodMesh.castShadow = true;
     this.carGroup.add(hoodMesh);
 
     // Raised center power bulge
-    const bulgeGeo = new THREE.BoxGeometry(2.4 * s, 0.10 * s, 4.4 * s);
+    const bulgeGeo = new THREE.BoxGeometry(2.4 * s, 0.10 * s, 4.2 * s);
     const bulgeMesh = new THREE.Mesh(bulgeGeo, bodyPaintMat);
-    bulgeMesh.position.set(0, 2.70 * s, 4.0 * s);
+    bulgeMesh.position.set(0, 2.48 * s, 4.1 * s);
     this.carGroup.add(bulgeMesh);
 
     // Iconic Fender Top Turn Indicators (Amber crystals on front hood corners)
     [-2.42 * s, 2.42 * s].forEach(ix => {
       const indHousingGeo = new THREE.BoxGeometry(0.25 * s, 0.12 * s, 0.48 * s);
       const indHousing = new THREE.Mesh(indHousingGeo, darkTrimMat);
-      indHousing.position.set(ix, 2.68 * s, 5.6 * s);
+      indHousing.position.set(ix, 2.46 * s, 5.6 * s);
       this.carGroup.add(indHousing);
 
       const indLensGeo = new THREE.BoxGeometry(0.21 * s, 0.10 * s, 0.44 * s);
       const indLens = new THREE.Mesh(indLensGeo, new THREE.MeshBasicMaterial({ color: 0xf59e0b }));
-      indLens.position.set(ix, 2.74 * s, 5.6 * s);
+      indLens.position.set(ix, 2.52 * s, 5.6 * s);
       this.carGroup.add(indLens);
     });
 
     // ── 5. Upright Radiator Grille & Dual Round LED Headlights ─────────────────
-    const grilleBoxGeo = new THREE.BoxGeometry(4.8 * s, 1.05 * s, 0.15 * s);
+    const grilleBoxGeo = new THREE.BoxGeometry(4.8 * s, 0.95 * s, 0.15 * s);
     const grilleBox = new THREE.Mesh(grilleBoxGeo, darkTrimMat);
-    grilleBox.position.set(0, 1.95 * s, 6.42 * s);
+    grilleBox.position.set(0, 1.85 * s, 6.42 * s);
     this.carGroup.add(grilleBox);
 
     // Horizontal Chrome Slats
-    [-0.28 * s, 0, 0.28 * s].forEach(sy => {
+    [-0.25 * s, 0, 0.25 * s].forEach(sy => {
       const slatGeo = new THREE.BoxGeometry(2.8 * s, 0.05 * s, 0.18 * s);
       const slatMesh = new THREE.Mesh(slatGeo, chromeMat);
-      slatMesh.position.set(0, 1.95 * s + sy, 6.44 * s);
+      slatMesh.position.set(0, 1.85 * s + sy, 6.44 * s);
       this.carGroup.add(slatMesh);
     });
 
     // Center Chrome Luxury Emblem
-    const emblemGeo = new THREE.CylinderGeometry(0.24 * s, 0.24 * s, 0.08 * s, 20);
+    const emblemGeo = new THREE.CylinderGeometry(0.22 * s, 0.22 * s, 0.08 * s, 20);
     emblemGeo.rotateX(Math.PI / 2);
     const emblemMesh = new THREE.Mesh(emblemGeo, chromeMat);
-    emblemMesh.position.set(0, 1.95 * s, 6.52 * s);
+    emblemMesh.position.set(0, 1.85 * s, 6.52 * s);
     this.carGroup.add(emblemMesh);
 
     // Dual Round Projector LED Headlights with Glowing Halo DRL Rings
@@ -423,27 +414,27 @@ export class VehicleManager {
       // Chrome headlight bezel ring
       const bezelGeo = new THREE.TorusGeometry(0.38 * s, 0.05 * s, 12, 24);
       const bezelMesh = new THREE.Mesh(bezelGeo, chromeMat);
-      bezelMesh.position.set(hx, 1.95 * s, 6.46 * s);
+      bezelMesh.position.set(hx, 1.85 * s, 6.46 * s);
       this.carGroup.add(bezelMesh);
 
       // Glowing circular Halo DRL ring
       const haloGeo = new THREE.TorusGeometry(0.32 * s, 0.03 * s, 12, 24);
       const haloMesh = new THREE.Mesh(haloGeo, this.headlightMatOn);
-      haloMesh.position.set(hx, 1.95 * s, 6.48 * s);
+      haloMesh.position.set(hx, 1.85 * s, 6.48 * s);
       this.carGroup.add(haloMesh);
 
       // Inner Projector LED lens
       const lensGeo = new THREE.CylinderGeometry(0.24 * s, 0.24 * s, 0.08 * s, 20);
       lensGeo.rotateX(Math.PI / 2);
       const lensMesh = new THREE.Mesh(lensGeo, this.headlightMatOff);
-      lensMesh.position.set(hx, 1.95 * s, 6.47 * s);
+      lensMesh.position.set(hx, 1.85 * s, 6.47 * s);
       this.carGroup.add(lensMesh);
       this.headlightMeshes.push(lensMesh);
     });
 
     // Real dynamic Three.js SpotLights pointing forward from headlights
     this.spotLightLeft = new THREE.SpotLight(0xfff7ed, 0, 80 * s, Math.PI / 6.5, 0.45, 1.4);
-    this.spotLightLeft.position.set(-2.15 * s, 1.95 * s, 6.55 * s);
+    this.spotLightLeft.position.set(-2.15 * s, 1.85 * s, 6.55 * s);
     const targetL = new THREE.Object3D();
     targetL.position.set(-2.2 * s, 0.5 * s, 35.0 * s);
     this.carGroup.add(targetL);
@@ -451,7 +442,7 @@ export class VehicleManager {
     this.carGroup.add(this.spotLightLeft);
 
     this.spotLightRight = new THREE.SpotLight(0xfff7ed, 0, 80 * s, Math.PI / 6.5, 0.45, 1.4);
-    this.spotLightRight.position.set(2.15 * s, 1.95 * s, 6.55 * s);
+    this.spotLightRight.position.set(2.15 * s, 1.85 * s, 6.55 * s);
     const targetR = new THREE.Object3D();
     targetR.position.set(2.2 * s, 0.5 * s, 35.0 * s);
     this.carGroup.add(targetR);
@@ -461,98 +452,100 @@ export class VehicleManager {
     // Front Bumper Bar & Skid Plate
     const frontBumperGeo = new THREE.BoxGeometry(5.4 * s, 0.65 * s, 0.45 * s);
     const frontBumperMesh = new THREE.Mesh(frontBumperGeo, darkTrimMat);
-    frontBumperMesh.position.set(0, 1.25 * s, 6.62 * s);
+    frontBumperMesh.position.set(0, 1.15 * s, 6.62 * s);
     this.carGroup.add(frontBumperMesh);
 
     const skidPlateGeo = new THREE.BoxGeometry(3.6 * s, 0.22 * s, 0.48 * s);
     const skidPlate = new THREE.Mesh(skidPlateGeo, silverTrimMat);
-    skidPlate.position.set(0, 0.88 * s, 6.65 * s);
+    skidPlate.position.set(0, 0.78 * s, 6.65 * s);
     this.carGroup.add(skidPlate);
 
     // Front License Plate
     const plateGeo = new THREE.BoxGeometry(1.6 * s, 0.45 * s, 0.04 * s);
     const plateMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 });
     const frontPlate = new THREE.Mesh(plateGeo, plateMat);
-    frontPlate.position.set(0, 1.15 * s, 6.86 * s);
+    frontPlate.position.set(0, 1.05 * s, 6.86 * s);
     this.carGroup.add(frontPlate);
 
-    // ── 6. Solid Cabin Structure with Straight Architectural Glazing ─────────
-    // Solid cabin frame (Watertight solid box)
-    const cabinFrameGeo = new THREE.BoxGeometry(5.2 * s, 2.30 * s, 8.0 * s);
-    const cabinFrame = new THREE.Mesh(cabinFrameGeo, bodyPaintMat);
-    cabinFrame.position.set(0, 3.65 * s, -2.4 * s);
-    cabinFrame.castShadow = true;
-    this.carGroup.add(cabinFrame);
+    // ── 6. Completely Hollow Cabin Structure with Open Window Apertures ───────
+    // NO opaque solid boxes inside the cabin!
+    // NO dark glasses! The window openings are completely open and crystal clear!
 
-    // A. Front Straight Windshield (Flat upright rectangular window inset)
-    const frontWindshieldFrameGeo = new THREE.BoxGeometry(4.7 * s, 1.85 * s, 0.06 * s);
-    const frontWindshieldFrame = new THREE.Mesh(frontWindshieldFrameGeo, darkTrimMat);
-    frontWindshieldFrame.position.set(0, 3.65 * s, 1.62 * s);
-    this.carGroup.add(frontWindshieldFrame);
+    // A. Front Windshield Opening Frame
+    // Front A-Pillars on Left (+X) and Right (-X)
+    [-2.55 * s, 2.55 * s].forEach(ax => {
+      const aPillarGeo = new THREE.BoxGeometry(0.25 * s, 2.15 * s, 0.25 * s);
+      const aPillar = new THREE.Mesh(aPillarGeo, bodyPaintMat);
+      aPillar.position.set(ax, 3.45 * s, 1.75 * s);
+      this.carGroup.add(aPillar);
+    });
 
-    const frontWindshieldGlassGeo = new THREE.PlaneGeometry(4.5 * s, 1.65 * s);
-    const frontWindshieldGlass = new THREE.Mesh(frontWindshieldGlassGeo, straightGlassMat);
-    frontWindshieldGlass.position.set(0, 3.65 * s, 1.66 * s);
-    this.carGroup.add(frontWindshieldGlass);
+    // Front lower cowl bar (below open windshield)
+    const frontCowlGeo = new THREE.BoxGeometry(5.2 * s, 0.20 * s, 0.25 * s);
+    const frontCowl = new THREE.Mesh(frontCowlGeo, bodyPaintMat);
+    frontCowl.position.set(0, 2.45 * s, 1.75 * s);
+    this.carGroup.add(frontCowl);
 
-    // Dual black windshield wipers
+    // Front top windshield header bar
+    const frontHeaderGeo = new THREE.BoxGeometry(5.2 * s, 0.20 * s, 0.25 * s);
+    const frontHeader = new THREE.Mesh(frontHeaderGeo, bodyPaintMat);
+    frontHeader.position.set(0, 4.45 * s, 1.75 * s);
+    this.carGroup.add(frontHeader);
+
+    // Dual front wipers sitting at cowl base
     [-0.95 * s, 0.95 * s].forEach(wx => {
-      const wiperArmGeo = new THREE.BoxGeometry(0.04 * s, 0.85 * s, 0.04 * s);
+      const wiperArmGeo = new THREE.BoxGeometry(0.04 * s, 0.75 * s, 0.04 * s);
       wiperArmGeo.rotateZ(0.25);
       const wiperArm = new THREE.Mesh(wiperArmGeo, darkTrimMat);
-      wiperArm.position.set(wx, 3.35 * s, 1.68 * s);
+      wiperArm.position.set(wx, 2.85 * s, 1.88 * s);
       this.carGroup.add(wiperArm);
     });
 
-    // B. Straight Side Windows (Flat, flush upright glazing set in solid pillars)
-    [-2.62 * s, 2.62 * s].forEach((sx, idx) => {
-      // 3 Straight Window Insets: Driver/Front, Passenger/Rear, Quarter/Cargo
-      const windowSpecs = [
-        { z: 0.8 * s, w: 1.5 * s, name: 'FrontWindow' },
-        { z: -1.0 * s, w: 1.4 * s, name: 'RearWindow' },
-        { z: -2.8 * s, w: 1.5 * s, name: 'QuarterWindow' }
-      ];
+    // B. Side Pillars (B, C, D pillars) creating completely OPEN side windows
+    [-2.55 * s, 2.55 * s].forEach(sx => {
+      // B-Pillar (between front & rear seats)
+      const bPillarGeo = new THREE.BoxGeometry(0.25 * s, 2.15 * s, 0.28 * s);
+      const bPillar = new THREE.Mesh(bPillarGeo, bodyPaintMat);
+      bPillar.position.set(sx, 3.45 * s, -0.40 * s);
+      this.carGroup.add(bPillar);
 
-      windowSpecs.forEach(win => {
-        // Black rubber window frame aperture
-        const frameGeo = new THREE.BoxGeometry(0.06 * s, 1.55 * s, win.w + 0.16 * s);
-        const frameMesh = new THREE.Mesh(frameGeo, darkTrimMat);
-        frameMesh.position.set(sx, 3.65 * s, win.z);
-        this.carGroup.add(frameMesh);
+      // C-Pillar (behind rear seats)
+      const cPillarGeo = new THREE.BoxGeometry(0.25 * s, 2.15 * s, 0.35 * s);
+      const cPillar = new THREE.Mesh(cPillarGeo, bodyPaintMat);
+      cPillar.position.set(sx, 3.45 * s, -3.20 * s);
+      this.carGroup.add(cPillar);
 
-        // Flat straight tinted glass pane
-        const paneGeo = new THREE.PlaneGeometry(win.w, 1.40 * s);
-        paneGeo.rotateY(idx === 0 ? -Math.PI / 2 : Math.PI / 2);
-        const paneMesh = new THREE.Mesh(paneGeo, straightGlassMat);
-        paneMesh.position.set(sx + (idx === 0 ? -0.04 : 0.04) * s, 3.65 * s, win.z);
-        this.carGroup.add(paneMesh);
-      });
+      // D-Pillar (rear corner pillar)
+      const dPillarGeo = new THREE.BoxGeometry(0.25 * s, 2.15 * s, 0.28 * s);
+      const dPillar = new THREE.Mesh(dPillarGeo, bodyPaintMat);
+      dPillar.position.set(sx, 3.45 * s, -6.35 * s);
+      this.carGroup.add(dPillar);
 
-      // Flush door handles on front & rear doors
-      [0.6 * s, -1.2 * s].forEach(hz => {
+      // Side lower sills and upper roof cantrail beams
+      const cantrailGeo = new THREE.BoxGeometry(0.25 * s, 0.18 * s, 8.2 * s);
+      const cantrail = new THREE.Mesh(cantrailGeo, bodyPaintMat);
+      cantrail.position.set(sx, 4.45 * s, -2.3 * s);
+      this.carGroup.add(cantrail);
+
+      // Door handles
+      [0.6 * s, -1.8 * s].forEach(hz => {
         const handleGeo = new THREE.BoxGeometry(0.08 * s, 0.10 * s, 0.65 * s);
         const handleMesh = new THREE.Mesh(handleGeo, chromeMat);
-        handleMesh.position.set(sx + (idx === 0 ? -0.05 : 0.05) * s, 2.35 * s, hz);
+        handleMesh.position.set(sx + (sx > 0 ? 0.05 : -0.05) * s, 2.25 * s, hz);
         this.carGroup.add(handleMesh);
       });
     });
 
-    // C. Rear Straight Window on Tailgate
-    const rearWinFrameGeo = new THREE.BoxGeometry(4.2 * s, 1.65 * s, 0.06 * s);
-    const rearWinFrame = new THREE.Mesh(rearWinFrameGeo, darkTrimMat);
-    rearWinFrame.position.set(0, 3.75 * s, -6.42 * s);
-    this.carGroup.add(rearWinFrame);
-
-    const rearWinGlassGeo = new THREE.PlaneGeometry(4.0 * s, 1.45 * s);
-    rearWinGlassGeo.rotateY(Math.PI);
-    const rearWinGlass = new THREE.Mesh(rearWinGlassGeo, straightGlassMat);
-    rearWinGlass.position.set(0, 3.75 * s, -6.46 * s);
-    this.carGroup.add(rearWinGlass);
+    // C. Rear Tailgate Frame with OPEN rear window
+    const rearHeaderGeo = new THREE.BoxGeometry(5.2 * s, 0.20 * s, 0.25 * s);
+    const rearHeader = new THREE.Mesh(rearHeaderGeo, bodyPaintMat);
+    rearHeader.position.set(0, 4.45 * s, -6.35 * s);
+    this.carGroup.add(rearHeader);
 
     // ── 7. Solid Flat Roof with Drip Rails & Expedition Roof Rack ─────────────
-    const roofCapGeo = new THREE.BoxGeometry(5.24 * s, 0.14 * s, 8.2 * s);
+    const roofCapGeo = new THREE.BoxGeometry(5.3 * s, 0.15 * s, 8.3 * s);
     const roofCap = new THREE.Mesh(roofCapGeo, bodyPaintMat);
-    roofCap.position.set(0, 4.82 * s, -2.4 * s);
+    roofCap.position.set(0, 4.60 * s, -2.3 * s);
     roofCap.castShadow = true;
     this.carGroup.add(roofCap);
 
@@ -560,7 +553,7 @@ export class VehicleManager {
     [-1.5 * s, -0.5 * s, 0.5 * s, 1.5 * s].forEach(rx => {
       const ribGeo = new THREE.BoxGeometry(0.08 * s, 0.05 * s, 7.8 * s);
       const ribMesh = new THREE.Mesh(ribGeo, bodyPaintMat);
-      ribMesh.position.set(rx, 4.90 * s, -2.4 * s);
+      ribMesh.position.set(rx, 4.70 * s, -2.3 * s);
       this.carGroup.add(ribMesh);
     });
 
@@ -568,34 +561,30 @@ export class VehicleManager {
     [-2.35 * s, 2.35 * s].forEach(rx => {
       const railGeo = new THREE.BoxGeometry(0.08 * s, 0.10 * s, 7.6 * s);
       const railMesh = new THREE.Mesh(railGeo, darkTrimMat);
-      railMesh.position.set(rx, 4.98 * s, -2.4 * s);
+      railMesh.position.set(rx, 4.76 * s, -2.3 * s);
       this.carGroup.add(railMesh);
     });
 
     // ── 8. Tailgate & Iconic Hard-Shell Mounted Spare Wheel ───────────────────
-    // Rear tailgate vertical chrome handle
     const rearHandleGeo = new THREE.BoxGeometry(0.08 * s, 0.55 * s, 0.08 * s);
     const rearHandle = new THREE.Mesh(rearHandleGeo, chromeMat);
-    rearHandle.position.set(1.95 * s, 2.45 * s, -6.45 * s);
+    rearHandle.position.set(1.95 * s, 2.35 * s, -6.45 * s);
     this.carGroup.add(rearHandle);
 
     // Full-size hard-shell mounted spare wheel on tailgate
     const spareGroup = new THREE.Group();
-    spareGroup.position.set(0, 2.45 * s, -6.85 * s);
+    spareGroup.position.set(0, 2.35 * s, -6.85 * s);
 
-    // Hard-shell cylindrical tire cover
     const spareCoverGeo = new THREE.CylinderGeometry(1.05 * s, 1.05 * s, 0.55 * s, 24);
     spareCoverGeo.rotateX(Math.PI / 2);
     const spareCover = new THREE.Mesh(spareCoverGeo, bodyPaintMat);
     spareGroup.add(spareCover);
 
-    // Polished chrome perimeter trim ring
     const spareRingGeo = new THREE.TorusGeometry(1.06 * s, 0.04 * s, 12, 28);
     const spareRing = new THREE.Mesh(spareRingGeo, chromeMat);
     spareRing.position.set(0, 0, -0.28 * s);
     spareGroup.add(spareRing);
 
-    // Center luxury badge disc on spare cover
     const spareBadgeGeo = new THREE.CylinderGeometry(0.32 * s, 0.32 * s, 0.05 * s, 20);
     spareBadgeGeo.rotateX(Math.PI / 2);
     const spareBadge = new THREE.Mesh(spareBadgeGeo, chromeMat);
@@ -621,7 +610,7 @@ export class VehicleManager {
     // Rear Bumper Bar & Tow Hitch
     const rearBumperGeo = new THREE.BoxGeometry(5.4 * s, 0.65 * s, 0.45 * s);
     const rearBumperMesh = new THREE.Mesh(rearBumperGeo, darkTrimMat);
-    rearBumperMesh.position.set(0, 1.25 * s, -6.60 * s);
+    rearBumperMesh.position.set(0, 1.15 * s, -6.60 * s);
     this.carGroup.add(rearBumperMesh);
 
     // Dual polished chrome exhaust tips
@@ -635,69 +624,78 @@ export class VehicleManager {
 
     // Rear License Plate
     const rearPlate = new THREE.Mesh(plateGeo, plateMat);
-    rearPlate.position.set(0, 1.25 * s, -6.85 * s);
+    rearPlate.position.set(0, 1.15 * s, -6.85 * s);
     this.carGroup.add(rearPlate);
 
     // ── 9. Rugged Luxury Side Mirrors ─────────────────────────────────────────
     [-2.95 * s, 2.95 * s].forEach((mx, idx) => {
       const mirrorStalkGeo = new THREE.BoxGeometry(0.25 * s, 0.08 * s, 0.12 * s);
       const mirrorStalk = new THREE.Mesh(mirrorStalkGeo, darkTrimMat);
-      mirrorStalk.position.set(mx + (idx === 0 ? 0.15 : -0.15) * s, 2.95 * s, 1.45 * s);
+      mirrorStalk.position.set(mx + (idx === 0 ? 0.15 : -0.15) * s, 2.85 * s, 1.45 * s);
       this.carGroup.add(mirrorStalk);
 
       const mirrorHousingGeo = new THREE.BoxGeometry(0.35 * s, 0.55 * s, 0.22 * s);
       const mirrorHousing = new THREE.Mesh(mirrorHousingGeo, bodyPaintMat);
-      mirrorHousing.position.set(mx, 2.95 * s, 1.45 * s);
+      mirrorHousing.position.set(mx, 2.85 * s, 1.45 * s);
       this.carGroup.add(mirrorHousing);
 
       // Mirror reflective glass face (facing -Z toward driver eyes)
       const mirrorGlassGeo = new THREE.PlaneGeometry(0.28 * s, 0.48 * s);
       mirrorGlassGeo.rotateY(Math.PI);
       const mirrorGlass = new THREE.Mesh(mirrorGlassGeo, chromeMat);
-      mirrorGlass.position.set(mx + (idx === 0 ? 0.04 : -0.04) * s, 2.95 * s, 1.33 * s);
+      mirrorGlass.position.set(mx + (idx === 0 ? 0.04 : -0.04) * s, 2.85 * s, 1.33 * s);
       this.carGroup.add(mirrorGlass);
     });
 
-    // ── 10. High-Detail Interior Cockpit ───────────────────────────────────────
-    // Dashboard block
-    const dashGeo = new THREE.BoxGeometry(4.8 * s, 0.82 * s, 1.55 * s);
+    // ── 10. High-Detail Interior Cockpit (RIGHT-HAND DRIVE FOR INDIA) ──────────
+    // Dashboard block (positioned directly in front of driver at Z = +1.60)
+    const dashGeo = new THREE.BoxGeometry(4.8 * s, 0.65 * s, 0.75 * s);
     const dashMesh = new THREE.Mesh(dashGeo, interiorLeatherMat);
-    dashMesh.position.set(0, 2.65 * s, 0.95 * s);
+    dashMesh.position.set(0, 2.45 * s, 1.55 * s);
     this.carGroup.add(dashMesh);
 
-    // Dual widescreen digital displays (Driver cluster + Infotainment navigation)
-    const dualDisplayGeo = new THREE.BoxGeometry(2.8 * s, 0.45 * s, 0.05 * s);
-    const dualDisplayMat = new THREE.MeshBasicMaterial({ color: 0x0284c7 }); // Glowing cyan-blue navigation UI
-    const dualDisplay = new THREE.Mesh(dualDisplayGeo, dualDisplayMat);
-    dualDisplay.position.set(0.45 * s, 2.95 * s, 0.92 * s);
-    this.carGroup.add(dualDisplay);
+    // Driver Instrument Cluster Display (DIRECTLY IN FRONT OF DRIVER ON RIGHT SIDE: X = -1.15)
+    const clusterGeo = new THREE.BoxGeometry(1.25 * s, 0.38 * s, 0.04 * s);
+    const clusterMat = new THREE.MeshBasicMaterial({ color: 0x00e5ff }); // Glowing digital speedometer/rev display
+    const clusterMesh = new THREE.Mesh(clusterGeo, clusterMat);
+    clusterMesh.position.set(-1.15 * s, 2.70 * s, 1.50 * s);
+    clusterMesh.rotateX(-0.15);
+    this.carGroup.add(clusterMesh);
 
-    // Passenger front grab handle (Iconic G-Wagon rugged luxury design)
+    // Center Infotainment Navigation Screen (at center: X = 0)
+    const screenGeo = new THREE.BoxGeometry(1.15 * s, 0.38 * s, 0.04 * s);
+    const screenMat = new THREE.MeshBasicMaterial({ color: 0x0284c7 });
+    const screenMesh = new THREE.Mesh(screenGeo, screenMat);
+    screenMesh.position.set(0.10 * s, 2.70 * s, 1.50 * s);
+    screenMesh.rotateX(-0.15);
+    this.carGroup.add(screenMesh);
+
+    // Passenger front grab handle (ON LEFT SIDE: X = +1.45)
     const grabBarGeo = new THREE.BoxGeometry(1.2 * s, 0.08 * s, 0.08 * s);
     const grabBar = new THREE.Mesh(grabBarGeo, darkTrimMat);
-    grabBar.position.set(-1.45 * s, 2.92 * s, 0.90 * s);
+    grabBar.position.set(1.45 * s, 2.65 * s, 1.48 * s);
     this.carGroup.add(grabBar);
 
-    // Floor Center Console & Gear Shift Selector
-    const floorConsoleGeo = new THREE.BoxGeometry(0.95 * s, 0.65 * s, 4.2 * s);
+    // Floor Center Console & Gear Shift Selector (between the two front seats)
+    const floorConsoleGeo = new THREE.BoxGeometry(0.85 * s, 0.55 * s, 3.2 * s);
     const floorConsole = new THREE.Mesh(floorConsoleGeo, interiorLeatherMat);
-    floorConsole.position.set(0, 1.40 * s, -0.6 * s);
+    floorConsole.position.set(0, 1.30 * s, 0.20 * s);
     this.carGroup.add(floorConsole);
 
     const shifterGeo = new THREE.CylinderGeometry(0.06 * s, 0.06 * s, 0.28 * s, 8);
     const shifter = new THREE.Mesh(shifterGeo, chromeMat);
-    shifter.position.set(0, 1.82 * s, 0.3 * s);
+    shifter.position.set(0, 1.68 * s, 0.55 * s);
     this.carGroup.add(shifter);
 
-    // 3-Spoke Sport Steering Wheel (Mounted on right driver side for India RHD)
+    // 3-Spoke Sport Steering Wheel (MOUNTED ON RIGHT DRIVER SIDE FOR INDIA: X = -1.15)
     const steeringColumnGeo = new THREE.CylinderGeometry(0.08 * s, 0.08 * s, 0.65 * s, 12);
     steeringColumnGeo.rotateX(Math.PI / 4);
     const steeringColumn = new THREE.Mesh(steeringColumnGeo, interiorLeatherMat);
-    steeringColumn.position.set(1.15 * s, 2.50 * s, 0.58 * s);
+    steeringColumn.position.set(-1.15 * s, 2.38 * s, 1.30 * s);
     this.carGroup.add(steeringColumn);
 
     this.interiorSteeringWheel = new THREE.Group();
-    this.interiorSteeringWheel.position.set(1.15 * s, 2.75 * s, 0.38 * s);
+    this.interiorSteeringWheel.position.set(-1.15 * s, 2.60 * s, 1.05 * s);
     this.interiorSteeringWheel.rotation.x = -Math.PI / 5;
 
     const steeringRimGeo = new THREE.TorusGeometry(0.48 * s, 0.055 * s, 12, 24);
@@ -717,33 +715,39 @@ export class VehicleManager {
     });
     this.carGroup.add(this.interiorSteeringWheel);
 
-    // Front Bucket Seats (Driver at +1.15s, Passenger at -1.15s)
+    // Front Driving Seats (RIGHT SIDE = DRIVER AT X = -1.15, LEFT SIDE = PASSENGER AT X = +1.15)
+    // FRONT ROW POSITIONED ERGONOMICALLY RIGHT BEHIND STEERING WHEEL (Z = +0.25 to -0.45)
     [-1.15 * s, 1.15 * s].forEach(sx => {
-      const seatBaseGeo = new THREE.BoxGeometry(1.55 * s, 0.38 * s, 1.65 * s);
+      // Seat cushion
+      const seatBaseGeo = new THREE.BoxGeometry(1.55 * s, 0.38 * s, 1.55 * s);
       const seatBase = new THREE.Mesh(seatBaseGeo, interiorLeatherMat);
-      seatBase.position.set(sx, 1.40 * s, -0.5 * s);
+      seatBase.position.set(sx, 1.35 * s, 0.25 * s);
       this.carGroup.add(seatBase);
 
-      const seatBackGeo = new THREE.BoxGeometry(1.45 * s, 1.70 * s, 0.28 * s);
+      // Ergonomic recline backrest
+      const seatBackGeo = new THREE.BoxGeometry(1.45 * s, 1.65 * s, 0.28 * s);
+      seatBackGeo.rotateX(0.12);
       const seatBack = new THREE.Mesh(seatBackGeo, interiorLeatherMat);
-      seatBack.position.set(sx, 2.25 * s, -1.25 * s);
+      seatBack.position.set(sx, 2.15 * s, -0.45 * s);
       this.carGroup.add(seatBack);
 
+      // Headrest
       const headrestGeo = new THREE.BoxGeometry(0.85 * s, 0.42 * s, 0.22 * s);
       const headrest = new THREE.Mesh(headrestGeo, interiorLeatherMat);
-      headrest.position.set(sx, 3.25 * s, -1.35 * s);
+      headrest.position.set(sx, 3.12 * s, -0.55 * s);
       this.carGroup.add(headrest);
     });
 
-    // Rear Bench Seat
-    const rearBenchGeo = new THREE.BoxGeometry(4.6 * s, 0.42 * s, 1.5 * s);
+    // Rear Bench Seat (POSITIONED WELL BEHIND AT Z = -2.2 to -2.9)
+    const rearBenchGeo = new THREE.BoxGeometry(4.6 * s, 0.38 * s, 1.45 * s);
     const rearBench = new THREE.Mesh(rearBenchGeo, interiorLeatherMat);
-    rearBench.position.set(0, 1.45 * s, -2.4 * s);
+    rearBench.position.set(0, 1.35 * s, -2.20 * s);
     this.carGroup.add(rearBench);
 
-    const rearBackGeo = new THREE.BoxGeometry(4.5 * s, 1.60 * s, 0.30 * s);
+    const rearBackGeo = new THREE.BoxGeometry(4.5 * s, 1.55 * s, 0.28 * s);
+    rearBackGeo.rotateX(0.12);
     const rearBack = new THREE.Mesh(rearBackGeo, interiorLeatherMat);
-    rearBack.position.set(0, 2.25 * s, -3.1 * s);
+    rearBack.position.set(0, 2.15 * s, -2.90 * s);
     this.carGroup.add(rearBack);
 
     // ── 11. Four Bold Off-Road Luxury Wheels & Brakes ─────────────────────────
@@ -890,13 +894,15 @@ export class VehicleManager {
   toggleCameraPOV(ui) {
     this.cameraMode = (this.cameraMode === 'cockpit') ? 'chase' : 'cockpit';
     if (ui) {
-      ui.showToast(`🎥 Camera: ${this.cameraMode === 'cockpit' ? 'Cockpit Driver View' : 'Third-Person Chase Cam'}`);
+      ui.showToast(`🎥 Camera: ${this.cameraMode === 'cockpit' ? 'Cockpit Driver View (India RHD)' : 'Third-Person Chase Cam'}`);
     }
   }
 
   enterCar(player, avatar, cameraCtrl, ui) {
     if (this.isDriving) return;
     this.isDriving = true;
+
+    const s = WORLD_SCALE;
 
     // Disable static obstacle collision so player doesn't push against car
     if (this.carCollider) {
@@ -906,10 +912,10 @@ export class VehicleManager {
     this.playDoorAudio();
     this.startEngineAudio();
 
-    // Position player avatar in the driver's seat
+    // Position player avatar in the FRONT DRIVER'S SEAT (India Right-Hand Drive: X = -1.15s, Z = +0.25s)
+    const driverSeatPos = this.carGroup.localToWorld(new THREE.Vector3(-1.15 * s, 1.35 * s, 0.25 * s));
     if (avatar) {
-      const driverWorldPos = this.carGroup.localToWorld(new THREE.Vector3(1.15 * WORLD_SCALE, 1.45 * WORLD_SCALE, -0.5 * WORLD_SCALE));
-      avatar.setSitting(driverWorldPos, this.yaw);
+      avatar.setSitting(driverSeatPos, this.yaw);
     }
 
     // Default to Cockpit view upon entering
@@ -919,7 +925,7 @@ export class VehicleManager {
     }
 
     if (ui) {
-      ui.showToast('🚗 Driving • W/S: Drive/Brake • A/D: Steer • H: Horn • L: Lights • G: Garage Door • C: Camera • E: Exit', 4500);
+      ui.showToast('🚗 Driving (India RHD) • W/S: Drive/Brake • A/D: Steer • H: Horn • L: Lights • G: Garage Door • C: Camera • E: Exit', 4500);
       ui.hideInteractionPrompt();
     }
   }
@@ -933,8 +939,8 @@ export class VehicleManager {
 
     const s = WORLD_SCALE;
 
-    // Safely teleport player standing outside driver's side door
-    const exitWorldPos = this.carGroup.localToWorld(new THREE.Vector3(3.6 * s, 0, 0));
+    // Safely teleport player standing outside driver's side door (India RHD: exit on right side X = -3.4s)
+    const exitWorldPos = this.carGroup.localToWorld(new THREE.Vector3(-3.4 * s, 0, 0.25 * s));
     player.position.set(exitWorldPos.x, this.posY + player.config.eyeHeight, exitWorldPos.z);
     player.feetElevation = this.posY;
 
@@ -1117,8 +1123,8 @@ export class VehicleManager {
       // Update engine audio pitch & volume
       this.updateEngineAudio();
 
-      // Keep player position synchronized with car driver seat
-      const driverSeatPos = this.carGroup.localToWorld(new THREE.Vector3(1.15 * s, 1.45 * s, -0.5 * s));
+      // Keep player position synchronized with FRONT DRIVER SEAT (India Right-Hand Drive: X = -1.15s, Z = +0.25s)
+      const driverSeatPos = this.carGroup.localToWorld(new THREE.Vector3(-1.15 * s, 1.35 * s, 0.25 * s));
       player.position.copy(driverSeatPos);
       player.feetElevation = this.posY;
 
@@ -1130,8 +1136,9 @@ export class VehicleManager {
       // Camera Positioning (Cockpit Driver View vs Chase Cam)
       if (cameraCtrl && cameraCtrl.camera) {
         if (this.cameraMode === 'cockpit') {
-          // Camera placed directly at driver's eye level looking out windshield
-          const eyeWorldPos = this.carGroup.localToWorld(new THREE.Vector3(1.15 * s, 3.15 * s, -0.45 * s));
+          // Camera placed directly at FRONT DRIVER'S EYE LEVEL (India RHD: X = -1.15s, Z = +0.15s, Y = 2.95s)
+          // Looking directly through the OPEN front windshield with ZERO glass occlusion!
+          const eyeWorldPos = this.carGroup.localToWorld(new THREE.Vector3(-1.15 * s, 2.95 * s, 0.15 * s));
           cameraCtrl.camera.position.copy(eyeWorldPos);
 
           // Rotate camera yaw with car turn while preserving mouse pitch/yaw freelook

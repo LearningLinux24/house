@@ -50,13 +50,13 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
 
 | Shortcut | Action | Description |
 | :--- | :--- | :--- |
-| <kbd>E</kbd> | **Enter / Exit Car** | Approach driver's side on foot to enter (`[E] Enter Car`), or click in Orbit mode. Press <kbd>E</kbd> while driving to park the vehicle, stop the engine, and safely step out beside the driver's door. |
+| <kbd>E</kbd> | **Enter / Exit Car** | Approach the driver's side (right side, Indian RHD) on foot to enter (`[E] Enter Car`), or click in Orbit mode. Press <kbd>E</kbd> while driving to park the vehicle, stop the engine, and safely step out beside the driver's door on the right. |
 | <kbd>W</kbd> or <kbd>↑</kbd> | **Accelerate Forward** | Accelerates the vehicle smoothly up to 16 mph; spins all 4 wheels; dynamically revs engine sound pitch with speed. |
 | <kbd>S</kbd> or <kbd>↓</kbd> | **Brake / Reverse** | Brakes strongly when moving forward; reverses backward when stopped. |
 | <kbd>A</kbd> or <kbd>←</kbd> | **Steer Left** | Turns front wheels and cockpit steering wheel smoothly to the left with realistic bicycle turning physics. |
 | <kbd>D</kbd> or <kbd>→</kbd> | **Steer Right** | Turns front wheels and cockpit steering wheel smoothly to the right with spring-back auto-centering. |
 | <kbd>Space</kbd> | **Handbrake** | Emergency handbrake for instant responsive stopping. |
-| <kbd>C</kbd> or <kbd>5</kbd> / <kbd>P</kbd> | **Toggle Camera View** | Switch between First-Person **Cockpit Driver View** (sitting behind the wheel looking through the windshield with 360° mouse freelook) and Third-Person **Chase Cam** (cinematic chase view behind and above the car). |
+| <kbd>C</kbd> or <kbd>5</kbd> / <kbd>P</kbd> | **Toggle Camera View** | Switch between First-Person **Cockpit Driver View** (sitting in the front right seat behind the wheel with 100% unobstructed open sightlines and 360° mouse freelook) and Third-Person **Chase Cam** (cinematic chase view behind and above the car). |
 | <kbd>L</kbd> | **Toggle Headlights** | Turn on/off bright dual round LED projector headlights with dynamic Three.js SpotLights illuminating the garage, walls, and street. |
 | <kbd>H</kbd> | **Honk Horn** | Plays authentic dual-tone automotive horn sound (`440 Hz` + `554 Hz`). |
 | <kbd>G</kbd> | **Garage Door Remote** | Remotely open or close the motorized overhead garage door `G2` from inside the car to drive out to the street and park back in. |
@@ -133,25 +133,30 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
     * Directional sound projection cone oriented Westward into the living room seating area.
     * Inverse-distance acoustic roll-off (`refDistance: 5.0 ft`, `maxDistance: 35.0 ft`).
     * Authentic concrete slab floor muffling: volume plays at 100% on the active floor and drops to 12% muffled acoustic bleed when transitioning to the other floor.
-* **Interactive Drivable Luxury Sport SUV & Straight Architectural Glazing**:
+* **Interactive Drivable Luxury Sport SUV (India RHD & Open Crystal-Clear Cabin)**:
   * **Rugged Luxury 3D SUV Architecture (G-Class / Defender Design)**:
     * Replaces the former primitive placeholder boxes with a muscular, iconic luxury 4x4 SUV in deep midnight obsidian/sapphire metallic clearcoat paint (`#162238`).
-    * **Straight Architectural Glazing**: Built with flush, upright straight tinted glass windows—eliminating disjointed tilted planes or floating gaps:
-      * **Front Straight Windshield**: Clean flat upright rectangular windshield pane inset into the front cabin cowl with black rubber seal and dual front wipers.
-      * **Flush Straight Side Windows**: 3 flat side windows on each flank (Front Driver, Rear Passenger, Cargo Quarter Glass) set seamlessly inside black frames between solid body A, B, C, and D pillars.
-      * **Rear Tailgate Window**: Flat upright rear glass framed in the rear door.
+    * **100% Crystal-Clear Open Sightlines (No Glass Occlusion)**: All window panes have been removed, transforming the cabin into clean structural A, B, C, and D pillars with open apertures:
+      * **Front Windshield Opening**: Framed by solid A-pillars, cowl bar, and roof header with dual front wipers, providing an unobstructed forward view across the hood and street.
+      * **Side Window Apertures**: 3 open window spaces on each side (Front, Rear, Quarter) between structural pillars.
+      * **Rear Tailgate Opening**: Open rear tailgate frame with mounted spare tire visible behind.
+    * **Indian Right-Hand Drive (RHD) Front Cockpit Ergonomics**:
+      * Driver is seated in the **front seat** directly behind the steering wheel and digital instrument cluster on the right-hand side (Indian traffic standard).
+      * Passenger seat and grab handle positioned on the left-hand side.
+      * Center navigation infotainment screen and floor console with automatic gear shifter located between the front seats.
+      * Driver exit teleportation placed directly beside the right-hand driver's door.
+      * Rear passenger bench seat positioned comfortably behind the front row.
     * **Bold Exterior Sculpting**: Heavy-duty ladder chassis with chrome tubular side step running boards, muscular box fender flares over all 4 wheels, continuous horizontal waist rub-strip with chrome insert trim, flat hood with central power bulge, and iconic fender-top crystal amber turn indicators.
     * **Front Fascia & Round Projector Halo Lights**: Upright rectangular radiator grille with 3 horizontal chrome slats and center luxury star emblem, dual round LED projector headlights with circular glowing white Halo DRL rings, dynamic forward Three.js `SpotLight` beams, steel bumper with silver skid plate, and front/rear license plates (`KA-01-HG-2026`).
     * **Tailgate with Mounted Hard-Shell Spare Tire**: Full-size rear-mounted spare wheel in a luxury hard-shell cylindrical cover with polished chrome trim ring and center badge emblem, vertical LED taillight clusters, rear bumper bar, and dual polished chrome exhaust pipes.
     * **Roof with Drip Rails & Expedition Rails**: Flat solid roof panel with longitudinal reinforcement ribs and low-profile black/silver expedition roof rack rails.
     * **High-Performance Alloy Wheels & Brakes**: Deep-tread all-terrain rubber tires, machine-finished 5-double-spoke alloy wheels with center hub caps, ventilated disc brake rotors, and vibrant red sports calipers.
-    * **Detailed Cockpit & Interior**: Stitched leather dashboard with passenger grab handle, dual widescreen digital displays (instrument cluster + navigation UI), 3-spoke sport steering wheel with chrome spokes (steers synchronously with vehicle input), floor console with automatic gear shifter, sculpted front leather bucket seats with headrests, rear bench seat, and rearview mirrors.
   * **Interactive Drivable Mechanics & Controls**:
-    * **Enter / Drive (<kbd>E</kbd>)**: Approach the driver's side in First-Person mode and press <kbd>E</kbd> (`[E] Enter Car`), or left-click the car in Orbit / Dollhouse mode.
+    * **Enter / Drive (<kbd>E</kbd>)**: Approach the driver's side (right side) in First-Person mode and press <kbd>E</kbd> (`[E] Enter Car`), or left-click the car in Orbit / Dollhouse mode.
     * **Accelerate & Reverse (<kbd>W</kbd> / <kbd>S</kbd> or <kbd>↑</kbd> / <kbd>↓</kbd>)**: Smooth responsive acceleration forward up to 16 mph and reverse braking.
     * **Steer (<kbd>A</kbd> / <kbd>D</kbd> or <kbd>←</kbd> / <kbd>→</kbd>)**: Articulates front wheels and cockpit steering wheel with realistic bicycle turning physics and spring-back auto-centering.
     * **Handbrake (<kbd>Space</kbd>)**: Instant emergency handbrake stopping.
-    * **Dual Driving Cameras (<kbd>C</kbd> or <kbd>5</kbd> / <kbd>P</kbd>)**: Toggle instantly between First-Person **Cockpit Driver View** (sitting behind the wheel looking through the straight windshield with 360° mouse freelook) and Third-Person **Chase Cam** (cinematic chase view behind and above the car).
+    * **Dual Driving Cameras (<kbd>C</kbd> or <kbd>5</kbd> / <kbd>P</kbd>)**: Toggle instantly between First-Person **Cockpit Driver View** (sitting in front driver seat on the right looking through the open windshield with 360° mouse freelook) and Third-Person **Chase Cam** (cinematic chase view behind and above the car).
     * **Working Headlights (<kbd>L</kbd>)**: Toggles bright forward LED headlights and spotlights on/off.
     * **Automotive Horn (<kbd>H</kbd>)**: Synthesizes authentic musical dual-tone car horn (`440 Hz` + `554 Hz`).
     * **Built-in Garage Door Remote (<kbd>G</kbd>)**: Press <kbd>G</kbd> from inside the car to remotely open or close the motorized overhead garage door `G2`, allowing seamless drive-out from the garage onto the driveway ramp and front street, and parking back in!
