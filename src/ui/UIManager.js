@@ -219,7 +219,8 @@ export class UIManager {
 
     // Calculate cardinal direction for East-Facing House:
     // yaw = -PI/2 -> N (0°), yaw = PI -> E (90°), yaw = +PI/2 -> S (180°), yaw = 0 -> W (270°)
-    const deg = ((-cameraYaw - Math.PI / 2) * 180 / Math.PI + 360) % 360;
+    const rawDeg = (-cameraYaw - Math.PI / 2) * 180 / Math.PI;
+    const deg = ((rawDeg % 360) + 360) % 360;
     const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
     const cardinal = dirs[Math.round(deg / 45) % 8];
 

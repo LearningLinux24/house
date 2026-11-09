@@ -532,46 +532,30 @@ export class Engine {
         // Camera follows player (handles all 3 POV modes)
         this.cameraCtrl.update(this.player, delta, this.collision);
       }
-
-      const zone = this.collision.getZoneAt(this.player.position.x, this.player.position.z, this.player.feetElevation);
-      this.ui.updateHUD(
-        zone.name,
-        this.player.position.x,
-        -this.player.position.z,
-        this.player.feetElevation,
-        this.currentFps,
-        cameraYaw
-      );
-
-      this.ui.updateMinimap(
-        this.player.position.x,
-        -this.player.position.z,
-        cameraYaw,
-        this.player.feetElevation
-      );
     } else {
       // Orbit camera damping or idle camera update — only when NOT driving vehicle
       if (!this.vehicleManager || !this.vehicleManager.isDriving) {
         this.cameraCtrl.update(this.player, delta, this.collision);
       }
-
-      const zone = this.collision.getZoneAt(this.player.position.x, this.player.position.z, this.player.feetElevation);
-      this.ui.updateHUD(
-        zone.name,
-        this.player.position.x,
-        -this.player.position.z,
-        this.player.feetElevation,
-        this.currentFps,
-        cameraYaw
-      );
-
-      this.ui.updateMinimap(
-        this.player.position.x,
-        -this.player.position.z,
-        cameraYaw,
-        this.player.feetElevation
-      );
     }
+
+    // Unified HUD & Minimap status update
+    const zone = this.collision.getZoneAt(this.player.position.x, this.player.position.z, this.player.feetElevation);
+    this.ui.updateHUD(
+      zone.name,
+      this.player.position.x,
+      -this.player.position.z,
+      this.player.feetElevation,
+      this.currentFps,
+      cameraYaw
+    );
+
+    this.ui.updateMinimap(
+      this.player.position.x,
+      -this.player.position.z,
+      cameraYaw,
+      this.player.feetElevation
+    );
 
     // Update Avatar model (position, walk cycle, visibility based on POV mode)
     const isDrivingCockpit = this.vehicleManager && this.vehicleManager.isDriving && this.vehicleManager.cameraMode === 'cockpit';

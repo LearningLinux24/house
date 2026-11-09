@@ -166,8 +166,7 @@ export class CameraController {
         eyePos.z + this._fwd.z * dist
       );
       // Look at the avatar's upper body / head level
-      const lookAt = new THREE.Vector3(eyePos.x, eyePos.y - 0.3 * WORLD_SCALE, eyePos.z);
-      this.camera.lookAt(lookAt);
+      this.camera.lookAt(eyePos.x, eyePos.y - 0.3 * WORLD_SCALE, eyePos.z);
 
     } else if (mode === POV_MODES.THIRD_PERSON_FRONT) {
       // ── Selfie / face cam (in front of player) ───────────────────────────

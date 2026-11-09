@@ -962,7 +962,14 @@ export class VehicleManager {
 
     // Safely teleport player standing outside driver's side door (India RHD: exit on right side X = -3.4s)
     const exitWorldPos = this.carGroup.localToWorld(new THREE.Vector3(-3.4 * s, 0, 0.25 * s));
-    player.position.set(exitWorldPos.x, this.posY + player.config.eyeHeight, exitWorldPos.z);
+    let spawnX = exitWorldPos.x;
+    let spawnZ = exitWorldPos.z;
+    if (this.collision) {
+      const [cleanX, cleanZ] = this.collision.resolveWallCollisions(spawnX, spawnZ, player.config.radius, this.posY);
+      spawnX = cleanX;
+      spawnZ = cleanZ;
+    }
+    player.position.set(spawnX, this.posY + player.config.eyeHeight, spawnZ);
     player.feetElevation = this.posY;
 
     // Restore standing avatar pose

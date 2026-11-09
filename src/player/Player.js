@@ -10,6 +10,13 @@ export class Player {
     this.feetElevation = spawnPoint.elev;
     this.velocityY = 0;
     this.isGrounded = true;
+
+    // Reusable scratch objects to eliminate per-frame GC allocations
+    this._euler = new THREE.Euler(0, 0, 0, 'YXZ');
+    this._forward = new THREE.Vector3();
+    this._right = new THREE.Vector3();
+    this._moveDir = new THREE.Vector3();
+    this._up = new THREE.Vector3(0, 1, 0);
   }
 
   update(delta, input, camera) {
@@ -44,15 +51,14 @@ export class Player {
       moveZ /= len;
 
       // Extract horizontal camera yaw direction
-      const euler = new THREE.Euler(0, 0, 0, 'YXZ');
-      euler.setFromQuaternion(camera.quaternion);
+      this._euler.setFromQuaternion(camera.quaternion);
 
-      const forward = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), euler.y);
-      const right = new THREE.Vector3(1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), euler.y);
+      this._forward.set(0, 0, -1).applyAxisAngle(this._up, this._euler.y);
+      this._right.set(1, 0, 0).applyAxisAngle(this._up, this._euler.y);
 
-      const moveDir = new THREE.Vector3()
-        .addScaledVector(forward, -moveZ)
-        .addScaledVector(right, moveX)
+      this._moveDir.set(0, 0, 0)
+        .addScaledVector(this._forward, -moveZ)
+        .addScaledVector(this._right, moveX)
         .normalize();
 
       const totalDist = speed * dt;
@@ -63,8 +69,8 @@ export class Player {
       const stepDt = dt / steps;
 
       for (let sIdx = 0; sIdx < steps; sIdx++) {
-        const nextX = this.position.x + moveDir.x * speed * stepDt;
-        const nextZ = this.position.z + moveDir.z * speed * stepDt;
+        const nextX = this.position.x + this._moveDir.x * speed * stepDt;
+        const nextZ = this.position.z + this._moveDir.z * speed * stepDt;
 
         // Sample step elevation before confirming move
         const targetFloorElev = this.collision.getFloorElevation(nextX, nextZ, this.feetElevation);
