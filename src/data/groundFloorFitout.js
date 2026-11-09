@@ -799,27 +799,11 @@ export const GROUND_FLOOR_FITOUT = [
   // ==========================================
   {
     id: 'POR-01',
-    name: 'Entrance Porch Shoe Rack',
-    category: 'furniture',
-    type: 'furniture',
-    box: [8.000, 11.000, 0.000, 1.000, 1.500, 4.500],
-    material: 'M-WOOD-DARK'
-  },
-  {
-    id: 'CHEST-HALL-01',
     name: 'South Hallway 3-Tier Chest of Drawers',
     category: 'furniture',
     type: 'furniture',
-    box: [14.000, 16.600, 2.700, 4.000, 1.500, 4.650],
+    box: [8.000, 11.000, 0.000, 1.200, 1.500, 4.500],
     material: 'M-LAMINATE-WALNUT'
-  },
-  {
-    id: 'CHEST-GAR-01',
-    name: 'Garage 3-Tier Tool Chest',
-    category: 'furniture',
-    type: 'furniture',
-    box: [34.250, 35.550, 9.500, 12.100, 0.000, 3.150],
-    material: 'M-STEEL-GREY'
   },
 
   // ==========================================
@@ -875,11 +859,11 @@ export const GROUND_FLOOR_FITOUT = [
   },
   {
     id: 'GAR-03',
-    name: 'Scooter (Two-Wheeler)',
-    category: 'vehicles',
-    type: 'vehicle',
-    box: [35.000, 37.000, 2.000, 8.000, 0.200, 3.400],
-    material: 'M-SCOOTER-RED'
+    name: 'Garage 3-Tier Tool Chest',
+    category: 'furniture',
+    type: 'furniture',
+    box: [34.500, 37.000, 3.500, 6.500, 0.000, 3.200],
+    material: 'M-STEEL-GREY'
   },
 
   // ==========================================

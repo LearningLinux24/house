@@ -258,27 +258,18 @@ export const INTERIOR_COLLIDERS = [
   {
     id: 'COL-POR-01',
     fitoutId: 'POR-01',
-    name: 'Entrance Porch Shoe Rack',
-    floor: 'ground_floor',
-    box: [8.100, 10.900, 0.000, 0.950, 1.500, 4.500],
-    type: 'interior_furniture',
-    isStepable: true
-  },
-  {
-    id: 'COL-CHEST-HALL',
-    fitoutId: 'CHEST-HALL-01',
     name: 'South Hallway 3-Tier Chest',
     floor: 'ground_floor',
-    box: [14.000, 16.600, 2.700, 4.000, 1.500, 4.650],
+    box: [8.000, 11.000, 0.000, 1.200, 1.500, 4.500],
     type: 'interior_furniture',
     isStepable: true
   },
   {
-    id: 'COL-CHEST-GAR',
-    fitoutId: 'CHEST-GAR-01',
+    id: 'COL-GAR-03',
+    fitoutId: 'GAR-03',
     name: 'Garage 3-Tier Tool Chest',
     floor: 'ground_floor',
-    box: [34.250, 35.550, 9.500, 12.100, 0.000, 3.150],
+    box: [34.500, 37.000, 3.500, 6.500, 0.000, 3.200],
     type: 'interior_furniture',
     isStepable: true
   },

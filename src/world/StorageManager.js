@@ -113,30 +113,32 @@ export const STORAGE_SPECS = {
   chests: [
     {
       id: 'CHEST-HALL-01',
+      fitoutId: 'POR-01',
       name: 'South Hallway Chest',
       floor: 'ground_floor',
       floorElev: 1.50,
       material: 'M-LAMINATE-WALNUT',
-      box: [14.000, 16.600, 2.700, 4.000, 1.500, 4.650],
-      slideDir: [0, 0, 1], // slides South into hallway (+Z in Three.js)
+      box: [8.000, 11.000, 0.000, 1.200, 1.500, 4.500],
+      slideDir: [0, 0, -1], // slides North into hallway (-Z in Three.js)
       tiers: [
-        { id: 'CHEST-HALL-01-T1', name: 'Bottom Drawer' },
-        { id: 'CHEST-HALL-01-T2', name: 'Middle Drawer' },
-        { id: 'CHEST-HALL-01-T3', name: 'Top Drawer' }
+        { id: 'POR-01-T1', name: 'Bottom Drawer' },
+        { id: 'POR-01-T2', name: 'Middle Drawer' },
+        { id: 'POR-01-T3', name: 'Top Drawer' }
       ]
     },
     {
       id: 'CHEST-GAR-01',
+      fitoutId: 'GAR-03',
       name: 'Garage Tool Chest',
       floor: 'ground_floor',
       floorElev: 0.00,
       material: 'M-STEEL-GREY',
-      box: [34.250, 35.550, 9.500, 12.100, 0.000, 3.150],
+      box: [34.500, 37.000, 3.500, 6.500, 0.000, 3.200],
       slideDir: [1, 0, 0], // slides East into garage (+X in Three.js)
       tiers: [
-        { id: 'CHEST-GAR-01-T1', name: 'Bottom Drawer' },
-        { id: 'CHEST-GAR-01-T2', name: 'Middle Drawer' },
-        { id: 'CHEST-GAR-01-T3', name: 'Top Drawer' }
+        { id: 'GAR-03-T1', name: 'Bottom Drawer' },
+        { id: 'GAR-03-T2', name: 'Middle Drawer' },
+        { id: 'GAR-03-T3', name: 'Top Drawer' }
       ]
     }
   ]
