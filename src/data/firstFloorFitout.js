@@ -372,11 +372,11 @@ const CHILD_BEDROOM = [
 
 // 8.9  Mandir (F14) - Positioned against New East wall (Y = 0) per Indian Vastu Shastra
 const MANDIR = [
-  { id: 'MD-01', name: 'Marble platform 4×2 ft 2.5 ft high', category: 'furniture', type: 'furniture', box: [42.750, 46.750, 0.000, 2.000, 12.000, 14.500], material: 'M-MARBLE-WHITE' },
-  { id: 'MD-02', name: 'Wooden temple unit 3×1.5×4.5 ft',    category: 'furniture', type: 'furniture', box: [43.250, 46.250, 0.000, 1.500, 14.500, 19.000], material: 'M-WOOD-DARK' },
-  { id: 'MD-03', name: 'Brass lamp south',                   category: 'furniture', type: 'furniture', box: [43.000, 43.300, 1.650, 1.950, 14.500, 15.200], material: 'M-BRASS' },
-  { id: 'MD-04', name: 'Brass lamp north',                   category: 'furniture', type: 'furniture', box: [46.200, 46.500, 1.650, 1.950, 14.500, 15.200], material: 'M-BRASS' },
-  { id: 'MD-05', name: 'Prayer mat 2×2 ft',                  category: 'furniture', type: 'furniture', box: [43.750, 45.750, 2.800, 4.800, 12.000, 12.040], material: 'M-CARPET-RED' },
+  { id: 'MD-01', name: 'Marble platform 5.2×2.0 ft 1.8 ft high', category: 'furniture', type: 'furniture', box: [42.150, 47.350, 0.000, 2.000, 12.000, 13.800], material: 'M-MARBLE-WHITE' },
+  { id: 'MD-02', name: 'Wooden temple shrine with holy photo',   category: 'furniture', type: 'furniture', box: [42.350, 47.150, 0.000, 1.200, 13.800, 18.200], material: 'M-WOOD-DARK' },
+  { id: 'MD-03', name: 'Brass diya south',                      category: 'furniture', type: 'furniture', box: [42.350, 42.750, 1.450, 1.850, 13.800, 14.800], material: 'M-BRASS' },
+  { id: 'MD-04', name: 'Brass diya north',                      category: 'furniture', type: 'furniture', box: [46.750, 47.150, 1.450, 1.850, 13.800, 14.800], material: 'M-BRASS' },
+  { id: 'MD-05', name: 'Prayer mat 2×2 ft',                     category: 'furniture', type: 'furniture', box: [43.750, 45.750, 2.800, 4.800, 12.000, 12.040], material: 'M-CARPET-RED' },
 ];
 
 // 8.10  Balcony (F1, F2) — Completely empty per user requirement

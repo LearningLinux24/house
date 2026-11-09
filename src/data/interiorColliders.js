@@ -626,7 +626,7 @@ export const INTERIOR_COLLIDERS = [
     fitoutId: 'MD-01',
     name: '1F Mandir Marble Platform',
     floor: 'first_floor',
-    box: [42.750, 46.750, 0.000, 2.000, 12.000, 14.500],
+    box: [42.150, 47.350, 0.000, 2.000, 12.000, 13.800],
     type: 'interior_furniture',
     isStepable: true
   },
@@ -635,7 +635,7 @@ export const INTERIOR_COLLIDERS = [
     fitoutId: 'MD-02',
     name: '1F Mandir Wooden Temple Unit',
     floor: 'first_floor',
-    box: [43.250, 46.250, 0.000, 1.500, 14.500, 19.000],
+    box: [42.350, 47.150, 0.000, 1.200, 13.800, 18.200],
     type: 'interior_furniture',
     isStepable: false
   }

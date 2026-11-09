@@ -384,11 +384,11 @@ Marble platform with the wooden temple unit against the east wall, two brass lam
 
 | ID | Item | Box | Material |
 | :--- | :--- | :--- | :--- |
-| MD-01 | Marble platform 2.0 x 4.0 ft, 2.5 ft high, against east wall | `[47.250, 49.250, 2.500, 6.500, 12.000, 14.500]` | M-MARBLE-WHITE |
-| MD-02 | Wooden temple unit 1.5 x 3.0 x 4.5 ft on the platform | `[47.750, 49.250, 3.000, 6.000, 14.500, 19.000]` | M-WOOD-DARK |
-| MD-03 | Brass lamp, south | `[47.350, 47.650, 2.700, 3.000, 14.500, 15.200]` | M-BRASS |
-| MD-04 | Brass lamp, north | `[47.350, 47.650, 6.000, 6.300, 14.500, 15.200]` | M-BRASS |
-| MD-05 | Prayer mat 2.0 x 2.0 ft | `[44.000, 46.000, 3.000, 5.000, 12.000, 12.040]` | M-CARPET-RED |
+| MD-01 | Marble platform 5.2 x 2.0 ft, 1.8 ft high, against east wall | `[42.150, 47.350, 0.000, 2.000, 12.000, 13.800]` | M-MARBLE-WHITE |
+| MD-02 | Wooden temple shrine unit with mandir.jpg photo on the platform | `[42.350, 47.150, 0.000, 1.200, 13.800, 18.200]` | M-WOOD-DARK |
+| MD-03 | Brass diya lamp, south | `[42.350, 42.750, 1.450, 1.850, 13.800, 14.800]` | M-BRASS |
+| MD-04 | Brass diya lamp, north | `[46.750, 47.150, 1.450, 1.850, 13.800, 14.800]` | M-BRASS |
+| MD-05 | Prayer mat 2.0 x 2.0 ft | `[43.750, 45.750, 2.800, 4.800, 12.000, 12.040]` | M-CARPET-RED |
 
 ### 8.10 Balconies (F1, F2)
 

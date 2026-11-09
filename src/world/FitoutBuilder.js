@@ -226,6 +226,21 @@ export class FitoutBuilder {
       return this.createBasinPedestal(item);
     }
 
+    // Specialized Mandir Shrine with holy mandir.jpg photo (exact 4166:2136 aspect ratio)
+    if (item.id === 'MD-02') {
+      return this.createMandirShrine(item);
+    }
+
+    // Specialized Mandir Marble Altar Platform
+    if (item.id === 'MD-01') {
+      return this.createMandirPlatform(item);
+    }
+
+    // Specialized Mandir Traditional Brass Oil Lamps (Diyas / Samai)
+    if (item.id === 'MD-03' || item.id === 'MD-04') {
+      return this.createBrassDiya(item);
+    }
+
     // For windows/ventilators, center a realistic thin glazed pane within the wall depth
     if (item.type === 'window' || item.type === 'ventilator') {
       const dx = xmax - xmin;
@@ -1792,6 +1807,454 @@ export class FitoutBuilder {
       });
       group.add(handleMesh);
     });
+
+    return group;
+  }
+
+  createMandirShrine(item) {
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
+    const sizeX = xmax - xmin;
+    const sizeY = zmax - zmin; // CAD Z -> Three.js Y
+    const sizeZ = ymax - ymin; // CAD Y -> Three.js Z
+
+    const posX = (xmin + xmax) / 2;
+    const posY = (zmin + zmax) / 2;
+    const posZ = -((ymin + ymax) / 2);
+
+    const s = WORLD_SCALE;
+    const group = new THREE.Group();
+    group.name = `MandirShrine_${item.id}`;
+    group.position.set(posX, posY, posZ);
+    group.userData = item;
+
+    // Materials: Traditional Rich Teak Wood, Dark Rosewood & Polished Temple Brass
+    const teakMat = new THREE.MeshStandardMaterial({
+      color: 0x482410,
+      roughness: 0.52,
+      metalness: 0.04
+    });
+    const darkTeakMat = new THREE.MeshStandardMaterial({
+      color: 0x2e1407,
+      roughness: 0.62,
+      metalness: 0.03
+    });
+    const goldMat = new THREE.MeshStandardMaterial({
+      color: 0xdfaa33,
+      roughness: 0.22,
+      metalness: 0.88
+    });
+    const brassMat = this.materials.get('M-BRASS') || goldMat;
+
+    // Load Holy Mandir Image Texture (/images/mandir.jpg)
+    const textureLoader = new THREE.TextureLoader();
+    const photoTexture = textureLoader.load('/images/mandir.jpg', () => {
+      photoMat.needsUpdate = true;
+    });
+    photoTexture.colorSpace = THREE.SRGBColorSpace;
+
+    const photoMat = new THREE.MeshStandardMaterial({
+      map: photoTexture,
+      roughness: 0.28,
+      metalness: 0.04,
+      side: THREE.DoubleSide
+    });
+
+    // 1. Holy Photo with exact aspect ratio (4166 : 2136 = 1.9503745)
+    // Width = 4.40 ft * s. Height = (4.40 / (4166 / 2136)) * s = 2.256001 * s.
+    const photoAspectRatio = 4166 / 2136;
+    const photoWidth = 4.40 * s;
+    const photoHeight = photoWidth / photoAspectRatio;
+
+    // Base of the shrine rests on marble platform at local Y = -sizeY / 2
+    const baseBottomY = -sizeY / 2;
+
+    // Main carved wooden plinth (Chowki)
+    const plinthHeight = 0.24 * s;
+    const plinthGeo = new THREE.BoxGeometry(sizeX * 0.98, plinthHeight, sizeZ * 0.96);
+    const plinthMesh = new THREE.Mesh(plinthGeo, teakMat);
+    plinthMesh.position.set(0, baseBottomY + plinthHeight / 2, 0);
+    plinthMesh.castShadow = true;
+    plinthMesh.receiveShadow = true;
+    group.add(plinthMesh);
+
+    // Gold molding trim around plinth
+    const plinthTrimGeo = new THREE.BoxGeometry(sizeX * 0.99, 0.035 * s, sizeZ * 0.97);
+    const plinthTrim = new THREE.Mesh(plinthTrimGeo, goldMat);
+    plinthTrim.position.set(0, baseBottomY + plinthHeight - 0.0175 * s, 0);
+    group.add(plinthTrim);
+
+    // Inner sanctum step (Asana / pedestal step for photo)
+    const stepHeight = 0.09 * s;
+    const stepGeo = new THREE.BoxGeometry(photoWidth + 0.20 * s, stepHeight, sizeZ * 0.50);
+    const stepMesh = new THREE.Mesh(stepGeo, darkTeakMat);
+    const stepTopY = baseBottomY + plinthHeight + stepHeight;
+    stepMesh.position.set(0, baseBottomY + plinthHeight + stepHeight / 2, 0);
+    stepMesh.castShadow = true;
+    stepMesh.receiveShadow = true;
+    group.add(stepMesh);
+
+    // Backboard panel (Prabhavali backing board against East wall)
+    const backZ = sizeZ / 2 - 0.04 * s;
+    const backHeight = photoHeight + 0.65 * s;
+    const backGeo = new THREE.BoxGeometry(sizeX * 0.96, backHeight, 0.06 * s);
+    const backMesh = new THREE.Mesh(backGeo, teakMat);
+    const backCenterY = stepTopY + backHeight / 2 - 0.05 * s;
+    backMesh.position.set(0, backCenterY, backZ);
+    backMesh.castShadow = true;
+    group.add(backMesh);
+
+    // Position of the photo:
+    // Sits upright directly on the step (bottom at stepTopY)
+    const photoCenterY = stepTopY + photoHeight / 2;
+    const photoZ = backZ - 0.04 * s; // Mounted just in front of backboard
+
+    // Custom BufferGeometry with normal (0, 0, -1) facing devotee looking towards East wall
+    const hw = photoWidth / 2;
+    const hh = photoHeight / 2;
+    const photoGeo = new THREE.BufferGeometry();
+    const positions = new Float32Array([
+      -hw,  hh, 0, // 0: Top-Left
+       hw,  hh, 0, // 1: Top-Right
+      -hw, -hh, 0, // 2: Bottom-Left
+       hw, -hh, 0  // 3: Bottom-Right
+    ]);
+    const uvs = new Float32Array([
+      0, 1, // 0: TL
+      1, 1, // 1: TR
+      0, 0, // 2: BL
+      1, 0  // 3: BR
+    ]);
+    const indices = [0, 1, 2, 1, 3, 2];
+    photoGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    photoGeo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+    photoGeo.setIndex(indices);
+    photoGeo.computeVertexNormals();
+
+    const photoMesh = new THREE.Mesh(photoGeo, photoMat);
+    photoMesh.position.set(0, photoCenterY, photoZ);
+    group.add(photoMesh);
+
+    // Ornate Gold Beveled Picture Frame around Photo
+    const frameThick = 0.055 * s;
+    const frameDepth = 0.045 * s;
+    const framePosZ = photoZ - frameDepth / 2;
+
+    // Top Frame Rail
+    const topRailGeo = new THREE.BoxGeometry(photoWidth + frameThick * 2, frameThick, frameDepth);
+    const topRail = new THREE.Mesh(topRailGeo, goldMat);
+    topRail.position.set(0, photoCenterY + hh + frameThick / 2, framePosZ);
+    topRail.castShadow = true;
+    group.add(topRail);
+
+    // Bottom Frame Rail
+    const botRailGeo = new THREE.BoxGeometry(photoWidth + frameThick * 2, frameThick, frameDepth);
+    const botRail = new THREE.Mesh(botRailGeo, goldMat);
+    botRail.position.set(0, photoCenterY - hh - frameThick / 2, framePosZ);
+    botRail.castShadow = true;
+    group.add(botRail);
+
+    // Left Frame Stile
+    const leftStileGeo = new THREE.BoxGeometry(frameThick, photoHeight, frameDepth);
+    const leftStile = new THREE.Mesh(leftStileGeo, goldMat);
+    leftStile.position.set(-hw - frameThick / 2, photoCenterY, framePosZ);
+    leftStile.castShadow = true;
+    group.add(leftStile);
+
+    // Right Frame Stile
+    const rightStileGeo = new THREE.BoxGeometry(frameThick, photoHeight, frameDepth);
+    const rightStile = new THREE.Mesh(rightStileGeo, goldMat);
+    rightStile.position.set(hw + frameThick / 2, photoCenterY, framePosZ);
+    rightStile.castShadow = true;
+    group.add(rightStile);
+
+    // Fluted Carved Wooden Side Pillars (Left and Right)
+    const pillarXOffset = hw + frameThick + 0.11 * s;
+    const pillarZ = photoZ - 0.08 * s;
+    const pillarHeight = photoHeight + frameThick * 2 + 0.10 * s;
+    [-pillarXOffset, pillarXOffset].forEach(px => {
+      // Square Plinth Base
+      const colBaseGeo = new THREE.BoxGeometry(0.18 * s, 0.12 * s, 0.18 * s);
+      const colBase = new THREE.Mesh(colBaseGeo, teakMat);
+      colBase.position.set(px, stepTopY + 0.06 * s, pillarZ);
+      colBase.castShadow = true;
+      group.add(colBase);
+
+      const colBaseTrimGeo = new THREE.BoxGeometry(0.19 * s, 0.02 * s, 0.19 * s);
+      const colBaseTrim = new THREE.Mesh(colBaseTrimGeo, goldMat);
+      colBaseTrim.position.set(px, stepTopY + 0.12 * s, pillarZ);
+      group.add(colBaseTrim);
+
+      // Fluted Cylindrical Shaft
+      const shaftHeight = pillarHeight - 0.28 * s;
+      const shaftGeo = new THREE.CylinderGeometry(0.055 * s, 0.065 * s, shaftHeight, 16);
+      const shaft = new THREE.Mesh(shaftGeo, teakMat);
+      shaft.position.set(px, stepTopY + 0.13 * s + shaftHeight / 2, pillarZ);
+      shaft.castShadow = true;
+      group.add(shaft);
+
+      // Bell Capital & Abacus
+      const capGeo = new THREE.CylinderGeometry(0.085 * s, 0.055 * s, 0.09 * s, 16);
+      const cap = new THREE.Mesh(capGeo, goldMat);
+      cap.position.set(px, stepTopY + 0.13 * s + shaftHeight + 0.045 * s, pillarZ);
+      cap.castShadow = true;
+      group.add(cap);
+
+      // Corner Kalash finial above pillar
+      const cornerKalashGeo = new THREE.ConeGeometry(0.045 * s, 0.16 * s, 12);
+      const cornerKalash = new THREE.Mesh(cornerKalashGeo, goldMat);
+      cornerKalash.position.set(px, stepTopY + pillarHeight + 0.18 * s, pillarZ);
+      group.add(cornerKalash);
+    });
+
+    // Temple Architrave / Torana Beam across the top
+    const beamY = photoCenterY + hh + frameThick + 0.09 * s;
+    const beamGeo = new THREE.BoxGeometry(sizeX * 0.98, 0.14 * s, 0.28 * s);
+    const beamMesh = new THREE.Mesh(beamGeo, teakMat);
+    beamMesh.position.set(0, beamY, pillarZ);
+    beamMesh.castShadow = true;
+    group.add(beamMesh);
+
+    // Decorative Gold Inlay Band across Architrave
+    const beamBandGeo = new THREE.BoxGeometry(sizeX * 0.99, 0.03 * s, 0.29 * s);
+    const beamBand = new THREE.Mesh(beamBandGeo, goldMat);
+    beamBand.position.set(0, beamY, pillarZ);
+    group.add(beamBand);
+
+    // Tiered Temple Shikhara (Gopuram / Crown)
+    // Tier 1: Lower Cornice
+    const tier1H = 0.16 * s;
+    const tier1Y = beamY + 0.07 * s + tier1H / 2;
+    const tier1Geo = new THREE.BoxGeometry(sizeX * 0.86, tier1H, 0.32 * s);
+    const tier1Mesh = new THREE.Mesh(tier1Geo, darkTeakMat);
+    tier1Mesh.position.set(0, tier1Y, pillarZ);
+    tier1Mesh.castShadow = true;
+    group.add(tier1Mesh);
+
+    // Tier 2: Middle Pyramid Canopy
+    const tier2H = 0.16 * s;
+    const tier2Y = tier1Y + tier1H / 2 + tier2H / 2;
+    const tier2Geo = new THREE.BoxGeometry(sizeX * 0.62, tier2H, 0.26 * s);
+    const tier2Mesh = new THREE.Mesh(tier2Geo, teakMat);
+    tier2Mesh.position.set(0, tier2Y, pillarZ);
+    tier2Mesh.castShadow = true;
+    group.add(tier2Mesh);
+
+    // Tier 3: Upper Crest
+    const tier3H = 0.12 * s;
+    const tier3Y = tier2Y + tier2H / 2 + tier3H / 2;
+    const tier3Geo = new THREE.BoxGeometry(sizeX * 0.38, tier3H, 0.20 * s);
+    const tier3Mesh = new THREE.Mesh(tier3Geo, darkTeakMat);
+    tier3Mesh.position.set(0, tier3Y, pillarZ);
+    tier3Mesh.castShadow = true;
+    group.add(tier3Mesh);
+
+    // Central Sacred Golden Kalash Finial (Pot + Spire)
+    const kalashBaseY = tier3Y + tier3H / 2;
+    const kalashPotGeo = new THREE.SphereGeometry(0.09 * s, 16, 12);
+    const kalashPot = new THREE.Mesh(kalashPotGeo, goldMat);
+    kalashPot.position.set(0, kalashBaseY + 0.09 * s, pillarZ);
+    group.add(kalashPot);
+
+    const kalashSpireGeo = new THREE.ConeGeometry(0.05 * s, 0.22 * s, 16);
+    const kalashSpire = new THREE.Mesh(kalashSpireGeo, goldMat);
+    kalashSpire.position.set(0, kalashBaseY + 0.18 * s + 0.11 * s, pillarZ);
+    group.add(kalashSpire);
+
+    // Sanctum Devotional Accessories on the Altar Step (in front of the photo)
+    const accZ = photoZ - 0.22 * s;
+
+    // 1. Brass Puja Bell (Ghanti)
+    const bellDomeGeo = new THREE.CylinderGeometry(0.015 * s, 0.05 * s, 0.06 * s, 12);
+    const bellDome = new THREE.Mesh(bellDomeGeo, brassMat);
+    const bellY = stepTopY + 0.03 * s;
+    bellDome.position.set(-photoWidth * 0.28, bellY, accZ);
+    group.add(bellDome);
+
+    const bellHandleGeo = new THREE.CylinderGeometry(0.01 * s, 0.01 * s, 0.07 * s, 8);
+    const bellHandle = new THREE.Mesh(bellHandleGeo, brassMat);
+    bellHandle.position.set(-photoWidth * 0.28, bellY + 0.06 * s, accZ);
+    group.add(bellHandle);
+
+    // 2. Brass Incense Burner (Agarbatti stand)
+    const incenseBaseGeo = new THREE.CylinderGeometry(0.04 * s, 0.05 * s, 0.025 * s, 12);
+    const incenseBase = new THREE.Mesh(incenseBaseGeo, brassMat);
+    incenseBase.position.set(-photoWidth * 0.15, stepTopY + 0.0125 * s, accZ);
+    group.add(incenseBase);
+
+    // Incense sticks
+    [-0.015 * s, 0, 0.015 * s].forEach((ox, idx) => {
+      const stickGeo = new THREE.CylinderGeometry(0.003 * s, 0.003 * s, 0.12 * s, 6);
+      const stickMat = new THREE.MeshStandardMaterial({ color: 0x3d2b1f, roughness: 0.9 });
+      const stick = new THREE.Mesh(stickGeo, stickMat);
+      stick.position.set(-photoWidth * 0.15 + ox, stepTopY + 0.07 * s, accZ);
+      stick.rotation.z = (idx - 1) * 0.12;
+      group.add(stick);
+
+      // Glowing tip
+      const tipGeo = new THREE.SphereGeometry(0.004 * s, 6, 6);
+      const tipMat = new THREE.MeshStandardMaterial({ color: 0xff3300, emissive: 0xff2200, emissiveIntensity: 2.0 });
+      const tip = new THREE.Mesh(tipGeo, tipMat);
+      tip.position.set(-photoWidth * 0.15 + ox + (idx - 1) * 0.015 * s, stepTopY + 0.13 * s, accZ);
+      group.add(tip);
+    });
+
+    // 3. Brass Prasad / Offering Thali in Center
+    const thaliGeo = new THREE.CylinderGeometry(0.14 * s, 0.12 * s, 0.02 * s, 20);
+    const thali = new THREE.Mesh(thaliGeo, goldMat);
+    thali.position.set(0, stepTopY + 0.01 * s, accZ);
+    group.add(thali);
+
+    // Offerings inside thali
+    const sweetMat = new THREE.MeshStandardMaterial({ color: 0xff9900, roughness: 0.8 });
+    [
+      [0, 0.02 * s, 0],
+      [-0.03 * s, 0.02 * s, -0.02 * s],
+      [0.03 * s, 0.02 * s, -0.02 * s],
+      [0, 0.02 * s, 0.03 * s]
+    ].forEach(([sx, sy, sz]) => {
+      const sweetGeo = new THREE.SphereGeometry(0.018 * s, 8, 8);
+      const sweet = new THREE.Mesh(sweetGeo, sweetMat);
+      sweet.position.set(sx, stepTopY + sy, accZ + sz);
+      group.add(sweet);
+    });
+
+    // 4. Brass Aarti Diya with sacred flame
+    const aartiGeo = new THREE.CylinderGeometry(0.045 * s, 0.03 * s, 0.035 * s, 12);
+    const aarti = new THREE.Mesh(aartiGeo, brassMat);
+    aarti.position.set(photoWidth * 0.20, stepTopY + 0.0175 * s, accZ);
+    group.add(aarti);
+
+    const flameMat = new THREE.MeshStandardMaterial({
+      color: 0xffe680,
+      emissive: 0xff5500,
+      emissiveIntensity: 3.0
+    });
+    const flameGeo = new THREE.ConeGeometry(0.022 * s, 0.065 * s, 8);
+    const flame = new THREE.Mesh(flameGeo, flameMat);
+    flame.position.set(photoWidth * 0.20, stepTopY + 0.065 * s, accZ);
+    group.add(flame);
+
+    // Warm Devotional Glow for the Sanctum
+    const mandirGlow = new THREE.PointLight(0xffdf99, 0.75, 10 * s, 1.4);
+    mandirGlow.position.set(0, photoCenterY + 0.3 * s, photoZ - 0.5 * s);
+    group.add(mandirGlow);
+
+    return group;
+  }
+
+  createMandirPlatform(item) {
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
+    const sizeX = xmax - xmin;
+    const sizeY = zmax - zmin; // CAD Z -> Three.js Y
+    const sizeZ = ymax - ymin; // CAD Y -> Three.js Z
+
+    const posX = (xmin + xmax) / 2;
+    const posY = (zmin + zmax) / 2;
+    const posZ = -((ymin + ymax) / 2);
+
+    const s = WORLD_SCALE;
+    const group = new THREE.Group();
+    group.name = `MandirPlatform_${item.id}`;
+    group.position.set(posX, posY, posZ);
+    group.userData = item;
+
+    // White Makrana polished marble
+    const marbleMat = new THREE.MeshStandardMaterial({
+      color: 0xf5f3ee,
+      roughness: 0.16,
+      metalness: 0.02
+    });
+
+    // Base platform body
+    const slabHeight = 0.08 * s;
+    const baseHeight = sizeY - slabHeight;
+    const baseGeo = new THREE.BoxGeometry(sizeX * 0.98, baseHeight, sizeZ * 0.98);
+    const baseMesh = new THREE.Mesh(baseGeo, marbleMat);
+    baseMesh.position.set(0, -slabHeight / 2, 0);
+    baseMesh.castShadow = true;
+    baseMesh.receiveShadow = true;
+    group.add(baseMesh);
+
+    // Top marble slab with bullnose edge overhang
+    const slabGeo = new THREE.BoxGeometry(sizeX, slabHeight, sizeZ);
+    const slabMesh = new THREE.Mesh(slabGeo, marbleMat);
+    slabMesh.position.set(0, sizeY / 2 - slabHeight / 2, 0);
+    slabMesh.castShadow = true;
+    slabMesh.receiveShadow = true;
+    group.add(slabMesh);
+
+    // Subtle golden trim edge around top slab
+    const edgeGeo = new THREE.EdgesGeometry(slabGeo);
+    const edgeMat = new THREE.LineBasicMaterial({ color: 0xd4af37, transparent: true, opacity: 0.45 });
+    slabMesh.add(new THREE.LineSegments(edgeGeo, edgeMat));
+
+    return group;
+  }
+
+  createBrassDiya(item) {
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
+    const sizeX = xmax - xmin;
+    const sizeY = zmax - zmin; // CAD Z -> Three.js Y
+    const sizeZ = ymax - ymin; // CAD Y -> Three.js Z
+
+    const posX = (xmin + xmax) / 2;
+    const posY = (zmin + zmax) / 2;
+    const posZ = -((ymin + ymax) / 2);
+
+    const s = WORLD_SCALE;
+    const group = new THREE.Group();
+    group.name = `BrassDiya_${item.id}`;
+    group.position.set(posX, posY, posZ);
+    group.userData = item;
+
+    const brassMat = this.materials.get('M-BRASS') || new THREE.MeshStandardMaterial({
+      color: 0xdfaa33,
+      roughness: 0.22,
+      metalness: 0.88
+    });
+    const flameMat = new THREE.MeshStandardMaterial({
+      color: 0xffe680,
+      emissive: 0xff6600,
+      emissiveIntensity: 2.5
+    });
+
+    const baseRadius = 0.16 * s;
+    const baseHeight = 0.06 * s;
+    const baseGeo = new THREE.CylinderGeometry(baseRadius * 0.7, baseRadius, baseHeight, 16);
+    const baseMesh = new THREE.Mesh(baseGeo, brassMat);
+    baseMesh.position.set(0, -sizeY / 2 + baseHeight / 2, 0);
+    baseMesh.castShadow = true;
+    group.add(baseMesh);
+
+    // Stem
+    const stemHeight = sizeY * 0.65;
+    const stemGeo = new THREE.CylinderGeometry(0.025 * s, 0.035 * s, stemHeight, 12);
+    const stemMesh = new THREE.Mesh(stemGeo, brassMat);
+    stemMesh.position.set(0, -sizeY / 2 + baseHeight + stemHeight / 2, 0);
+    stemMesh.castShadow = true;
+    group.add(stemMesh);
+
+    // Oil cup / bowl (Katori)
+    const cupRadius = 0.14 * s;
+    const cupHeight = 0.06 * s;
+    const cupGeo = new THREE.CylinderGeometry(cupRadius, cupRadius * 0.4, cupHeight, 16);
+    const cupMesh = new THREE.Mesh(cupGeo, brassMat);
+    const cupPosY = -sizeY / 2 + baseHeight + stemHeight;
+    cupMesh.position.set(0, cupPosY, 0);
+    cupMesh.castShadow = true;
+    group.add(cupMesh);
+
+    // Small brass peacock / kalash finial in center
+    const finialGeo = new THREE.ConeGeometry(0.03 * s, 0.10 * s, 8);
+    const finialMesh = new THREE.Mesh(finialGeo, brassMat);
+    finialMesh.position.set(0, cupPosY + cupHeight / 2 + 0.05 * s, 0);
+    group.add(finialMesh);
+
+    // Flame wick with warm glow
+    const flameGeo = new THREE.ConeGeometry(0.025 * s, 0.07 * s, 8);
+    const flameMesh = new THREE.Mesh(flameGeo, flameMat);
+    flameMesh.position.set(0, cupPosY + cupHeight / 2 + 0.08 * s, cupRadius * 0.6);
+    group.add(flameMesh);
 
     return group;
   }
