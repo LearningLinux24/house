@@ -115,7 +115,16 @@ export class FitoutBuilder {
       item.id === 'KIT-01' ||
       item.id === 'KIT-03' ||
       item.id === 'KF-01' ||
-      item.id === 'KF-03'
+      item.id === 'KF-03' ||
+      item.id === 'DIN-02' ||
+      item.id === 'DIN-03' ||
+      item.id === 'DIN-04' ||
+      item.id === 'DIN-05' ||
+      item.id === 'LB-10' ||
+      item.id === 'LB-11' ||
+      item.id === 'LB-12' ||
+      item.id === 'LB-13' ||
+      item.id === 'CH-12'
     ) {
       return null;
     }
@@ -131,6 +140,37 @@ export class FitoutBuilder {
     // Specialized Refrigerator 3D Appliance model for Kitchens
     if (item.id === 'KIT-11' || item.id === 'KF-11') {
       return this.createRefrigerator(item);
+    }
+
+    // Specialized Modern Dining Tables
+    if (item.id === 'DIN-01' || item.id === 'LB-09') {
+      return this.createDiningTable(item);
+    }
+
+    // Specialized Modern Dining Chairs
+    if (
+      item.id === 'DIN-06' ||
+      item.id === 'DIN-07' ||
+      item.id === 'DIN-08' ||
+      item.id === 'DIN-09' ||
+      item.id === 'LB-14' ||
+      item.id === 'LB-15' ||
+      item.id === 'LB-16' ||
+      item.id === 'LB-17' ||
+      item.id === 'LB-18' ||
+      item.id === 'LB-19'
+    ) {
+      return this.createDiningChair(item);
+    }
+
+    // Specialized Modern Coffee Tables
+    if (item.id === 'LOB-02' || item.id === 'LB-06') {
+      return this.createCoffeeTable(item);
+    }
+
+    // Specialized Study Desk Chair
+    if (item.id === 'CH-11') {
+      return this.createStudyChair(item);
     }
 
     // Specialized Stainless Steel Kitchen Sinks (Double Hollow Basins & Strainers)
@@ -1040,6 +1080,382 @@ export class FitoutBuilder {
     topMesh.position.set(0, sizeY / 2 - topH / 2, 0);
     topMesh.castShadow = true;
     group.add(topMesh);
+
+    return group;
+  }
+
+  createDiningTable(item) {
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
+    const sizeX = xmax - xmin;
+    const sizeZ = ymax - ymin; // CAD Y -> Three.js Z
+
+    const posX = (xmin + xmax) / 2;
+    const isGF = item.id === 'DIN-01';
+    const floorY = (isGF ? 1.50 : 12.00) * WORLD_SCALE;
+    const tableTopY = zmax;
+    const totalH = tableTopY - floorY;
+    const posY = floorY + totalH / 2;
+    const posZ = -((ymin + ymax) / 2);
+
+    const group = new THREE.Group();
+    group.name = `DiningTable_${item.id}`;
+    group.position.set(posX, posY, posZ);
+
+    const woodMat = this.materials.get('M-WOOD-DARK') || new THREE.MeshStandardMaterial({
+      color: 0x2b1d14,
+      roughness: 0.35,
+      metalness: 0.05
+    });
+    const brassMat = new THREE.MeshStandardMaterial({
+      color: 0xd4af37,
+      metalness: 0.85,
+      roughness: 0.20
+    });
+
+    // 1. Polished Tabletop Slab with Beveled Underside Chamfer
+    const topThick = totalH * 0.08;
+    const topGeo = new THREE.BoxGeometry(sizeX, topThick, sizeZ);
+    const topMesh = new THREE.Mesh(topGeo, woodMat);
+    topMesh.position.set(0, totalH / 2 - topThick / 2, 0);
+    topMesh.castShadow = true;
+    topMesh.receiveShadow = true;
+    group.add(topMesh);
+
+    // 2. Recessed Perimeter Apron Sub-Frame
+    const apronInset = sizeX * 0.06;
+    const apronH = totalH * 0.16;
+    const apronW = sizeX - apronInset * 2;
+    const apronD = sizeZ - apronInset * 2;
+    const apronThick = sizeX * 0.025;
+
+    [-apronD / 2 + apronThick / 2, apronD / 2 - apronThick / 2].forEach(pz => {
+      const railGeo = new THREE.BoxGeometry(apronW, apronH, apronThick);
+      const railMesh = new THREE.Mesh(railGeo, woodMat);
+      railMesh.position.set(0, totalH / 2 - topThick - apronH / 2, pz);
+      railMesh.castShadow = true;
+      group.add(railMesh);
+    });
+    [-apronW / 2 + apronThick / 2, apronW / 2 - apronThick / 2].forEach(px => {
+      const railGeo = new THREE.BoxGeometry(apronThick, apronH, apronD - apronThick * 2);
+      const railMesh = new THREE.Mesh(railGeo, woodMat);
+      railMesh.position.set(px, totalH / 2 - topThick - apronH / 2, 0);
+      railMesh.castShadow = true;
+      group.add(railMesh);
+    });
+
+    // 3. Four Elegant Tapered Square Legs with Brass Ferrules
+    const legTopW = sizeX * 0.055;
+    const legBtmW = sizeX * 0.035;
+    const legH = totalH - topThick;
+    const legPosX = apronW / 2 - legTopW / 2;
+    const legPosZ = apronD / 2 - legTopW / 2;
+
+    [[-legPosX, -legPosZ], [legPosX, -legPosZ], [-legPosX, legPosZ], [legPosX, legPosZ]].forEach(([lx, lz]) => {
+      const legGeo = new THREE.CylinderGeometry(legTopW * 0.6, legBtmW * 0.6, legH, 4);
+      legGeo.rotateY(Math.PI / 4);
+      const legMesh = new THREE.Mesh(legGeo, woodMat);
+      legMesh.position.set(lx, totalH / 2 - topThick - legH / 2, lz);
+      legMesh.castShadow = true;
+      group.add(legMesh);
+
+      const ferruleH = legH * 0.08;
+      const ferruleGeo = new THREE.CylinderGeometry(legBtmW * 0.65, legBtmW * 0.62, ferruleH, 16);
+      const ferruleMesh = new THREE.Mesh(ferruleGeo, brassMat);
+      ferruleMesh.position.set(lx, -totalH / 2 + ferruleH / 2, lz);
+      group.add(ferruleMesh);
+    });
+
+    return group;
+  }
+
+  createDiningChair(item) {
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
+    const sizeX = xmax - xmin;
+    const sizeY = zmax - zmin; // CAD Z -> Three.js Y
+    const sizeZ = ymax - ymin; // CAD Y -> Three.js Z
+
+    const posX = (xmin + xmax) / 2;
+    const posY = (zmin + zmax) / 2;
+    const posZ = -((ymin + ymax) / 2);
+
+    const group = new THREE.Group();
+    group.name = `DiningChair_${item.id}`;
+    group.position.set(posX, posY, posZ);
+
+    const woodMat = this.materials.get('M-WOOD-DARK') || new THREE.MeshStandardMaterial({
+      color: 0x2b1d14,
+      roughness: 0.38,
+      metalness: 0.05
+    });
+    const cushionMat = new THREE.MeshStandardMaterial({
+      color: 0xefeae1,
+      roughness: 0.75,
+      metalness: 0.02
+    });
+    const brassMat = new THREE.MeshStandardMaterial({
+      color: 0xd4af37,
+      metalness: 0.85,
+      roughness: 0.20
+    });
+
+    let backrestSide = '-Z';
+    if (item.id === 'DIN-06' || item.id === 'DIN-07' || item.id === 'LB-18' || item.id === 'LB-19') {
+      backrestSide = '-Z'; // North chairs face South (+Z)
+    } else if (item.id === 'DIN-08' || item.id === 'DIN-09' || item.id === 'LB-16' || item.id === 'LB-17') {
+      backrestSide = '+Z'; // South chairs face North (-Z)
+    } else if (item.id === 'LB-14') {
+      backrestSide = '-X'; // West chair faces East (+X)
+    } else if (item.id === 'LB-15') {
+      backrestSide = '+X'; // East chair faces West (-X)
+    }
+
+    const seatH = sizeY * 0.48;
+    const legH = seatH;
+    const legW = sizeX * 0.08;
+
+    // 1. Four Tapered Wooden Legs with Brass Glides
+    const lx = sizeX / 2 - legW;
+    const lz = sizeZ / 2 - legW;
+    [[-lx, -lz], [lx, -lz], [-lx, lz], [lx, lz]].forEach(([px, pz]) => {
+      const legGeo = new THREE.CylinderGeometry(legW * 0.45, legW * 0.30, legH, 8);
+      const legMesh = new THREE.Mesh(legGeo, woodMat);
+      legMesh.position.set(px, -sizeY / 2 + legH / 2, pz);
+      legMesh.castShadow = true;
+      group.add(legMesh);
+
+      const glideGeo = new THREE.CylinderGeometry(legW * 0.32, legW * 0.32, legH * 0.06, 12);
+      const glideMesh = new THREE.Mesh(glideGeo, brassMat);
+      glideMesh.position.set(px, -sizeY / 2 + legH * 0.03, pz);
+      group.add(glideMesh);
+    });
+
+    // Leg Stretchers
+    [-lz, lz].forEach(pz => {
+      const rGeo = new THREE.BoxGeometry(sizeX * 0.70, legW * 0.5, legW * 0.4);
+      const rMesh = new THREE.Mesh(rGeo, woodMat);
+      rMesh.position.set(0, -sizeY / 2 + legH * 0.35, pz);
+      group.add(rMesh);
+    });
+
+    // 2. Seat Frame & Padded Cushion
+    const seatFrameH = legW * 0.7;
+    const seatGeo = new THREE.BoxGeometry(sizeX * 0.94, seatFrameH, sizeZ * 0.94);
+    const seatMesh = new THREE.Mesh(seatGeo, woodMat);
+    seatMesh.position.set(0, -sizeY / 2 + legH - seatFrameH / 2, 0);
+    seatMesh.castShadow = true;
+    group.add(seatMesh);
+
+    const cushionH = sizeY * 0.09;
+    const cushionGeo = new THREE.BoxGeometry(sizeX * 0.92, cushionH, sizeZ * 0.92);
+    const cushionMesh = new THREE.Mesh(cushionGeo, cushionMat);
+    cushionMesh.position.set(0, -sizeY / 2 + legH + cushionH / 2, 0);
+    cushionMesh.castShadow = true;
+    cushionMesh.receiveShadow = true;
+    group.add(cushionMesh);
+
+    // 3. Ergonomic Backrest
+    const backH = sizeY - seatH;
+    const backThick = sizeX * 0.08;
+    const backY = -sizeY / 2 + seatH + backH / 2;
+
+    if (backrestSide === '-Z' || backrestSide === '+Z') {
+      const bz = (backrestSide === '-Z') ? (-sizeZ / 2 + backThick / 2) : (sizeZ / 2 - backThick / 2);
+
+      [-sizeX / 2 + backThick / 2, sizeX / 2 - backThick / 2].forEach(bx => {
+        const stileGeo = new THREE.BoxGeometry(backThick, backH, backThick);
+        const stileMesh = new THREE.Mesh(stileGeo, woodMat);
+        stileMesh.position.set(bx, backY, bz);
+        stileMesh.castShadow = true;
+        group.add(stileMesh);
+      });
+
+      const crestGeo = new THREE.BoxGeometry(sizeX * 0.94, backH * 0.22, backThick * 1.1);
+      const crestMesh = new THREE.Mesh(crestGeo, woodMat);
+      crestMesh.position.set(0, -sizeY / 2 + seatH + backH - backH * 0.11, bz);
+      crestMesh.castShadow = true;
+      group.add(crestMesh);
+
+      [-sizeX * 0.20, 0, sizeX * 0.20].forEach(sx => {
+        const slatGeo = new THREE.BoxGeometry(sizeX * 0.05, backH * 0.65, backThick * 0.5);
+        const slatMesh = new THREE.Mesh(slatGeo, woodMat);
+        slatMesh.position.set(sx, backY - backH * 0.06, bz);
+        group.add(slatMesh);
+      });
+    } else {
+      const bx = (backrestSide === '-X') ? (-sizeX / 2 + backThick / 2) : (sizeX / 2 - backThick / 2);
+
+      [-sizeZ / 2 + backThick / 2, sizeZ / 2 - backThick / 2].forEach(bz => {
+        const stileGeo = new THREE.BoxGeometry(backThick, backH, backThick);
+        const stileMesh = new THREE.Mesh(stileGeo, woodMat);
+        stileMesh.position.set(bx, backY, bz);
+        stileMesh.castShadow = true;
+        group.add(stileMesh);
+      });
+
+      const crestGeo = new THREE.BoxGeometry(backThick * 1.1, backH * 0.22, sizeZ * 0.94);
+      const crestMesh = new THREE.Mesh(crestGeo, woodMat);
+      crestMesh.position.set(bx, -sizeY / 2 + seatH + backH - backH * 0.11, 0);
+      crestMesh.castShadow = true;
+      group.add(crestMesh);
+
+      [-sizeZ * 0.20, 0, sizeZ * 0.20].forEach(sz => {
+        const slatGeo = new THREE.BoxGeometry(backThick * 0.5, backH * 0.65, sizeZ * 0.05);
+        const slatMesh = new THREE.Mesh(slatGeo, woodMat);
+        slatMesh.position.set(bx, backY - backH * 0.06, sz);
+        group.add(slatMesh);
+      });
+    }
+
+    return group;
+  }
+
+  createCoffeeTable(item) {
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
+    const sizeX = xmax - xmin;
+    const sizeY = zmax - zmin; // CAD Z -> Three.js Y
+    const sizeZ = ymax - ymin; // CAD Y -> Three.js Z
+
+    const posX = (xmin + xmax) / 2;
+    const posY = (zmin + zmax) / 2;
+    const posZ = -((ymin + ymax) / 2);
+
+    const group = new THREE.Group();
+    group.name = `CoffeeTable_${item.id}`;
+    group.position.set(posX, posY, posZ);
+
+    const woodMat = this.materials.get('M-WOOD-DARK') || new THREE.MeshStandardMaterial({
+      color: 0x24180f,
+      roughness: 0.35,
+      metalness: 0.05
+    });
+    const glassMat = new THREE.MeshStandardMaterial({
+      color: 0x1a2630,
+      roughness: 0.05,
+      metalness: 0.15,
+      transparent: true,
+      opacity: 0.65
+    });
+    const brassMat = new THREE.MeshStandardMaterial({
+      color: 0xd4af37,
+      metalness: 0.90,
+      roughness: 0.15
+    });
+
+    // 1. Upper Tabletop with Inset Glass Panel
+    const topThick = sizeY * 0.07;
+    const frameW = sizeX * 0.08;
+    [-sizeZ / 2 + frameW / 2, sizeZ / 2 - frameW / 2].forEach(pz => {
+      const fGeo = new THREE.BoxGeometry(sizeX, topThick, frameW);
+      const fMesh = new THREE.Mesh(fGeo, woodMat);
+      fMesh.position.set(0, sizeY / 2 - topThick / 2, pz);
+      fMesh.castShadow = true;
+      group.add(fMesh);
+    });
+    [-sizeX / 2 + frameW / 2, sizeX / 2 - frameW / 2].forEach(px => {
+      const fGeo = new THREE.BoxGeometry(frameW, topThick, sizeZ - frameW * 2);
+      const fMesh = new THREE.Mesh(fGeo, woodMat);
+      fMesh.position.set(px, sizeY / 2 - topThick / 2, 0);
+      fMesh.castShadow = true;
+      group.add(fMesh);
+    });
+
+    const glassGeo = new THREE.BoxGeometry(sizeX - frameW * 1.9, topThick * 0.7, sizeZ - frameW * 1.9);
+    const glassMesh = new THREE.Mesh(glassGeo, glassMat);
+    glassMesh.position.set(0, sizeY / 2 - topThick / 2, 0);
+    group.add(glassMesh);
+
+    // 2. Lower Open Magazine / Storage Shelf Tier
+    const shelfY = -sizeY * 0.15;
+    const shelfGeo = new THREE.BoxGeometry(sizeX * 0.88, topThick * 0.8, sizeZ * 0.88);
+    const shelfMesh = new THREE.Mesh(shelfGeo, woodMat);
+    shelfMesh.position.set(0, shelfY, 0);
+    shelfMesh.receiveShadow = true;
+    group.add(shelfMesh);
+
+    // 3. Four Tapered Legs with Brass Feet
+    const legTopW = sizeX * 0.045;
+    const legBtmW = sizeX * 0.025;
+    const legH = sizeY - topThick;
+    const lx = sizeX / 2 - frameW * 1.1;
+    const lz = sizeZ / 2 - frameW * 1.1;
+
+    [[-lx, -lz], [lx, -lz], [-lx, lz], [lx, lz]].forEach(([px, pz]) => {
+      const legGeo = new THREE.CylinderGeometry(legTopW * 0.5, legBtmW * 0.5, legH, 12);
+      const legMesh = new THREE.Mesh(legGeo, woodMat);
+      legMesh.position.set(px, -topThick / 2, pz);
+      legMesh.castShadow = true;
+      group.add(legMesh);
+
+      const footGeo = new THREE.CylinderGeometry(legBtmW * 0.6, legBtmW * 0.6, legH * 0.10, 12);
+      const footMesh = new THREE.Mesh(footGeo, brassMat);
+      footMesh.position.set(px, -sizeY / 2 + legH * 0.05, pz);
+      group.add(footMesh);
+    });
+
+    return group;
+  }
+
+  createStudyChair(item) {
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
+    const sizeX = xmax - xmin;
+    const sizeY = (15.200 - 12.000) * WORLD_SCALE;
+    const sizeZ = ymax - ymin;
+
+    const posX = (xmin + xmax) / 2;
+    const posY = (12.000 * WORLD_SCALE) + sizeY / 2;
+    const posZ = -((ymin + ymax) / 2);
+
+    const group = new THREE.Group();
+    group.name = `StudyChair_${item.id}`;
+    group.position.set(posX, posY, posZ);
+
+    const chromeMat = this.materials.get('M-CHROME') || new THREE.MeshStandardMaterial({
+      color: 0xdde0e3,
+      metalness: 0.92,
+      roughness: 0.15
+    });
+    const cushionMat = new THREE.MeshStandardMaterial({
+      color: 0x263238,
+      roughness: 0.60
+    });
+
+    const seatRelY = (1.60 * WORLD_SCALE) - sizeY / 2;
+
+    // 1. Chrome Star Base
+    const legRadius = Math.min(sizeX, sizeZ) * 0.44;
+    [0, (Math.PI * 2) / 4, (Math.PI * 2) / 2, (Math.PI * 3) / 2].forEach(angle => {
+      const legGeo = new THREE.BoxGeometry(legRadius, sizeX * 0.03, sizeX * 0.04);
+      const legMesh = new THREE.Mesh(legGeo, chromeMat);
+      legMesh.position.set(Math.cos(angle) * (legRadius / 2), -sizeY / 2 + sizeX * 0.03, Math.sin(angle) * (legRadius / 2));
+      legMesh.rotation.y = -angle;
+      group.add(legMesh);
+    });
+
+    const colGeo = new THREE.CylinderGeometry(sizeX * 0.04, sizeX * 0.05, 1.40 * WORLD_SCALE, 16);
+    const colMesh = new THREE.Mesh(colGeo, chromeMat);
+    colMesh.position.set(0, -sizeY / 2 + (1.40 * WORLD_SCALE) / 2, 0);
+    group.add(colMesh);
+
+    // 2. Sculpted Bucket Seat Cushion
+    const seatGeo = new THREE.BoxGeometry(sizeX * 0.88, sizeX * 0.09, sizeZ * 0.88);
+    const seatMesh = new THREE.Mesh(seatGeo, cushionMat);
+    seatMesh.position.set(0, seatRelY, 0);
+    seatMesh.castShadow = true;
+    group.add(seatMesh);
+
+    // 3. Ergonomic Contoured Backrest
+    const backH = sizeY - (seatRelY + sizeY / 2);
+    const backThick = sizeX * 0.06;
+    const backGeo = new THREE.BoxGeometry(backThick, backH * 0.85, sizeZ * 0.82);
+    const backMesh = new THREE.Mesh(backGeo, cushionMat);
+    backMesh.position.set(-sizeX * 0.38, seatRelY + backH * 0.50, 0);
+    backMesh.castShadow = true;
+    group.add(backMesh);
+
+    const spineGeo = new THREE.CylinderGeometry(sizeX * 0.025, sizeX * 0.025, backH * 0.90, 12);
+    const spineMesh = new THREE.Mesh(spineGeo, chromeMat);
+    spineMesh.position.set(-sizeX * 0.42, seatRelY + backH * 0.45, 0);
+    group.add(spineMesh);
 
     return group;
   }
