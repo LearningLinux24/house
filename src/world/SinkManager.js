@@ -77,7 +77,7 @@ export const SINK_SPECS = [
   },
   {
     id: 'SINK-FF-GALLERY',
-    name: 'North Gallery Basin Tap',
+    name: 'West Gallery Basin Tap',
     floor: 'first_floor',
     x: 34.85,
     y_cad: 4.85,

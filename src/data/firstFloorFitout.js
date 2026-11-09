@@ -103,8 +103,8 @@ const WINDOWS = [
   { id: 'WF-3-GLASS', name: 'Lobby south window west glass',    category: 'windows', type: 'window',    box: [15.000, 19.000, -0.750, 0.000, 15.000, 19.000], material: 'M-GLASS' },
   // WF-4  Lobby south window east  4 × 4 ft  sill Z 15.00
   { id: 'WF-4-GLASS', name: 'Lobby south window east glass',    category: 'windows', type: 'window',    box: [21.000, 25.000, -0.750, 0.000, 15.000, 19.000], material: 'M-GLASS' },
-  // WF-7  Mandir south window  3 × 3 ft  sill Z 15.50
-  { id: 'WF-7-GLASS', name: 'Mandir south window glass',        category: 'windows', type: 'window',    box: [43.000, 46.000, -0.750, 0.000, 15.500, 18.500], material: 'M-GLASS' },
+  // WF-7  Mandir north window (relocated to North wall)  3 × 3 ft  sill Z 15.50
+  { id: 'WF-7-GLASS', name: 'Mandir north window glass',        category: 'windows', type: 'window',    box: [49.250, 50.000, 3.000, 6.000, 15.500, 18.500], material: 'M-GLASS' },
   // WF-8  Child bedroom north window  4 × 4 ft  sill Z 15.00
   { id: 'WF-8-GLASS', name: 'Child bedroom north window glass', category: 'windows', type: 'window',    box: [43.500, 47.500, 23.250, 24.000, 15.000, 19.000], material: 'M-GLASS' },
   // VF-1  Bathroom 1 ventilator (north)  2 × 1.5 ft  sill Z 17.50
@@ -370,13 +370,13 @@ const CHILD_BEDROOM = [
   { id: 'CH-14', name: 'Curtain north window',              category: 'furniture', type: 'furniture', box: [43.000, 48.000, 23.050, 23.200, 12.100, 19.300], material: 'M-FABRIC-CURTAIN' },
 ];
 
-// 8.9  Mandir (F14)
+// 8.9  Mandir (F14) - Positioned against New East wall (Y = 0) per Indian Vastu Shastra
 const MANDIR = [
-  { id: 'MD-01', name: 'Marble platform 2×4 ft 2.5 ft high', category: 'furniture', type: 'furniture', box: [47.250, 49.250, 2.500, 6.500, 12.000, 14.500], material: 'M-MARBLE-WHITE' },
-  { id: 'MD-02', name: 'Wooden temple unit 1.5×3×4.5 ft',    category: 'furniture', type: 'furniture', box: [47.750, 49.250, 3.000, 6.000, 14.500, 19.000], material: 'M-WOOD-DARK' },
-  { id: 'MD-03', name: 'Brass lamp south',                   category: 'furniture', type: 'furniture', box: [47.350, 47.650, 2.700, 3.000, 14.500, 15.200], material: 'M-BRASS' },
-  { id: 'MD-04', name: 'Brass lamp north',                   category: 'furniture', type: 'furniture', box: [47.350, 47.650, 6.000, 6.300, 14.500, 15.200], material: 'M-BRASS' },
-  { id: 'MD-05', name: 'Prayer mat 2×2 ft',                  category: 'furniture', type: 'furniture', box: [44.000, 46.000, 3.000, 5.000, 12.000, 12.040], material: 'M-CARPET-RED' },
+  { id: 'MD-01', name: 'Marble platform 4×2 ft 2.5 ft high', category: 'furniture', type: 'furniture', box: [42.750, 46.750, 0.000, 2.000, 12.000, 14.500], material: 'M-MARBLE-WHITE' },
+  { id: 'MD-02', name: 'Wooden temple unit 3×1.5×4.5 ft',    category: 'furniture', type: 'furniture', box: [43.250, 46.250, 0.000, 1.500, 14.500, 19.000], material: 'M-WOOD-DARK' },
+  { id: 'MD-03', name: 'Brass lamp south',                   category: 'furniture', type: 'furniture', box: [43.000, 43.300, 1.650, 1.950, 14.500, 15.200], material: 'M-BRASS' },
+  { id: 'MD-04', name: 'Brass lamp north',                   category: 'furniture', type: 'furniture', box: [46.200, 46.500, 1.650, 1.950, 14.500, 15.200], material: 'M-BRASS' },
+  { id: 'MD-05', name: 'Prayer mat 2×2 ft',                  category: 'furniture', type: 'furniture', box: [43.750, 45.750, 2.800, 4.800, 12.000, 12.040], material: 'M-CARPET-RED' },
 ];
 
 // 8.10  Balcony (F1, F2) — Completely empty per user requirement

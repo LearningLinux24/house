@@ -54,26 +54,27 @@ export const FIRST_FLOOR_DATA = {
     { id: 'F-EXT-N-LIN3', box: [43.500, 47.500, 23.250, 24.000, 19.000, 22.000], type: 'lintel' },   // WF-8 Lintel
     { id: 'F-EXT-N-P4', box: [47.500, 50.000, 23.250, 24.000, 12.000, 22.000], type: 'wall_ext' },
 
-    { id: 'F-EXT-E', box: [49.250, 50.000,  0.000, 23.250, 12.000, 22.000], type: 'wall_ext' },
+    // 2b. North wall (formerly East wall F-EXT-E) with WF-7 Mandir Window
+    { id: 'F-EXT-E-P1', box: [49.250, 50.000,  0.000,  3.000, 12.000, 22.000], type: 'wall_ext' },
+    { id: 'F-EXT-E-SILL1', box: [49.250, 50.000,  3.000,  6.000, 12.000, 15.500], type: 'wall_ext' }, // WF-7 Sill (relocated to North wall)
+    { id: 'F-EXT-E-LIN1', box: [49.250, 50.000,  3.000,  6.000, 18.500, 22.000], type: 'lintel' },   // WF-7 Lintel (relocated to North wall)
+    { id: 'F-EXT-E-P2', box: [49.250, 50.000,  6.000, 23.250, 12.000, 22.000], type: 'wall_ext' },
 
-    // 2b. F-EXT-W: Master bedroom west wall with aperture for WF-1
+    // 2c. South wall (formerly West wall F-EXT-W): Master bedroom with aperture for WF-1
     { id: 'F-EXT-W-P1', box: [-0.750,  0.000, 11.750, 15.500, 12.000, 22.000], type: 'wall_ext' },
     { id: 'F-EXT-W-SILL', box: [-0.750,  0.000, 15.500, 19.500, 12.000, 15.000], type: 'wall_ext' }, // WF-1 Sill
     { id: 'F-EXT-W-LIN', box: [-0.750,  0.000, 15.500, 19.500, 19.000, 22.000], type: 'lintel' },   // WF-1 Lintel
     { id: 'F-EXT-W-P2', box: [-0.750,  0.000, 19.500, 23.250, 12.000, 22.000], type: 'wall_ext' },
 
-    // 2c. F-EXT-S: Lobby through Mandir south wall with room windows (WF-3, WF-4 in Lobby, WF-7 in Mandir)
+    // 2d. East wall (formerly South wall F-EXT-S): Lobby through Mandir with WF-3, WF-4 (Solid behind Mandir shrine)
     { id: 'F-EXT-S-P1', box: [14.000, 15.000, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
     { id: 'F-EXT-S-SILL1', box: [15.000, 19.000, -0.750,  0.000, 12.000, 15.000], type: 'wall_ext' }, // WF-3 Sill
     { id: 'F-EXT-S-LIN1', box: [15.000, 19.000, -0.750,  0.000, 19.000, 22.000], type: 'lintel' },   // WF-3 Lintel
     { id: 'F-EXT-S-P2', box: [19.000, 21.000, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
     { id: 'F-EXT-S-SILL2', box: [21.000, 25.000, -0.750,  0.000, 12.000, 15.000], type: 'wall_ext' }, // WF-4 Sill
     { id: 'F-EXT-S-LIN2', box: [21.000, 25.000, -0.750,  0.000, 19.000, 22.000], type: 'lintel' },   // WF-4 Lintel
-    // Solid wall spanning through Stairs Bay and First Floor Hallway (no windows behind stairs or in hallway)
-    { id: 'F-EXT-S-P3', box: [25.000, 43.000, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
-    { id: 'F-EXT-S-SILL5', box: [43.000, 46.000, -0.750,  0.000, 12.000, 15.500], type: 'wall_ext' }, // WF-7 Sill
-    { id: 'F-EXT-S-LIN5', box: [43.000, 46.000, -0.750,  0.000, 18.500, 22.000], type: 'lintel' },   // WF-7 Lintel
-    { id: 'F-EXT-S-P6', box: [46.000, 50.000, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
+    // Solid wall spanning through Stairs Bay, Hallway, and behind the new East Mandir shrine
+    { id: 'F-EXT-S-P3', box: [25.000, 50.000, -0.750,  0.000, 12.000, 22.000], type: 'wall_ext' },
 
     // ─────────────────────────────────────────────────────────────────────
     // STEP 3 · Interior Walls  (Z = 12.00 to 22.00, T_INT = 0.375 ft)
@@ -210,15 +211,15 @@ export const FIRST_FLOOR_DATA = {
   // Rooms / Zones  (for zone detection & minimap rendering)
   // ─────────────────────────────────────────────────────────────────────────
   zones: [
-    { id: 'F1',  name: 'South Balcony (13\'7.5" × 4\')',      bounds: [ 0.000, 13.625,  0.000,  4.000] },
-    { id: 'F2',  name: 'West Balcony (3\'3" × 7\'4.5")',      bounds: [ 0.000,  3.250,  4.000, 11.375] },
+    { id: 'F1',  name: 'East Balcony (13\'7.5" × 4\')',       bounds: [ 0.000, 13.625,  0.000,  4.000] },
+    { id: 'F2',  name: 'South Balcony (3\'3" × 7\'4.5")',     bounds: [ 0.000,  3.250,  4.000, 11.375] },
     { id: 'F3',  name: 'Kitchen (10\'0" × 7\'0")',            bounds: [ 3.625, 13.625,  4.375, 11.375] },
     { id: 'F4',  name: 'Master Bedroom (13\'7.5" × 11\'6")',  bounds: [ 0.000, 13.625, 11.750, 23.250] },
     { id: 'F5',  name: 'Basin Niche (3\'3" × 4\'4.5")',       bounds: [14.000, 17.250, 18.875, 23.250] },
     { id: 'F6',  name: 'Bathroom 1 (9\'0" × 4\'0")',          bounds: [17.625, 26.625, 19.250, 23.250] },
     { id: 'F7',  name: 'Lobby (12\'0" × 18\'10.5")',          bounds: [14.000, 26.000,  0.000, 18.875] },
     { id: 'F8',  name: 'Stairs Bay',                           bounds: [26.375, 33.875,  0.000, 15.000] },
-    { id: 'F9',  name: 'North Gallery (8\'3" × 3\'10.5")',    bounds: [26.000, 34.250, 15.000, 18.875] },
+    { id: 'F9',  name: 'West Gallery (8\'3" × 3\'10.5")',     bounds: [26.000, 34.250, 15.000, 18.875] },
     { id: 'F10', name: 'Shaft Alcove (5\'6" × 4\'4.5")',      bounds: [27.000, 32.500, 18.875, 23.250] },
     { id: 'F11', name: 'Bathroom 2 (7\'0" × 4\'0")',          bounds: [32.875, 39.875, 19.250, 23.250] },
     { id: 'F12', name: 'Hallway (5\'7.5" × 18\'10.5")',       bounds: [34.250, 39.875,  0.000, 18.875] },

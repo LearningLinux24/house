@@ -73,12 +73,12 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
     * Realistic mechanical audio via Web Audio API featuring electric motor hum combined with chain and roller track rumble.
     * Dynamic collision integration: solid physical barrier when closed; dynamically deactivated when open for smooth walk-through / drive-through.
   * **Interactive Pedestrian Entrance Gate (<kbd>G1</kbd>)**: Dual-leaf mild steel boundary gate with solid kick plates, horizontal privacy slats, and vertical stainless steel pull handles.
-  * **Interactive Exterior South Entrance Door (<kbd>D7</kbd>)**: A solid teak entrance door on the south exterior wall directly facing the central staircase flight passage, complete with wooden jamb frame, lintel, exterior granite landing step, and dynamic collision integration for smooth outside-to-hallway entry.
+  * **Interactive Exterior East Entrance Door (<kbd>D7</kbd>)**: A solid teak entrance door on the east exterior wall directly facing the central staircase flight passage, complete with wooden jamb frame, lintel, exterior granite landing step, and dynamic collision integration for smooth outside-to-hallway entry.
   * **Interactive Glazed Balcony Doors (<kbd>DF3</kbd>, <kbd>DF8</kbd>)**: Powder-coated aluminum framed doors with full-height safety glass panels leading to exterior first-floor balconies.
   * **Interior Flush Doors**: Solid teak doors with stainless steel lever handles and realistic latch audio.
   * **Dual Interaction Support**: Walk up in First-Person mode and press <kbd>E</kbd> or click; in Dollhouse / Orbit mode, simply left-click directly on any door or gate leaf.
 * **Interactive Sinks & Running Water System**:
-  * **8 Interactive Sinks & Basins**: Operating taps across Ground Floor and First Floor (Ground Floor Kitchen, West Bathroom, East Bathroom, First Floor Kitchen, Basin Niche, Bathrooms 1 & 2, and North Gallery).
+  * **8 Interactive Sinks & Basins**: Operating taps across Ground Floor and First Floor (Ground Floor Kitchen, South Bathroom, North Bathroom, First Floor Kitchen, Basin Niche, Bathrooms 1 & 2, and West Gallery).
   * **Enhanced 3D Sink & Basin Architectures**:
     * **Kitchen Stainless Steel Sinks (`KIT-05`, `KF-05`)**: Dual deep hollow basins recessed into the granite counter with perimeter mounting rim lip, center saddle, chrome basket strainers with drain perforations, and fluted drainer run-off grooves.
     * **Bathroom Ceramic Washbasins (`WW-02`, `EW-02`, etc.)**: Sculpted sanitary white ceramic bowls with hollow recessed cavity, chrome pop-up drain stopper disc, rear overflow drain hole with chrome escutcheon, and soap deck indents.
@@ -196,10 +196,19 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
   * **🏢 First Floor (<kbd>2</kbd>)**: Isolate First Floor architecture and fitout with intermediate slab as its floor; roof and terrace parapets are hidden for an open look into 1F rooms.
 * **3-Tier Vertical Exploration (GF + 1F + Terrace)**:
   * **Ground Floor** ($Z = 1.50$ ft plinth): Porch, Living room, Kitchen, Dining, Bedroom, Bathrooms, Storeroom, Garage ramp ($Z = 0.0$ to $0.50$ ft).
-  * **First Floor** ($Z = 12.00$ ft): Master Bedroom, Kitchen, Lobby, North Gallery, Bathrooms, Child Bedroom, Mandir, and open exterior balcony with 3.5 ft stainless steel railings.
+  * **First Floor** ($Z = 12.00$ ft): Master Bedroom, Kitchen, Lobby, West Gallery, Bathrooms, Child Bedroom, Mandir, and open exterior balcony with 3.5 ft stainless steel railings.
   * **Terrace Level** ($Z = 22.50$ ft): Fully accessible open-air terrace with 3.25 ft perimeter parapet walls and 3-sided stairwell guard enclosure.
   * **Open Central Shaft with Walkable Gratings**: Features heavy-duty stainless steel open-bar gratings on the 1F floor (allowing see-through views down to GF without falling) and 1F ceiling (providing open sightlines up to the terrace and sky).
-* **Live Minimap (Top-Right)**: Real-time 2D top-down floor plan showing room boundaries, active floor (`GF PLAN` / `1F PLAN`), player position, and viewing direction cone.
+* **East-Facing Indian Vastu Orientation & Architectural Compass**:
+  * **Cardinal Direction Mapping**:
+    * **East (Front / Street)**: Main pedestrian gate `G1`, motorized garage door `G2`, East entrance door `D7`, and front roadway.
+    * **West (Rear)**: Backyard, kitchen/washroom rear walls, and West Gallery.
+    * **North (Right Flank)**: Garage exterior wall, Mandir room, and storeroom.
+    * **South (Left Flank)**: Landscaped garden, entrance porch, and master bedroom.
+  * **Live Architectural Compass Rose**: Built-in compass rose on the minimap canvas clearly indicating North (right), East (down), South (left), and West (up).
+  * **Dynamic HUD Compass Heading**: Live heading angle and cardinal readout displayed in the bottom HUD status bar (e.g. `Facing: E (90°)`).
+  * **Vastu-Aligned Mandir Layout**: The 1F Mandir altar, marble platform, and wooden temple unit are placed against the sacred **East wall** (so devotees face East while praying), with the Mandir window relocated to the North wall.
+* **Live Minimap (Top-Right)**: Real-time 2D top-down floor plan showing room boundaries, active floor (`GF PLAN` / `1F PLAN`), player position, viewing direction cone, and architectural compass rose.
 * **Quick Teleports**: Click any of the room buttons in the sidebar to jump instantly to any zone across Ground Floor, First Floor, or Terrace.
 * **Real-time Status Bar (Bottom)**: Displays current room zone, exact X/Y coordinates in feet, floor elevation, and FPS performance counter.
 * **Optimized High-Fidelity Rendering**:

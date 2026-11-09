@@ -15,7 +15,7 @@ export const CURTAIN_SPECS = [
   },
   {
     id: 'CURTAIN-GF-LOBBY',
-    name: 'Lobby North Window Curtain',
+    name: 'Lobby West Window Curtain',
     floor: 'ground_floor',
     axis: 'X',
     wallY: 23.12,
@@ -26,7 +26,7 @@ export const CURTAIN_SPECS = [
   },
   {
     id: 'CURTAIN-1F-MASTER',
-    name: 'Master Bedroom West Window Curtain',
+    name: 'Master Bedroom South Window Curtain',
     floor: 'first_floor',
     axis: 'Y',
     wallX: 0.15,
@@ -37,7 +37,7 @@ export const CURTAIN_SPECS = [
   },
   {
     id: 'CURTAIN-1F-LOBBY-L',
-    name: 'Lobby South Window Left Curtain',
+    name: 'Lobby East Window Left Curtain',
     floor: 'first_floor',
     axis: 'X',
     wallY: 0.15,
@@ -48,7 +48,7 @@ export const CURTAIN_SPECS = [
   },
   {
     id: 'CURTAIN-1F-LOBBY-R',
-    name: 'Lobby South Window Right Curtain',
+    name: 'Lobby East Window Right Curtain',
     floor: 'first_floor',
     axis: 'X',
     wallY: 0.15,
@@ -59,7 +59,7 @@ export const CURTAIN_SPECS = [
   },
   {
     id: 'CURTAIN-1F-CHILD',
-    name: 'Child Bedroom North Window Curtain',
+    name: 'Child Bedroom West Window Curtain',
     floor: 'first_floor',
     axis: 'X',
     wallY: 23.12,

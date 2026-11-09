@@ -539,7 +539,8 @@ export class Engine {
         this.player.position.x,
         -this.player.position.z,
         this.player.feetElevation,
-        this.currentFps
+        this.currentFps,
+        cameraYaw
       );
 
       this.ui.updateMinimap(
@@ -560,7 +561,8 @@ export class Engine {
         this.player.position.x,
         -this.player.position.z,
         this.player.feetElevation,
-        this.currentFps
+        this.currentFps,
+        cameraYaw
       );
 
       this.ui.updateMinimap(

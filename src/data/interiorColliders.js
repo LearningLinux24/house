@@ -517,7 +517,7 @@ export const INTERIOR_COLLIDERS = [
   {
     id: 'COL-NB-01',
     fitoutId: 'NB-01',
-    name: '1F North Gallery Basin & Pedestal',
+    name: '1F West Gallery Basin & Pedestal',
     floor: 'first_floor',
     box: [14.750, 16.500, 21.950, 23.250, 12.000, 14.750],
     type: 'interior_furniture',
@@ -626,7 +626,7 @@ export const INTERIOR_COLLIDERS = [
     fitoutId: 'MD-01',
     name: '1F Mandir Marble Platform',
     floor: 'first_floor',
-    box: [47.250, 49.250, 2.500, 6.500, 12.000, 14.500],
+    box: [42.750, 46.750, 0.000, 2.000, 12.000, 14.500],
     type: 'interior_furniture',
     isStepable: true
   },
@@ -635,7 +635,7 @@ export const INTERIOR_COLLIDERS = [
     fitoutId: 'MD-02',
     name: '1F Mandir Wooden Temple Unit',
     floor: 'first_floor',
-    box: [47.750, 49.250, 3.000, 6.000, 14.500, 19.000],
+    box: [43.250, 46.250, 0.000, 1.500, 14.500, 19.000],
     type: 'interior_furniture',
     isStepable: false
   }

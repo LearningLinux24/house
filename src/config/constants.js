@@ -44,10 +44,12 @@ export const PLAYER_CONFIG = {
 };
 
 /**
- * Axis Mapping between Architectural Plan and Three.js Coordinate Systems:
- * - Three.js X = Spec X (East)
- * - Three.js Y = Spec Z (Up / Elevation)
- * - Three.js Z = -Spec Y (North points to -Z)
+ * Axis Mapping between Architectural Plan and Three.js Coordinate Systems (East-Facing House):
+ * - Three.js +Z = -Spec Y (East: Front Street / Main Entrance Gates / Garage)
+ * - Three.js -Z = Spec Y (West: Rear Backyard / Washrooms)
+ * - Three.js +X = Spec X (North: Mandir / Storeroom / Right Boundary)
+ * - Three.js -X = -Spec X (South: Side Garden / Master Bedroom / Porch)
+ * - Three.js Y  = Spec Z (Up / Elevation)
  */
 export function specToEngine(x, y_spec, z_elev) {
   return {

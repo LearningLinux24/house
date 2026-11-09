@@ -200,7 +200,7 @@ export class UIManager {
     }
   }
 
-  updateHUD(roomName, x, y_spec, elev, fps = 60) {
+  updateHUD(roomName, x, y_spec, elev, fps = 60, cameraYaw = 0) {
     const s = WORLD_SCALE;
     if (this.elements.hudRoom) this.elements.hudRoom.textContent = roomName;
     if (this.elements.hudFloor) {
@@ -217,8 +217,14 @@ export class UIManager {
     const normY = y_spec / s;
     const normElev = elev / s;
 
+    // Calculate cardinal direction for East-Facing House:
+    // yaw = -PI/2 -> N (0°), yaw = PI -> E (90°), yaw = +PI/2 -> S (180°), yaw = 0 -> W (270°)
+    const deg = ((-cameraYaw - Math.PI / 2) * 180 / Math.PI + 360) % 360;
+    const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+    const cardinal = dirs[Math.round(deg / 45) % 8];
+
     if (this.elements.bottomStatusRoom) this.elements.bottomStatusRoom.textContent = `📍 ${roomName}`;
-    if (this.elements.bottomStatusCoords) this.elements.bottomStatusCoords.textContent = `X: ${normX.toFixed(1)}' | Y: ${normY.toFixed(1)}'`;
+    if (this.elements.bottomStatusCoords) this.elements.bottomStatusCoords.textContent = `X: ${normX.toFixed(1)}' | Y: ${normY.toFixed(1)}' | Facing: ${cardinal} (${Math.round(deg)}°)`;
     if (this.elements.bottomStatusElev) this.elements.bottomStatusElev.textContent = `Elev: ${normElev.toFixed(1)}'`;
     if (this.elements.bottomStatusFps) this.elements.bottomStatusFps.textContent = `${Math.round(fps)} FPS`;
   }
@@ -286,6 +292,72 @@ export class UIManager {
     ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
     ctx.lineWidth = 1.5;
     ctx.strokeRect(0, 0, width, height);
+
+    // ── Architectural Compass Rose (East-Facing Layout) ────────────────────
+    // Right = North (Mandir), Down = East (Street), Left = South (Garden), Up = West (Backyard)
+    const ccx = 18;
+    const ccy = 18;
+    const cr = 8;
+
+    ctx.save();
+    // Circular backing
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    ctx.beginPath();
+    ctx.arc(ccx, ccy, cr + 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+
+    // Crosshair axes
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.20)';
+    ctx.beginPath();
+    ctx.moveTo(ccx - cr, ccy);
+    ctx.lineTo(ccx + cr, ccy);
+    ctx.moveTo(ccx, ccy - cr);
+    ctx.lineTo(ccx, ccy + cr);
+    ctx.stroke();
+
+    // North Needle (Pointing Right towards Mandir / Spec +X)
+    ctx.fillStyle = '#38bdf8'; // Bright cyan
+    ctx.beginPath();
+    ctx.moveTo(ccx, ccy - 2);
+    ctx.lineTo(ccx + cr + 1, ccy);
+    ctx.lineTo(ccx, ccy + 2);
+    ctx.closePath();
+    ctx.fill();
+
+    // East Needle (Pointing Down towards Street / Spec -Y)
+    ctx.fillStyle = '#f59e0b'; // Amber
+    ctx.beginPath();
+    ctx.moveTo(ccx - 2, ccy);
+    ctx.lineTo(ccx, ccy + cr + 1);
+    ctx.lineTo(ccx + 2, ccy);
+    ctx.closePath();
+    ctx.fill();
+
+    // Direction Cardinal Letters
+    ctx.font = 'bold 7px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // N at Right
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText('N', ccx + cr + 5, ccy);
+
+    // E at Bottom
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillText('E', ccx, ccy + cr + 5);
+
+    // W at Top
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText('W', ccx, ccy - cr - 4);
+
+    // S at Left
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText('S', ccx - cr - 4, ccy);
+
+    ctx.restore();
 
     // Player position
     const px = (playerX + 0.75 * s) * scaleX;

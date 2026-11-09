@@ -11,7 +11,7 @@ export const GROUND_FLOOR_FITOUT = [
   // ==========================================
   {
     id: 'WD-1',
-    name: 'South Hallway Window (4x4)',
+    name: 'East Hallway Window (4x4)',
     category: 'windows',
     type: 'window',
     box: [18.000, 22.000, -0.750, 0.000, 4.500, 8.500],
@@ -274,10 +274,10 @@ export const GROUND_FLOOR_FITOUT = [
   },
 
   // ==========================================
-  // D7: South Entrance Door in front of Stairs (Teak)
+  // D7: East Entrance Door in front of Stairs (Teak)
   {
     id: 'D7-FJ1',
-    name: 'South Entrance Door Jamb West',
+    name: 'East Entrance Door Jamb South',
     category: 'doors',
     type: 'door_frame',
     box: [28.500, 28.670, -0.750, 0.000, 1.500, 8.330],
@@ -285,7 +285,7 @@ export const GROUND_FLOOR_FITOUT = [
   },
   {
     id: 'D7-FJ2',
-    name: 'South Entrance Door Jamb East',
+    name: 'East Entrance Door Jamb North',
     category: 'doors',
     type: 'door_frame',
     box: [31.580, 31.750, -0.750, 0.000, 1.500, 8.330],
@@ -293,7 +293,7 @@ export const GROUND_FLOOR_FITOUT = [
   },
   {
     id: 'D7-FH',
-    name: 'South Entrance Door Frame Head',
+    name: 'East Entrance Door Frame Head',
     category: 'doors',
     type: 'door_frame',
     box: [28.500, 31.750, -0.750, 0.000, 8.330, 8.500],
@@ -301,7 +301,7 @@ export const GROUND_FLOOR_FITOUT = [
   },
   {
     id: 'D7-LEAF',
-    name: 'South Entrance Door Leaf',
+    name: 'East Entrance Door Leaf',
     category: 'doors',
     type: 'door_leaf',
     box: [28.690, 31.560, -0.435, -0.315, 1.540, 8.310],
@@ -823,7 +823,7 @@ export const GROUND_FLOOR_FITOUT = [
   // ==========================================
   {
     id: 'POR-01',
-    name: 'South Hallway 3-Tier Almirah',
+    name: 'East Hallway 3-Tier Almirah',
     category: 'furniture',
     type: 'furniture',
     box: [8.000, 11.000, 0.000, 1.200, 1.500, 4.500],
@@ -951,7 +951,7 @@ export const GROUND_FLOOR_FITOUT = [
   },
   {
     id: 'SB-HALL',
-    name: 'South Hallway Switchboard',
+    name: 'East Hallway Switchboard',
     category: 'electrical',
     type: 'switchboard',
     box: [24.000, 24.400, 3.900, 4.000, 5.300, 5.700],
@@ -984,13 +984,13 @@ export const FITOUT_LIGHTS = [
   { id: 'LT-2', name: 'Lobby West LED Panel', room: 'Lobby', cx: 17.000, cy_spec: 17.000, sizeX: 2.0, sizeY: 2.0 },
   { id: 'LT-3', name: 'Lobby East LED Panel', room: 'Lobby', cx: 23.000, cy_spec: 17.000, sizeX: 2.0, sizeY: 2.0 },
   { id: 'LT-4', name: 'Kitchen LED Panel', room: 'Kitchen', cx: 20.000, cy_spec: 7.875, sizeX: 2.0, sizeY: 2.0 },
-  { id: 'LT-5', name: 'West Washroom LED Panel', room: 'West WC', cx: 8.625, cy_spec: 21.250, sizeX: 1.0, sizeY: 1.0 },
-  { id: 'LT-6', name: 'East Washroom LED Panel', room: 'East WC', cx: 37.750, cy_spec: 21.250, sizeX: 1.0, sizeY: 1.0 },
+  { id: 'LT-5', name: 'South Washroom LED Panel', room: 'South WC', cx: 8.625, cy_spec: 21.250, sizeX: 1.0, sizeY: 1.0 },
+  { id: 'LT-6', name: 'North Washroom LED Panel', room: 'North WC', cx: 37.750, cy_spec: 21.250, sizeX: 1.0, sizeY: 1.0 },
   { id: 'LT-7', name: 'Storeroom LED Panel', room: 'Storeroom', cx: 45.400, cy_spec: 19.300, sizeX: 2.0, sizeY: 2.0 },
   { id: 'LT-8', name: 'Garage LED Batten', room: 'Garage', cx: 42.000, cy_spec: 7.500, sizeX: 4.0, sizeY: 0.3 },
-  { id: 'LT-9', name: 'South Hallway LED Panel', room: 'South Hallway', cx: 20.000, cy_spec: 2.000, sizeX: 2.0, sizeY: 2.0 },
+  { id: 'LT-9', name: 'East Hallway LED Panel', room: 'East Hallway', cx: 20.000, cy_spec: 2.000, sizeX: 2.0, sizeY: 2.0 },
   { id: 'LT-10', name: 'Stairs Foot LED Panel', room: 'Stairs', cx: 30.000, cy_spec: 2.000, sizeX: 2.0, sizeY: 2.0 },
   { id: 'LT-11', name: 'Porch LED Panel', room: 'Porch', cx: 8.000, cy_spec: 3.750, sizeX: 2.0, sizeY: 2.0 },
-  { id: 'LT-12', name: 'East Hallway West LED Panel', room: 'East Hallway', cx: 31.000, cy_spec: 16.900, sizeX: 2.0, sizeY: 2.0 },
-  { id: 'LT-13', name: 'East Hallway East LED Panel', room: 'East Hallway', cx: 38.000, cy_spec: 16.900, sizeX: 2.0, sizeY: 2.0 }
+  { id: 'LT-12', name: 'North Hallway West LED Panel', room: 'North Hallway', cx: 31.000, cy_spec: 16.900, sizeX: 2.0, sizeY: 2.0 },
+  { id: 'LT-13', name: 'North Hallway East LED Panel', room: 'North Hallway', cx: 38.000, cy_spec: 16.900, sizeX: 2.0, sizeY: 2.0 }
 ];

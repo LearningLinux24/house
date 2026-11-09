@@ -76,7 +76,7 @@ export const DOOR_SPECS = [
   },
   {
     id: 'D7',
-    name: 'South Entrance Door',
+    name: 'East Entrance Door',
     floor: 'ground_floor',
     material: 'M-DOOR-TEAK',
     box: [28.690, 31.560, -0.435, -0.315, 1.540, 8.310],
