@@ -33,6 +33,7 @@ dist-ssr
 *.tiff
 *.ico
 *.svg
+!public/images/*
 
 # Editor & System Files
 *.mp4

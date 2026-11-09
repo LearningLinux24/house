@@ -1847,7 +1847,7 @@ export class FitoutBuilder {
 
     // Load Holy Mandir Image Texture (/images/mandir.jpg)
     const textureLoader = new THREE.TextureLoader();
-    const photoTexture = textureLoader.load('/images/mandir.jpg', () => {
+    const photoTexture = textureLoader.load('/images/mandir.jpg?v=2', () => {
       photoMat.needsUpdate = true;
     });
     photoTexture.colorSpace = THREE.SRGBColorSpace;
