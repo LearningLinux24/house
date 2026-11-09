@@ -121,6 +121,11 @@ export class FitoutBuilder {
       return this.createWashingMachine(item);
     }
 
+    // Specialized Refrigerator 3D Appliance model for Kitchens
+    if (item.id === 'KIT-11' || item.id === 'KF-11') {
+      return this.createRefrigerator(item);
+    }
+
     // For windows/ventilators, center a realistic thin glazed pane within the wall depth
     if (item.type === 'window' || item.type === 'ventilator') {
       const dx = xmax - xmin;
@@ -382,15 +387,14 @@ export class FitoutBuilder {
   }
 
   createWashingMachine(item) {
-    const s = WORLD_SCALE;
     const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
-    const sizeX = (xmax - xmin) * s;
-    const sizeY = (zmax - zmin) * s; // Spec Z -> 3js Y
-    const sizeZ = (ymax - ymin) * s; // Spec Y -> 3js Z
+    const sizeX = xmax - xmin;
+    const sizeY = zmax - zmin; // Spec Z -> 3js Y
+    const sizeZ = ymax - ymin; // Spec Y -> 3js Z
 
-    const posX = ((xmin + xmax) / 2) * s;
-    const posY = ((zmin + zmax) / 2) * s;
-    const posZ = -((ymin + ymax) / 2) * s;
+    const posX = (xmin + xmax) / 2;
+    const posY = (zmin + zmax) / 2;
+    const posZ = -((ymin + ymax) / 2);
 
     const group = new THREE.Group();
     group.name = 'WashingMachine_HW-06';
@@ -426,43 +430,43 @@ export class FitoutBuilder {
     group.add(plinth);
 
     // Bottom service drain filter hatch (round cap on right bottom)
-    const filterGeo = new THREE.CylinderGeometry(0.08 * s, 0.08 * s, 0.02 * s, 16);
+    const filterGeo = new THREE.CylinderGeometry(sizeX * 0.04, sizeX * 0.04, sizeZ * 0.02, 16);
     filterGeo.rotateX(Math.PI / 2);
     const filterCap = new THREE.Mesh(filterGeo, darkGreyMat);
     filterCap.position.set(sizeX * 0.32, -sizeY * 0.45, -sizeZ * 0.49);
     group.add(filterCap);
 
     // 4. Upper Control Fascia
-    const fasciaGeo = new THREE.BoxGeometry(sizeX * 0.96, sizeY * 0.20, 0.04 * s);
+    const fasciaGeo = new THREE.BoxGeometry(sizeX * 0.96, sizeY * 0.20, sizeZ * 0.02);
     const fasciaMat = new THREE.MeshStandardMaterial({ color: 0x1c2024, roughness: 0.3, metalness: 0.3 });
     const fascia = new THREE.Mesh(fasciaGeo, fasciaMat);
     fascia.position.set(0, sizeY * 0.33, -sizeZ * 0.485);
     group.add(fascia);
 
     // Detergent dispenser drawer (left)
-    const drawerGeo = new THREE.BoxGeometry(sizeX * 0.30, sizeY * 0.14, 0.025 * s);
+    const drawerGeo = new THREE.BoxGeometry(sizeX * 0.30, sizeY * 0.14, sizeZ * 0.02);
     const drawer = new THREE.Mesh(drawerGeo, whiteMat);
     drawer.position.set(-sizeX * 0.30, sizeY * 0.33, -sizeZ * 0.495);
-    const drawerHandleGeo = new THREE.BoxGeometry(sizeX * 0.18, sizeY * 0.02, 0.015 * s);
+    const drawerHandleGeo = new THREE.BoxGeometry(sizeX * 0.18, sizeY * 0.02, sizeZ * 0.015);
     const drawerHandle = new THREE.Mesh(drawerHandleGeo, darkGreyMat);
-    drawerHandle.position.set(0, -sizeY * 0.045, -0.012 * s);
+    drawerHandle.position.set(0, -sizeY * 0.045, -sizeZ * 0.01);
     drawer.add(drawerHandle);
     group.add(drawer);
 
     // Rotary cycle selector knob (center)
-    const knobGeo = new THREE.CylinderGeometry(0.12 * s, 0.12 * s, 0.05 * s, 24);
+    const knobGeo = new THREE.CylinderGeometry(sizeX * 0.06, sizeX * 0.06, sizeZ * 0.03, 24);
     knobGeo.rotateX(Math.PI / 2);
     const knob = new THREE.Mesh(knobGeo, chromeMat);
     knob.position.set(0, sizeY * 0.33, -sizeZ * 0.50);
-    const pipGeo = new THREE.BoxGeometry(0.015 * s, 0.06 * s, 0.01 * s);
+    const pipGeo = new THREE.BoxGeometry(sizeX * 0.008, sizeY * 0.02, sizeZ * 0.01);
     const pipMat = new THREE.MeshBasicMaterial({ color: 0x00d2ff });
     const pip = new THREE.Mesh(pipGeo, pipMat);
-    pip.position.set(0, 0.06 * s, -0.025 * s);
+    pip.position.set(0, sizeY * 0.02, -sizeZ * 0.015);
     knob.add(pip);
     group.add(knob);
 
     // Digital LED display screen (right)
-    const displayGeo = new THREE.BoxGeometry(sizeX * 0.28, sizeY * 0.12, 0.01 * s);
+    const displayGeo = new THREE.BoxGeometry(sizeX * 0.28, sizeY * 0.12, sizeZ * 0.01);
     const displayMat = new THREE.MeshStandardMaterial({
       color: 0x040e14,
       roughness: 0.1,
@@ -476,7 +480,7 @@ export class FitoutBuilder {
     const ledGeo = new THREE.PlaneGeometry(sizeX * 0.18, sizeY * 0.045);
     const ledMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
     const led = new THREE.Mesh(ledGeo, ledMat);
-    led.position.set(0, 0, 0.006 * s);
+    led.position.set(0, 0, sizeZ * 0.006);
     display.add(led);
     group.add(display);
 
@@ -485,33 +489,33 @@ export class FitoutBuilder {
     const doorZ = -sizeZ * 0.485;
 
     // Recessed drum cavity (interior cylinder visible through glass)
-    const drumCavityGeo = new THREE.CylinderGeometry(0.60 * s, 0.60 * s, 0.20 * s, 28, 1, true);
+    const drumCavityGeo = new THREE.CylinderGeometry(sizeX * 0.28, sizeX * 0.28, sizeZ * 0.12, 28, 1, true);
     drumCavityGeo.rotateX(Math.PI / 2);
     const drumCavity = new THREE.Mesh(drumCavityGeo, ssMat);
-    drumCavity.position.set(0, doorY, doorZ + 0.10 * s);
+    drumCavity.position.set(0, doorY, doorZ + sizeZ * 0.06);
     group.add(drumCavity);
 
     // Drum rear backplate
-    const drumBackGeo = new THREE.CircleGeometry(0.60 * s, 28);
+    const drumBackGeo = new THREE.CircleGeometry(sizeX * 0.28, 28);
     const drumBack = new THREE.Mesh(drumBackGeo, ssMat);
-    drumBack.position.set(0, doorY, doorZ + 0.20 * s);
+    drumBack.position.set(0, doorY, doorZ + sizeZ * 0.12);
     group.add(drumBack);
 
     // Outer door chrome bezel ring
-    const bezelGeo = new THREE.TorusGeometry(0.64 * s, 0.065 * s, 16, 36);
+    const bezelGeo = new THREE.TorusGeometry(sizeX * 0.30, sizeX * 0.035, 16, 36);
     const bezel = new THREE.Mesh(bezelGeo, chromeMat);
-    bezel.position.set(0, doorY, doorZ - 0.02 * s);
+    bezel.position.set(0, doorY, doorZ - sizeZ * 0.01);
     bezel.castShadow = true;
     group.add(bezel);
 
     // Inner dark bezel ring
-    const innerBezelGeo = new THREE.TorusGeometry(0.56 * s, 0.03 * s, 12, 32);
+    const innerBezelGeo = new THREE.TorusGeometry(sizeX * 0.26, sizeX * 0.018, 12, 32);
     const innerBezel = new THREE.Mesh(innerBezelGeo, darkGreyMat);
-    innerBezel.position.set(0, doorY, doorZ - 0.015 * s);
+    innerBezel.position.set(0, doorY, doorZ - sizeZ * 0.008);
     group.add(innerBezel);
 
     // Smoked dark curved porthole glass window
-    const glassGeo = new THREE.CylinderGeometry(0.54 * s, 0.50 * s, 0.04 * s, 32);
+    const glassGeo = new THREE.CylinderGeometry(sizeX * 0.25, sizeX * 0.23, sizeZ * 0.02, 32);
     glassGeo.rotateX(Math.PI / 2);
     const glassMat = new THREE.MeshStandardMaterial({
       color: 0x141e24,
@@ -521,21 +525,183 @@ export class FitoutBuilder {
       opacity: 0.78
     });
     const glass = new THREE.Mesh(glassGeo, glassMat);
-    glass.position.set(0, doorY, doorZ - 0.01 * s);
+    glass.position.set(0, doorY, doorZ - sizeZ * 0.005);
     group.add(glass);
 
     // Ergonomic door pull handle (on right side of door bezel)
-    const handleGeo = new THREE.BoxGeometry(0.04 * s, 0.26 * s, 0.05 * s);
+    const handleGeo = new THREE.BoxGeometry(sizeX * 0.02, sizeY * 0.09, sizeZ * 0.03);
     const handle = new THREE.Mesh(handleGeo, darkGreyMat);
-    handle.position.set(0.65 * s, doorY, doorZ - 0.045 * s);
+    handle.position.set(sizeX * 0.31, doorY, doorZ - sizeZ * 0.025);
     handle.castShadow = true;
     group.add(handle);
 
     // Door hinge block (on left side)
-    const hingeGeo = new THREE.BoxGeometry(0.035 * s, 0.18 * s, 0.04 * s);
+    const hingeGeo = new THREE.BoxGeometry(sizeX * 0.02, sizeY * 0.06, sizeZ * 0.02);
     const hinge = new THREE.Mesh(hingeGeo, chromeMat);
-    hinge.position.set(-0.66 * s, doorY, doorZ - 0.02 * s);
+    hinge.position.set(-sizeX * 0.31, doorY, doorZ - sizeZ * 0.01);
     group.add(hinge);
+
+    return group;
+  }
+
+  createRefrigerator(item) {
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
+    const sizeX = xmax - xmin;
+    const sizeY = zmax - zmin; // CAD Z -> Three.js Y
+    const sizeZ = ymax - ymin; // CAD Y -> Three.js Z
+
+    const posX = (xmin + xmax) / 2;
+    const posY = (zmin + zmax) / 2;
+    const posZ = -((ymin + ymax) / 2);
+
+    // KF-11 faces South (+Z in Three.js), KIT-11 faces North (-Z in Three.js)
+    const frontDirZ = (item.id === 'KF-11') ? 1 : -1;
+
+    const group = new THREE.Group();
+    group.name = `Refrigerator_${item.id}`;
+    group.position.set(posX, posY, posZ);
+
+    // Premium appliance materials
+    const bodyMat = this.materials.get('M-STEEL-SS') || new THREE.MeshStandardMaterial({
+      color: 0xc4c7cb,
+      metalness: 0.85,
+      roughness: 0.22
+    });
+    const darkAccentMat = new THREE.MeshStandardMaterial({
+      color: 0x1a1e22,
+      roughness: 0.40,
+      metalness: 0.20
+    });
+    const chromeMat = this.materials.get('M-CHROME') || new THREE.MeshStandardMaterial({
+      color: 0xe8e8e8,
+      metalness: 0.95,
+      roughness: 0.10
+    });
+    const gasketMat = new THREE.MeshStandardMaterial({
+      color: 0x111315,
+      roughness: 0.80
+    });
+
+    // 1. Recessed Base Plinth with Leveling Feet
+    const plinthH = sizeY * 0.04;
+    const plinthGeo = new THREE.BoxGeometry(sizeX * 0.96, plinthH, sizeZ * 0.92);
+    const plinth = new THREE.Mesh(plinthGeo, darkAccentMat);
+    plinth.position.set(0, -sizeY / 2 + plinthH / 2, -frontDirZ * sizeZ * 0.02);
+    plinth.receiveShadow = true;
+    group.add(plinth);
+
+    // Leveling feet
+    [-sizeX * 0.40, sizeX * 0.40].forEach(fx => {
+      const footGeo = new THREE.CylinderGeometry(sizeX * 0.035, sizeX * 0.035, plinthH * 0.6, 16);
+      const foot = new THREE.Mesh(footGeo, chromeMat);
+      foot.position.set(fx, -sizeY / 2 + plinthH * 0.3, frontDirZ * (sizeZ * 0.44));
+      group.add(foot);
+    });
+
+    // 2. Main Casing Body
+    const cabinetH = sizeY - plinthH;
+    const cabinetD = sizeZ * 0.94;
+    const cabinetY = -sizeY / 2 + plinthH + cabinetH / 2;
+    const cabinetZ = -frontDirZ * (sizeZ - cabinetD) / 2;
+
+    const cabinetGeo = new THREE.BoxGeometry(sizeX, cabinetH, cabinetD);
+    const cabinet = new THREE.Mesh(cabinetGeo, bodyMat);
+    cabinet.position.set(0, cabinetY, cabinetZ);
+    cabinet.castShadow = true;
+    cabinet.receiveShadow = true;
+    group.add(cabinet);
+
+    // 3. Doors & Rubber Gasket
+    const doorThick = sizeZ * 0.06;
+    const doorW = sizeX * 0.99;
+    const freezerH = cabinetH * 0.32;
+    const fridgeH = cabinetH * 0.63;
+    const gasketGapH = cabinetH * 0.015;
+
+    const doorFrontZ = frontDirZ * (sizeZ / 2 - doorThick / 2);
+
+    // Dark magnetic gasket shadow strip
+    const gasketGeo = new THREE.BoxGeometry(doorW * 0.99, gasketGapH, doorThick * 0.9);
+    const gasket = new THREE.Mesh(gasketGeo, gasketMat);
+    const gasketY = -sizeY / 2 + plinthH + fridgeH + gasketGapH / 2;
+    gasket.position.set(0, gasketY, doorFrontZ - frontDirZ * doorThick * 0.1);
+    group.add(gasket);
+
+    // Upper Freezer Door
+    const freezerY = -sizeY / 2 + plinthH + fridgeH + gasketGapH + freezerH / 2;
+    const freezerGeo = new THREE.BoxGeometry(doorW, freezerH, doorThick);
+    const freezerDoor = new THREE.Mesh(freezerGeo, bodyMat);
+    freezerDoor.position.set(0, freezerY, doorFrontZ);
+    freezerDoor.castShadow = true;
+    group.add(freezerDoor);
+
+    // Lower Fridge Door
+    const fridgeY = -sizeY / 2 + plinthH + fridgeH / 2;
+    const fridgeGeo = new THREE.BoxGeometry(doorW, fridgeH, doorThick);
+    const fridgeDoor = new THREE.Mesh(fridgeGeo, bodyMat);
+    fridgeDoor.position.set(0, fridgeY, doorFrontZ);
+    fridgeDoor.castShadow = true;
+    group.add(fridgeDoor);
+
+    // 4. Digital LED Control & Status Panel on Freezer Door
+    const panelW = sizeX * 0.28;
+    const panelH = freezerH * 0.28;
+    const panelGeo = new THREE.BoxGeometry(panelW, panelH, doorThick * 0.12);
+    const panelMat = new THREE.MeshStandardMaterial({
+      color: 0x0a1015,
+      roughness: 0.1,
+      metalness: 0.6
+    });
+    const panel = new THREE.Mesh(panelGeo, panelMat);
+    panel.position.set(0, freezerY + freezerH * 0.15, doorFrontZ + frontDirZ * (doorThick / 2 + doorThick * 0.04));
+    group.add(panel);
+
+    // Cyan LED display segments
+    const ledMat = new THREE.MeshBasicMaterial({ color: 0x00e5ff });
+    const ledGeo1 = new THREE.PlaneGeometry(panelW * 0.35, panelH * 0.12);
+    const led1 = new THREE.Mesh(ledGeo1, ledMat);
+    if (frontDirZ > 0) led1.rotation.y = 0;
+    else led1.rotation.y = Math.PI;
+    led1.position.set(-panelW * 0.20, freezerY + freezerH * 0.18, doorFrontZ + frontDirZ * (doorThick / 2 + doorThick * 0.11));
+    group.add(led1);
+
+    const ledGeo2 = new THREE.PlaneGeometry(panelW * 0.35, panelH * 0.12);
+    const led2 = new THREE.Mesh(ledGeo2, ledMat);
+    if (frontDirZ > 0) led2.rotation.y = 0;
+    else led2.rotation.y = Math.PI;
+    led2.position.set(panelW * 0.20, freezerY + freezerH * 0.18, doorFrontZ + frontDirZ * (doorThick / 2 + doorThick * 0.11));
+    group.add(led2);
+
+    // 5. Vertical Tubular Bar Handles with Standoffs
+    const handleSideX = sizeX * 0.38; // right side of doors
+    const handleRadius = sizeX * 0.015;
+    const handleOutZ = doorFrontZ + frontDirZ * (doorThick / 2 + sizeZ * 0.04);
+    const standoffD = sizeZ * 0.04;
+
+    const addVerticalHandle = (centerY, barLen) => {
+      const barGeo = new THREE.CylinderGeometry(handleRadius, handleRadius, barLen, 16);
+      const bar = new THREE.Mesh(barGeo, chromeMat);
+      bar.position.set(handleSideX, centerY, handleOutZ);
+      bar.castShadow = true;
+      group.add(bar);
+
+      [-barLen * 0.42, barLen * 0.42].forEach(offsetY => {
+        const postGeo = new THREE.CylinderGeometry(handleRadius * 0.8, handleRadius * 0.8, standoffD, 12);
+        postGeo.rotateX(Math.PI / 2);
+        const post = new THREE.Mesh(postGeo, chromeMat);
+        post.position.set(handleSideX, centerY + offsetY, doorFrontZ + frontDirZ * (doorThick / 2 + standoffD / 2));
+        group.add(post);
+      });
+    };
+
+    addVerticalHandle(freezerY, freezerH * 0.55);
+    addVerticalHandle(fridgeY + fridgeH * 0.12, fridgeH * 0.55);
+
+    // Subtle Brand Emblem (metallic badge)
+    const badgeGeo = new THREE.BoxGeometry(sizeX * 0.14, sizeY * 0.015, doorThick * 0.08);
+    const badge = new THREE.Mesh(badgeGeo, chromeMat);
+    badge.position.set(0, freezerY + freezerH * 0.40, doorFrontZ + frontDirZ * (doorThick / 2 + doorThick * 0.04));
+    group.add(badge);
 
     return group;
   }
