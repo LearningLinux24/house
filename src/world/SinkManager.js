@@ -11,7 +11,7 @@ export const SINK_SPECS = [
     y_cad: 4.80,
     z_cad: 4.70,
     basinZ: 3.65,
-    handleAxis: 'Z'
+    facing: 'North'
   },
   {
     id: 'SINK-GF-BATH-W',
@@ -21,7 +21,7 @@ export const SINK_SPECS = [
     y_cad: 22.80,
     z_cad: 4.45,
     basinZ: 3.60,
-    handleAxis: 'X'
+    facing: 'South'
   },
   {
     id: 'SINK-GF-BATH-E',
@@ -31,7 +31,7 @@ export const SINK_SPECS = [
     y_cad: 22.80,
     z_cad: 4.45,
     basinZ: 3.60,
-    handleAxis: 'X'
+    facing: 'South'
   },
 
   // First Floor Sinks & Basins
@@ -43,7 +43,7 @@ export const SINK_SPECS = [
     y_cad: 8.25,
     z_cad: 15.10,
     basinZ: 14.15,
-    handleAxis: 'Z'
+    facing: 'East'
   },
   {
     id: 'SINK-FF-NICHE',
@@ -53,7 +53,7 @@ export const SINK_SPECS = [
     y_cad: 22.80,
     z_cad: 14.95,
     basinZ: 14.10,
-    handleAxis: 'X'
+    facing: 'South'
   },
   {
     id: 'SINK-FF-BATH1',
@@ -63,7 +63,7 @@ export const SINK_SPECS = [
     y_cad: 22.80,
     z_cad: 14.95,
     basinZ: 14.10,
-    handleAxis: 'X'
+    facing: 'South'
   },
   {
     id: 'SINK-FF-BATH2',
@@ -73,7 +73,7 @@ export const SINK_SPECS = [
     y_cad: 22.80,
     z_cad: 14.95,
     basinZ: 14.10,
-    handleAxis: 'X'
+    facing: 'South'
   },
   {
     id: 'SINK-FF-GALLERY',
@@ -83,7 +83,7 @@ export const SINK_SPECS = [
     y_cad: 4.85,
     z_cad: 15.10,
     basinZ: 14.15,
-    handleAxis: 'Z'
+    facing: 'East'
   }
 ];
 
@@ -260,12 +260,24 @@ export class SinkManager {
 
       group.position.set(worldX, worldY, worldZ);
 
+      // Facing orientation vector: where spout curves into basin
+      let fx = 0, fz = 1;
+      if (spec.facing === 'North') { fx = 0; fz = -1; }
+      else if (spec.facing === 'South') { fx = 0; fz = 1; }
+      else if (spec.facing === 'East') { fx = 1; fz = 0; }
+      else if (spec.facing === 'West') { fx = -1; fz = 0; }
+
+      const tipX = fx * 0.28 * s;
+      const tipZ = fz * 0.28 * s;
+      const midCtrlX = fx * 0.20 * s + (fz !== 0 ? 0.05 * s : 0);
+      const midCtrlZ = fz * 0.20 * s + (fx !== 0 ? 0.05 * s : 0);
+
       // 1. Chrome Tap Spout (Curved Gooseneck / Mixer)
       const spoutCurve = new THREE.CubicBezierCurve3(
         new THREE.Vector3(0, 0, 0),
         new THREE.Vector3(0, 0.40 * s, 0),
-        new THREE.Vector3(0.08 * s, 0.50 * s, 0.20 * s),
-        new THREE.Vector3(0, 0.32 * s, 0.28 * s)
+        new THREE.Vector3(midCtrlX, 0.50 * s, midCtrlZ),
+        new THREE.Vector3(tipX, 0.32 * s, tipZ)
       );
       const spoutGeo = new THREE.TubeGeometry(spoutCurve, 16, 0.038 * s, 8, false);
       const spoutMesh = new THREE.Mesh(spoutGeo, chromeMat);
@@ -280,7 +292,7 @@ export class SinkManager {
 
       // 2. Interactive Lever Handle
       const handlePivot = new THREE.Group();
-      handlePivot.position.set(0, 0.20 * s, -0.02 * s);
+      handlePivot.position.set(-fz * 0.03 * s, 0.20 * s, -fx * 0.03 * s);
 
       const leverGeo = new THREE.CylinderGeometry(0.022 * s, 0.022 * s, 0.26 * s, 8);
       const leverMesh = new THREE.Mesh(leverGeo, chromeMat);
@@ -292,10 +304,10 @@ export class SinkManager {
       group.add(handlePivot);
 
       // 3. Animated Running Water Stream
-      // Positioned at spout tip (0, 0.32 * s, 0.28 * s) down to basin
+      // Positioned at spout tip down to basin
       const streamGeo = new THREE.CylinderGeometry(0.024 * s, 0.032 * s, streamHeight, 8, 1, true);
       const streamMesh = new THREE.Mesh(streamGeo, waterMat);
-      streamMesh.position.set(0, 0.32 * s - streamHeight / 2, 0.28 * s);
+      streamMesh.position.set(tipX, 0.32 * s - streamHeight / 2, tipZ);
       streamMesh.visible = false;
       group.add(streamMesh);
 
@@ -303,7 +315,7 @@ export class SinkManager {
       const rippleGeo = new THREE.RingGeometry(0.03 * s, 0.16 * s, 16);
       const rippleMesh = new THREE.Mesh(rippleGeo, rippleMat);
       rippleMesh.rotation.x = -Math.PI / 2;
-      rippleMesh.position.set(0, 0.32 * s - streamHeight + 0.01 * s, 0.28 * s);
+      rippleMesh.position.set(tipX, 0.32 * s - streamHeight + 0.01 * s, tipZ);
       rippleMesh.visible = false;
       group.add(rippleMesh);
 
@@ -311,7 +323,7 @@ export class SinkManager {
       const hitGeo = new THREE.BoxGeometry(0.70 * s, 0.85 * s, 0.70 * s);
       const hitMat = new THREE.MeshBasicMaterial({ visible: false });
       const hitMesh = new THREE.Mesh(hitGeo, hitMat);
-      hitMesh.position.set(0, 0.30 * s, 0.14 * s);
+      hitMesh.position.set(tipX / 2, 0.30 * s, tipZ / 2);
       group.add(hitMesh);
 
       this.rootGroup.add(group);
