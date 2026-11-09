@@ -279,14 +279,18 @@ export class TVManager {
         tv.ledMesh.material = tv.activeLedMat;
 
         try {
-          tv.video.currentTime = 0;
           await tv.video.play();
         } catch (playErr) {
           console.warn('[TVManager] Video play exception:', playErr.message);
         }
 
         if (ui) {
-          ui.showToast(`[TV] ${tv.name}: Playing "${tv.videoFilename}" in loop`);
+          const isResume = (tv.video.currentTime > 0.5);
+          ui.showToast(
+            isResume
+              ? `[TV] ${tv.name}: Resuming "${tv.videoFilename}"`
+              : `[TV] ${tv.name}: Playing "${tv.videoFilename}" in loop`
+          );
         }
       } else {
         // No .mp4 video found: show "Nothing to play" screen
