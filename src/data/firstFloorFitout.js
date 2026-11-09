@@ -302,7 +302,10 @@ const BATHROOM_2 = [
 // 8.5  Kitchen (F3)
 const KITCHEN = [
   { id: 'KF-01', name: 'Base cabinet west leg 2×7 ft',          category: 'furniture', type: 'furniture', box: [3.625,  5.625,  4.375, 11.375, 12.000, 14.600], material: 'M-LAMINATE-GREY' },
-  { id: 'KF-02', name: 'Granite top west leg',                  category: 'furniture', type: 'furniture', box: [3.625,  5.700,  4.375, 11.375, 14.600, 14.750], material: 'M-GRANITE-BLACK' },
+  { id: 'KF-02-S', name: 'Granite top west leg south',          category: 'furniture', type: 'furniture', box: [3.625,  5.700,  4.375,  7.000, 14.600, 14.750], material: 'M-GRANITE-BLACK' },
+  { id: 'KF-02-N', name: 'Granite top west leg north',          category: 'furniture', type: 'furniture', box: [3.625,  5.700,  9.500, 11.375, 14.600, 14.750], material: 'M-GRANITE-BLACK' },
+  { id: 'KF-02-REAR', name: 'Granite top west leg behind sink',  category: 'furniture', type: 'furniture', box: [3.625,  3.850,  7.000,  9.500, 14.600, 14.750], material: 'M-GRANITE-BLACK' },
+  { id: 'KF-02-FRONT', name: 'Granite top west leg front lip',   category: 'furniture', type: 'furniture', box: [5.450,  5.700,  7.000,  9.500, 14.600, 14.750], material: 'M-GRANITE-BLACK' },
   { id: 'KF-03', name: 'Base cabinet south leg 7.375×2.25 ft',  category: 'furniture', type: 'furniture', box: [3.625, 11.000,  4.375,  6.625, 12.000, 14.600], material: 'M-LAMINATE-GREY' },
   { id: 'KF-04', name: 'Granite top south leg',                 category: 'furniture', type: 'furniture', box: [3.625, 11.000,  4.375,  6.700, 14.600, 14.750], material: 'M-GRANITE-BLACK' },
   { id: 'KF-05', name: 'Double-bowl steel sink 2.5×1.6 ft',     category: 'furniture', type: 'furniture', box: [3.850,  5.450,  7.000,  9.500, 14.050, 14.750], material: 'M-STEEL-SS' },

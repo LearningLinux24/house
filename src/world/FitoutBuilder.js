@@ -774,13 +774,38 @@ export class FitoutBuilder {
     const bowlLength = isAlongX ? sizeX : sizeZ;
     const bowlWidth = isAlongX ? sizeZ : sizeX;
 
-    // 1. Countertop Outer Flange / Rim (thin metallic lip resting on granite)
+    // 1. Countertop Outer Flange / Rim (open hollow frame resting on granite)
     const rimH = sizeY * 0.08;
-    const rimGeo = new THREE.BoxGeometry(sizeX, rimH, sizeZ);
-    const rim = new THREE.Mesh(rimGeo, ssMat);
-    rim.position.set(0, sizeY / 2 - rimH / 2, 0);
-    rim.castShadow = true;
-    group.add(rim);
+    const lipW = Math.min(sizeX, sizeZ) * 0.08;
+
+    // North lip & South lip
+    [-sizeZ / 2 + lipW / 2, sizeZ / 2 - lipW / 2].forEach(pz => {
+      const lipGeo = new THREE.BoxGeometry(sizeX, rimH, lipW);
+      const lipMesh = new THREE.Mesh(lipGeo, ssMat);
+      lipMesh.position.set(0, sizeY / 2 - rimH / 2, pz);
+      lipMesh.castShadow = true;
+      group.add(lipMesh);
+    });
+
+    // West lip & East lip
+    [-sizeX / 2 + lipW / 2, sizeX / 2 - lipW / 2].forEach(px => {
+      const lipGeo = new THREE.BoxGeometry(lipW, rimH, sizeZ - lipW * 2);
+      const lipMesh = new THREE.Mesh(lipGeo, ssMat);
+      lipMesh.position.set(px, sizeY / 2 - rimH / 2, 0);
+      lipMesh.castShadow = true;
+      group.add(lipMesh);
+    });
+
+    // Center dividing bridge/saddle between the two bowls
+    const saddleGeo = new THREE.BoxGeometry(
+      isAlongX ? lipW : sizeX - lipW * 2,
+      rimH * 0.9,
+      isAlongX ? sizeZ - lipW * 2 : lipW
+    );
+    const saddleMesh = new THREE.Mesh(saddleGeo, ssMat);
+    saddleMesh.position.set(0, sizeY / 2 - rimH / 2, 0);
+    saddleMesh.castShadow = true;
+    group.add(saddleMesh);
 
     // 2. Double Basins with Center Saddle / Divider
     const basinDepth = sizeY * 0.90;
@@ -888,11 +913,32 @@ export class FitoutBuilder {
     const bowlH = sizeY * 0.95;
     const rimH = bowlH * 0.12;
 
-    const rimGeo = new THREE.BoxGeometry(sizeX, rimH, sizeZ);
-    const rim = new THREE.Mesh(rimGeo, ceramicMat);
-    rim.position.set(0, sizeY / 2 - rimH / 2, 0);
-    rim.castShadow = true;
-    group.add(rim);
+    // Rear faucet mounting deck
+    const rearDeckD = sizeZ * 0.26;
+    const rearDeckGeo = new THREE.BoxGeometry(sizeX, rimH, rearDeckD);
+    const rearDeck = new THREE.Mesh(rearDeckGeo, ceramicMat);
+    rearDeck.position.set(0, sizeY / 2 - rimH / 2, -sizeZ / 2 + rearDeckD / 2);
+    rearDeck.castShadow = true;
+    group.add(rearDeck);
+
+    // Left and Right rim strips
+    const sideRimW = sizeX * 0.08;
+    const sideRimD = sizeZ - rearDeckD;
+    [-sizeX / 2 + sideRimW / 2, sizeX / 2 - sideRimW / 2].forEach(px => {
+      const sideGeo = new THREE.BoxGeometry(sideRimW, rimH, sideRimD);
+      const sideMesh = new THREE.Mesh(sideGeo, ceramicMat);
+      sideMesh.position.set(px, sizeY / 2 - rimH / 2, -sizeZ / 2 + rearDeckD + sideRimD / 2);
+      sideMesh.castShadow = true;
+      group.add(sideMesh);
+    });
+
+    // Front curved rim lip
+    const frontRimD = sizeZ * 0.08;
+    const frontRimGeo = new THREE.BoxGeometry(sizeX, rimH, frontRimD);
+    const frontRim = new THREE.Mesh(frontRimGeo, ceramicMat);
+    frontRim.position.set(0, sizeY / 2 - rimH / 2, sizeZ / 2 - frontRimD / 2);
+    frontRim.castShadow = true;
+    group.add(frontRim);
 
     // Contoured outer tapered body
     const bodyGeo = new THREE.CylinderGeometry(sizeX * 0.47, sizeX * 0.38, bowlH - rimH, 24);

@@ -554,11 +554,35 @@ export const GROUND_FLOOR_FITOUT = [
     material: 'M-LAMINATE-GREY'
   },
   {
-    id: 'KIT-02',
-    name: 'Kitchen Granite Counter South',
+    id: 'KIT-02-W',
+    name: 'Kitchen Granite Counter South West',
     category: 'furniture',
     type: 'kitchen',
-    box: [14.000, 24.000, 4.375, 6.450, 4.100, 4.250],
+    box: [14.000, 16.500, 4.375, 6.450, 4.100, 4.250],
+    material: 'M-GRANITE-BLACK'
+  },
+  {
+    id: 'KIT-02-E',
+    name: 'Kitchen Granite Counter South East',
+    category: 'furniture',
+    type: 'kitchen',
+    box: [19.000, 24.000, 4.375, 6.450, 4.100, 4.250],
+    material: 'M-GRANITE-BLACK'
+  },
+  {
+    id: 'KIT-02-REAR',
+    name: 'Kitchen Granite Counter South Behind Sink',
+    category: 'furniture',
+    type: 'kitchen',
+    box: [16.500, 19.000, 4.375, 4.600, 4.100, 4.250],
+    material: 'M-GRANITE-BLACK'
+  },
+  {
+    id: 'KIT-02-FRONT',
+    name: 'Kitchen Granite Counter South Front Lip',
+    category: 'furniture',
+    type: 'kitchen',
+    box: [16.500, 19.000, 6.200, 6.450, 4.100, 4.250],
     material: 'M-GRANITE-BLACK'
   },
   {
