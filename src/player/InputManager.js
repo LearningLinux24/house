@@ -68,6 +68,9 @@ export class InputManager {
       case 'KeyF':
         this.emit('toggleFurniture');
         break;
+      case 'KeyG':
+        this.emit('toggleGarage');
+        break;
       case 'KeyE':
         this.emit('interact');
         break;

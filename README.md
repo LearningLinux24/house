@@ -117,6 +117,26 @@ A modular, extensible Three.js + Vite architectural simulation engine for multi-
     * Directional sound projection cone oriented Westward into the living room seating area.
     * Inverse-distance acoustic roll-off (`refDistance: 5.0 ft`, `maxDistance: 35.0 ft`).
     * Authentic concrete slab floor muffling: volume plays at 100% on the active floor and drops to 12% muffled acoustic bleed when transitioning to the other floor.
+* **Interactive Drivable Luxury Sport SUV & Realistic Automotive Design**:
+  * **High-Fidelity 3D Vehicle Architecture**:
+    * Replaces the former primitive placeholder boxes with a sculpted, contemporary luxury compact SUV in deep sapphire metallic clearcoat paint (`#143454`).
+    * **Aerodynamic Exterior Sculpting**: Contoured hood bonnet with dual power bulges and cowl vent, composite rocker sills, black flared wheel arches, side aerodynamic character creases, front bumper with lower air intake, front silver skid plate splitter, and front/rear license plates (`KA-01-HG-2026`).
+    * **High-Tech LED Projector Headlights**: Dual crystal poly-carbonate housings, chrome projector eye lenses, L-shaped white LED Daytime Running Lights (DRLs), and functional dynamic Three.js `SpotLight` headlights casting real forward illumination onto the garage, walls, and driveway.
+    * **Floating Greenhouse Cabin & Panoramic Roof**: Gloss black B/C-pillars, tinted privacy glass windows with chrome beltline trim, longitudinal silver roof rails, shark-fin roof antenna, and rear aerodynamic roof spoiler with integrated high-mount center LED stop lamp.
+    * **Contemporary Rear Fascia**: Full-width continuous red LED lightbar spanning across the tailgate, rear diffuser with silver skid plate, and dual polished chrome exhaust tips.
+    * **High-Performance 5-Split-Spoke Machine Alloy Wheels**: Radial treaded rubber tires, ventilated disc brake rotors, red Brembo-style sports calipers, articulated front wheel steering pivots, and dynamic 4-wheel spin rotation.
+    * **Detailed Cockpit & Interior**: Stitched leather dashboard with circular AC vents, digital instrument cluster with glowing speedometer/rev dials, 12-inch navigation touchscreen, 3-spoke sport steering wheel with chrome spokes and center horn pad (steers synchronously with vehicle input), automatic gear shifter, floor console, sculpted front bucket seats with lateral bolsters and headrests, rear passenger bench, and rearview mirror.
+  * **Interactive Drivable Mechanics & Controls**:
+    * **Enter / Drive (<kbd>E</kbd>)**: Approach the driver's side in First-Person mode and press <kbd>E</kbd> (`[E] Enter Car`), or left-click the car in Orbit / Dollhouse mode.
+    * **Accelerate & Reverse (<kbd>W</kbd> / <kbd>S</kbd> or <kbd>↑</kbd> / <kbd>↓</kbd>)**: Smooth responsive acceleration forward up to 16 mph and reverse braking.
+    * **Steer (<kbd>A</kbd> / <kbd>D</kbd> or <kbd>←</kbd> / <kbd>→</kbd>)**: Articulates front wheels and cockpit steering wheel with realistic bicycle turning physics and spring-back auto-centering.
+    * **Handbrake (<kbd>Space</kbd>)**: Instant emergency handbrake stopping.
+    * **Dual Driving Cameras (<kbd>C</kbd> or <kbd>5</kbd> / <kbd>P</kbd>)**: Toggle instantly between First-Person **Cockpit Driver View** (sitting behind the steering wheel looking through the windshield with 360° mouse freelook) and Third-Person **Chase Cam** (cinematic chase view behind and above the car).
+    * **Working Headlights (<kbd>L</kbd>)**: Toggles bright forward LED headlights and spotlights on/off.
+    * **Automotive Horn (<kbd>H</kbd>)**: Synthesizes authentic musical dual-tone car horn (`440 Hz` + `554 Hz`).
+    * **Built-in Garage Door Remote (<kbd>G</kbd>)**: Press <kbd>G</kbd> from inside the car to remotely open or close the motorized overhead garage door `G2`, allowing seamless drive-out from the garage onto the driveway ramp and front street, and parking back in!
+    * **Exit / Park (<kbd>E</kbd>)**: Press <kbd>E</kbd> to park the vehicle, stop the engine, and safely step out onto the ground beside the driver's door back into on-foot walking mode.
+    * **Procedural Automotive Web Audio**: Dual-oscillator engine rumble (36 Hz idle) with dynamic RPM pitch modulation scaling with vehicle speed, starter crank, door latch thunk, and dual-tone horn.
 * **Architectural Furniture, Entertainment & Sanitary Upgrades**:
   * **High-Detail Dining Tables (`LOB-09`, `LB-09`)**: Rich walnut tabletop slabs with beveled perimeter profiles, recessed apron rails, and 4 tapered square legs with polished brass tip ferrules across both Ground Floor and First Floor.
   * **Ergonomic Dining Chairs (`LOB-14`..`LOB-17`, `LB-14`..`LB-19`)**: Standard ergonomic seat height ($1.45$ ft / $17.4$ inches above floor), providing optimal $12.6$ inches clearance below the $30$-inch tabletop. Fitted with tapered legs with brass glides, cross-stretchers, upholstered padded cushions (`#efeae1`), and curved ergonomic backrests with upright stiles and lumbar slats oriented facing toward their respective tables.
@@ -198,6 +218,7 @@ house/
     │   ├── CurtainManager.js    # Interactive window curtains with fabric gathering drapes & slide audio
     │   ├── StorageManager.js    # Interactive wardrobes (almirahs), cupboards, and nightstand drawers
     │   ├── TVManager.js         # Interactive Smart TVs with dedicated folders, .mp4 loop playback & 3D audio
+    │   ├── VehicleManager.js    # Interactive drivable Luxury SUV with audio, lights, horn & garage remote
     │   ├── Materials.js         # Reusable Three.js PBR materials manager
     │   ├── Environment.js       # Extended terrain, street, fog, and sky dome
     │   └── RoomLabels.js        # 3D billboard canvas sprites for room labels

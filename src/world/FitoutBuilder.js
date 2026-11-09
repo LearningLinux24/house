@@ -109,7 +109,13 @@ export class FitoutBuilder {
       item.id === 'CH-06' ||
       item.id === 'CH-07' ||
       item.id === 'POR-01' ||
+      item.id === 'GAR-01' ||
+      item.id === 'GAR-02' ||
       item.id === 'GAR-03' ||
+      item.id === 'GAR-04' ||
+      item.id === 'GAR-05' ||
+      item.id === 'GAR-06' ||
+      item.id === 'GAR-07' ||
       item.id === 'KIT-06' ||
       item.id === 'KF-06' ||
       item.id === 'HW-04' ||

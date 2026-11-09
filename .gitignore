@@ -35,6 +35,7 @@ dist-ssr
 *.svg
 
 # Editor & System Files
+*.mp4
 .DS_Store
 Thumbs.db
 .vscode/*

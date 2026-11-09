@@ -12,6 +12,7 @@ import { FurnitureManager } from '../world/FurnitureManager.js';
 import { CurtainManager } from '../world/CurtainManager.js';
 import { StorageManager } from '../world/StorageManager.js';
 import { TVManager } from '../world/TVManager.js';
+import { VehicleManager } from '../world/VehicleManager.js';
 import { CollisionSystem } from '../player/CollisionSystem.js';
 import { InputManager } from '../player/InputManager.js';
 import { Player } from '../player/Player.js';
@@ -105,6 +106,10 @@ export class Engine {
       this.sceneManager.scene
     );
 
+    // 7h. Interactive Vehicle Manager (Modern 3D Luxury SUV, Drivable Mechanics, Audio & Controls)
+    this.vehicleManager = new VehicleManager(this.materials, this.collision);
+    this.vehicleManager.buildCar(this.sceneManager.scene);
+
     // 8. FPS Player
     this.spawnPoint = getSpawnPoint();
     this.player = new Player(this.spawnPoint, this.collision);
@@ -188,12 +193,39 @@ export class Engine {
     // Wire hotkeys
     this.input.on('toggleView', () => this.toggleView());
     this.input.on('togglePOV', () => {
+      if (this.vehicleManager && this.vehicleManager.isDriving) {
+        this.vehicleManager.toggleCameraPOV(this.ui);
+        return;
+      }
       const label = this.cameraCtrl.cyclePOV();
       this.ui.showToast(`Perspective: ${label}`);
     });
-    this.input.on('toggleRoof', () => this.toggleRoof());
-    this.input.on('toggleLabels', () => this.toggleLabels());
-    this.input.on('togglePrompts', () => this.togglePrompts());
+    this.input.on('toggleRoof', () => {
+      if (this.vehicleManager && this.vehicleManager.isDriving) {
+        this.vehicleManager.toggleCameraPOV(this.ui);
+        return;
+      }
+      this.toggleRoof();
+    });
+    this.input.on('toggleLabels', () => {
+      if (this.vehicleManager && this.vehicleManager.isDriving) {
+        this.vehicleManager.toggleHeadlights(this.ui);
+        return;
+      }
+      this.toggleLabels();
+    });
+    this.input.on('togglePrompts', () => {
+      if (this.vehicleManager && this.vehicleManager.isDriving) {
+        this.vehicleManager.playHorn();
+        return;
+      }
+      this.togglePrompts();
+    });
+    this.input.on('toggleGarage', () => {
+      if (this.vehicleManager) {
+        this.vehicleManager.toggleGarageDoor(this.doorManager, this.ui);
+      }
+    });
     this.input.on('toggleFurniture', () => this.toggleFurniture());
     this.input.on('interact', () => this.handleInteraction());
     this.input.on('resetPlayer', () => this.resetPlayer());
@@ -218,6 +250,7 @@ export class Engine {
         this.curtainManager.handleOrbitClick(e, this.sceneManager.camera);
         this.storageManager.handleOrbitClick(e, this.sceneManager.camera);
         this.tvManager.handleOrbitClick(e, this.sceneManager.camera, this.ui);
+        this.vehicleManager.handleOrbitClick(e, this.sceneManager.camera, this.player, this.avatar, this.cameraCtrl, this.ui);
       }
     });
 
@@ -264,6 +297,12 @@ export class Engine {
   }
 
   handleInteraction() {
+    // If currently driving the car, pressing [E] exits the vehicle
+    if (this.vehicleManager && this.vehicleManager.isDriving) {
+      this.vehicleManager.exitCar(this.player, this.avatar, this.cameraCtrl, this.ui);
+      return;
+    }
+
     // If player is currently sitting or sleeping, delegate to furnitureManager (flush or get up)
     if (this.furnitureManager && this.furnitureManager.activeState !== 'none') {
       this.furnitureManager.interact(this.player, this.avatar, this.cameraCtrl, this.ui, this.promptsVisible);
@@ -271,7 +310,9 @@ export class Engine {
     }
 
     // Deliver interaction key to the arbitrated winner
-    if (this.activeInteractSystem === 'furniture' && this.furnitureManager) {
+    if (this.activeInteractSystem === 'vehicle' && this.vehicleManager) {
+      this.vehicleManager.enterCar(this.player, this.avatar, this.cameraCtrl, this.ui);
+    } else if (this.activeInteractSystem === 'furniture' && this.furnitureManager) {
       this.furnitureManager.interact(this.player, this.avatar, this.cameraCtrl, this.ui, this.promptsVisible);
     } else if (this.activeInteractSystem === 'curtain' && this.curtainManager) {
       this.curtainManager.interact(this.ui, this.promptsVisible);
@@ -308,6 +349,9 @@ export class Engine {
     }
     if (this.tvManager) {
       this.tvManager.setFloorFilter(filter);
+    }
+    if (this.vehicleManager) {
+      this.vehicleManager.setFloorFilter(filter);
     }
     this.ui.setFloorButtonState(filter);
 
@@ -367,6 +411,17 @@ export class Engine {
     }
     if (this.tvManager) {
       this.tvManager.update(delta, this.sceneManager.camera, this.player.position, isFPActive, this.ui, false);
+    }
+    if (this.vehicleManager) {
+      this.vehicleManager.update(
+        delta,
+        this.input,
+        this.cameraCtrl,
+        this.player,
+        this.avatar,
+        this.ui,
+        this.doorManager
+      );
     }
 
     // Unified Target Arbitration:
@@ -429,6 +484,14 @@ export class Engine {
           prompt: this.tvManager.promptLabel
         });
       }
+      if (this.vehicleManager && this.vehicleManager.targetedCar && !this.vehicleManager.isDriving) {
+        candidates.push({
+          system: 'vehicle',
+          isDirectHit: !!this.vehicleManager.isDirectHit,
+          distance: this.vehicleManager.targetedDistance || 999,
+          prompt: this.vehicleManager.promptLabel
+        });
+      }
     }
 
     // Direct raycast hit beats fallback; between direct hits (or between fallbacks), closest distance wins
@@ -462,11 +525,13 @@ export class Engine {
     }
 
     if (!this.cameraCtrl.isOrbitMode && this.cameraCtrl.fpControls.isLocked) {
-      // Player movement — pass the actual camera as source of look direction
-      this.player.update(delta, this.input, this.sceneManager.camera);
+      if (!this.vehicleManager || !this.vehicleManager.isDriving) {
+        // Player movement — pass the actual camera as source of look direction
+        this.player.update(delta, this.input, this.sceneManager.camera);
 
-      // Camera follows player (handles all 3 POV modes)
-      this.cameraCtrl.update(this.player, delta, this.collision);
+        // Camera follows player (handles all 3 POV modes)
+        this.cameraCtrl.update(this.player, delta, this.collision);
+      }
 
       const zone = this.collision.getZoneAt(this.player.position.x, this.player.position.z, this.player.feetElevation);
       this.ui.updateHUD(
