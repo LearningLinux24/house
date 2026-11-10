@@ -493,7 +493,7 @@ const TERRACE_GYM_AND_TANK = [
     category: 'doors',
     type: 'glazing',
     box: [14.200, 14.280, 10.200, 12.000, 22.500, 29.300],
-    material: 'M-GLASS'
+    material: 'M-GLASS-CLEAR'
   },
   {
     id: 'TER-GYM-DR-GLZ-SLD',
@@ -502,7 +502,7 @@ const TERRACE_GYM_AND_TANK = [
     type: 'glazing',
     // Leave Y = 12.00 to 14.30 open as entrance doorway, parked panel behind fixed pane
     box: [14.280, 14.360, 10.250, 12.000, 22.500, 29.300],
-    material: 'M-GLASS'
+    material: 'M-GLASS-CLEAR'
   },
 
   // East Panoramic Window (X = 3.5 to 10.5, Y = -0.75 to 0.00, Z = 25.5 to 29.5)
@@ -520,7 +520,7 @@ const TERRACE_GYM_AND_TANK = [
     category: 'windows',
     type: 'glazing',
     box: [3.600, 10.400, -0.410, -0.390, 25.600, 29.400],
-    material: 'M-GLASS'
+    material: 'M-GLASS-CLEAR'
   },
 
   // West Scenic Yoga Window (X = 3.5 to 10.5, Y = 23.25 to 24.00, Z = 25.5 to 29.5)
@@ -538,7 +538,62 @@ const TERRACE_GYM_AND_TANK = [
     category: 'windows',
     type: 'glazing',
     box: [3.600, 10.400, 23.590, 23.610, 25.600, 29.400],
-    material: 'M-GLASS'
+    material: 'M-GLASS-CLEAR'
+  },
+
+  // ── VENTILATION FITOUT ──────────────────────────────────────────────────
+  // Heavy-duty Dual Wall Exhaust Fans with louvered vent cowls
+  {
+    id: 'TER-GYM-EXHAUST-W-LOUVER',
+    name: 'Gym West High-level Exhaust Louver Cowl',
+    category: 'windows',
+    type: 'ventilator',
+    box: [12.000, 13.500, 23.500, 23.850, 29.800, 31.200],
+    material: 'M-STEEL-SS'
+  },
+  {
+    id: 'TER-GYM-EXHAUST-E-LOUVER',
+    name: 'Gym East High-level Exhaust Louver Cowl',
+    category: 'windows',
+    type: 'ventilator',
+    box: [12.000, 13.500, -0.650, -0.300, 29.800, 31.200],
+    material: 'M-STEEL-SS'
+  },
+
+  // Modern Split Air Conditioner & Air Purifier Units (High wall mounted for fresh circulation)
+  {
+    id: 'TER-GYM-AC-1',
+    name: 'Gym AC Indoor Split Blower Unit 1',
+    category: 'electrical',
+    type: 'duct',
+    box: [5.000, 8.500, 23.260, 23.950, 29.800, 30.900],
+    material: 'M-SANITARY-WHITE'
+  },
+  {
+    id: 'TER-GYM-AC-2',
+    name: 'Gym AC Indoor Split Blower Unit 2',
+    category: 'electrical',
+    type: 'duct',
+    box: [5.000, 8.500, -0.700, -0.010, 29.800, 30.900],
+    material: 'M-SANITARY-WHITE'
+  },
+
+  // Outdoor AC Heat Exchanger Compressor Units on Roof Pad next to Water Tank
+  {
+    id: 'TER-GYM-AC-OUTDOOR-1',
+    name: 'Gym Rooftop AC Inverter Outdoor Unit 1',
+    category: 'electrical',
+    type: 'duct',
+    box: [1.500, 3.800, 8.500, 10.000, 32.000, 34.200],
+    material: 'M-STEEL-GREY'
+  },
+  {
+    id: 'TER-GYM-AC-OUTDOOR-2',
+    name: 'Gym Rooftop AC Inverter Outdoor Unit 2',
+    category: 'electrical',
+    type: 'duct',
+    box: [1.500, 3.800, 11.500, 13.000, 32.000, 34.200],
+    material: 'M-STEEL-GREY'
   },
 
   // Full-Length Workout Mirror along South Wall (X = 0.01 to 0.08, Y = 3.0 to 20.0, Z = 23.0 to 29.0)
@@ -858,6 +913,8 @@ export const FF_FANS = [
   { id: 'FN-F3', name: 'Lobby dining area fan',       room: 'Lobby',          cx: 20.000, cy_spec: 13.500, ceilZ: 22.0 },
   { id: 'FN-F4', name: 'Child bedroom fan',           room: 'Child Bedroom',  cx: 45.000, cy_spec: 16.500, ceilZ: 22.0 },
   { id: 'FN-F5', name: 'Mandir fan',                  room: 'Mandir',         cx: 44.750, cy_spec:  4.500, ceilZ: 22.0 },
+  { id: 'FN-GYM-1', name: 'Gym Workout Zone Fan',     room: 'Terrace Gym & Yoga Studio', cx: 7.000, cy_spec: 6.000, ceilZ: 31.5 },
+  { id: 'FN-GYM-2', name: 'Yoga Wellness Zone Fan',   room: 'Terrace Gym & Yoga Studio', cx: 7.000, cy_spec: 17.500, ceilZ: 31.5 },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -884,4 +941,7 @@ export const FF_LIGHTS = [
   { id: 'LT-F16', name: 'Bathroom 1 LED',        room: 'Bathroom 1',     cx: 22.125, cy_spec: 21.250, sizeX: 1.0, sizeY: 1.0, ceilZ: 22.0 },
   { id: 'LT-F17', name: 'Bathroom 2 LED',        room: 'Bathroom 2',     cx: 36.375, cy_spec: 21.250, sizeX: 1.0, sizeY: 1.0, ceilZ: 22.0 },
   { id: 'LT-F18', name: 'South balcony bulkhead',room: 'Balcony',        cx:  6.800, cy_spec:  2.000, sizeX: 1.0, sizeY: 0.5, ceilZ: 22.0 },
+  { id: 'LT-GYM-1', name: 'Gym LED Panel 1',     room: 'Terrace Gym & Yoga Studio', cx: 7.000, cy_spec: 6.000, sizeX: 2.0, sizeY: 2.0, ceilZ: 31.5 },
+  { id: 'LT-GYM-2', name: 'Gym LED Panel 2',     room: 'Terrace Gym & Yoga Studio', cx: 7.000, cy_spec: 12.000, sizeX: 2.0, sizeY: 2.0, ceilZ: 31.5 },
+  { id: 'LT-GYM-3', name: 'Yoga LED Panel 3',    room: 'Terrace Gym & Yoga Studio', cx: 7.000, cy_spec: 18.000, sizeX: 2.0, sizeY: 2.0, ceilZ: 31.5 },
 ];
