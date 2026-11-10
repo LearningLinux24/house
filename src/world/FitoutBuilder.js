@@ -241,6 +241,31 @@ export class FitoutBuilder {
       return this.createBrassDiya(item);
     }
 
+    // Specialized Rooftop Water Tank (Sintex Cylindrical Ribbed Tank + Lid)
+    if (item.id === 'TER-WATER-TANK') {
+      return this.createWaterTank(item);
+    }
+
+    // Specialized Gym Treadmill
+    if (item.id === 'TER-GYM-TREADMILL') {
+      return this.createGymTreadmill(item);
+    }
+
+    // Specialized Gym Weight Bench
+    if (item.id === 'TER-GYM-BENCH') {
+      return this.createGymBench(item);
+    }
+
+    // Specialized Gym Dumbbell Rack & Dumbbells
+    if (item.id === 'TER-GYM-DBRACK') {
+      return this.createDumbbellRack(item);
+    }
+
+    // Specialized Yoga Mats
+    if (item.type === 'yoga_mat') {
+      return this.createYogaMat(item);
+    }
+
     // For windows/ventilators, center a realistic thin glazed pane within the wall depth
     if (item.type === 'window' || item.type === 'ventilator') {
       const dx = xmax - xmin;
@@ -2255,6 +2280,297 @@ export class FitoutBuilder {
     const flameMesh = new THREE.Mesh(flameGeo, flameMat);
     flameMesh.position.set(0, cupPosY + cupHeight / 2 + 0.08 * s, cupRadius * 0.6);
     group.add(flameMesh);
+
+    return group;
+  }
+
+  createWaterTank(item) {
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box.map(v => v * WORLD_SCALE);
+    const posX = (xmin + xmax) / 2;
+    const posY = (zmin + zmax) / 2;
+    const posZ = -((ymin + ymax) / 2);
+    const height = zmax - zmin;
+    const radius = Math.min(xmax - xmin, ymax - ymin) / 2;
+    const s = WORLD_SCALE;
+
+    const group = new THREE.Group();
+    group.name = `WaterTank_${item.id}`;
+    group.position.set(posX, posY, posZ);
+    group.userData = item;
+
+    const tankMat = this.materials.get('M-WATER-TANK') || new THREE.MeshStandardMaterial({
+      color: 0x1a1c1e,
+      roughness: 0.35,
+      metalness: 0.15
+    });
+    const pipeMat = this.materials.get('M-PVC-PIPE') || new THREE.MeshStandardMaterial({
+      color: 0xe0e2e5,
+      roughness: 0.35
+    });
+
+    // Main Cylindrical Body
+    const mainBodyHeight = height * 0.82;
+    const tankGeo = new THREE.CylinderGeometry(radius, radius, mainBodyHeight, 32);
+    const tankMesh = new THREE.Mesh(tankGeo, tankMat);
+    tankMesh.position.set(0, -height / 2 + mainBodyHeight / 2, 0);
+    tankMesh.castShadow = true;
+    tankMesh.receiveShadow = true;
+    group.add(tankMesh);
+
+    // Reinforcing Rib Rings (Sintex style)
+    const ribCount = 4;
+    for (let i = 1; i <= ribCount; i++) {
+      const ribY = -height / 2 + (mainBodyHeight / (ribCount + 1)) * i;
+      const ribGeo = new THREE.TorusGeometry(radius + 0.02 * s, 0.04 * s, 8, 32);
+      ribGeo.rotateX(Math.PI / 2);
+      const ribMesh = new THREE.Mesh(ribGeo, tankMat);
+      ribMesh.position.set(0, ribY, 0);
+      group.add(ribMesh);
+    }
+
+    // Conical Domed Top
+    const domeHeight = height * 0.14;
+    const domeGeo = new THREE.ConeGeometry(radius, domeHeight, 32);
+    const domeMesh = new THREE.Mesh(domeGeo, tankMat);
+    domeMesh.position.set(0, -height / 2 + mainBodyHeight + domeHeight / 2, 0);
+    domeMesh.castShadow = true;
+    group.add(domeMesh);
+
+    // Inspection Lid / Cap on Top
+    const lidRadius = radius * 0.45;
+    const lidHeight = height * 0.05;
+    const lidGeo = new THREE.CylinderGeometry(lidRadius, lidRadius * 1.05, lidHeight, 24);
+    const lidMesh = new THREE.Mesh(lidGeo, tankMat);
+    lidMesh.position.set(0, -height / 2 + mainBodyHeight + domeHeight + lidHeight / 2, 0);
+    lidMesh.castShadow = true;
+    group.add(lidMesh);
+
+    // Overflow / Air Vent Pipe Fitting
+    const ventGeo = new THREE.CylinderGeometry(0.04 * s, 0.04 * s, 0.35 * s, 8);
+    const ventMesh = new THREE.Mesh(ventGeo, pipeMat);
+    ventMesh.position.set(radius * 0.7, -height / 2 + mainBodyHeight + 0.1 * s, 0);
+    group.add(ventMesh);
+
+    return group;
+  }
+
+  createGymTreadmill(item) {
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box.map(v => v * WORLD_SCALE);
+    const posX = (xmin + xmax) / 2;
+    const posY = (zmin + zmax) / 2;
+    const posZ = -((ymin + ymax) / 2);
+    const sizeX = xmax - xmin;
+    const sizeY = zmax - zmin;
+    const sizeZ = ymax - ymin;
+    const s = WORLD_SCALE;
+
+    const group = new THREE.Group();
+    group.name = `GymTreadmill_${item.id}`;
+    group.position.set(posX, posY, posZ);
+    group.userData = item;
+
+    const steelMat = this.materials.get('M-STEEL-GREY');
+    const rubberMat = this.materials.get('M-GYM-RUBBER');
+    const screenMat = new THREE.MeshStandardMaterial({
+      color: 0x050a12,
+      emissive: 0x103a5e,
+      emissiveIntensity: 0.8,
+      roughness: 0.1
+    });
+
+    // Running deck / platform
+    const deckH = 0.35 * s;
+    const deckGeo = new THREE.BoxGeometry(sizeX * 0.9, deckH, sizeZ * 0.85);
+    const deckMesh = new THREE.Mesh(deckGeo, steelMat);
+    deckMesh.position.set(0, -sizeY / 2 + deckH / 2, -sizeZ * 0.05);
+    deckMesh.castShadow = true;
+    group.add(deckMesh);
+
+    // Treadmill Belt
+    const beltGeo = new THREE.BoxGeometry(sizeX * 0.7, 0.04 * s, sizeZ * 0.75);
+    const beltMesh = new THREE.Mesh(beltGeo, rubberMat);
+    beltMesh.position.set(0, -sizeY / 2 + deckH + 0.02 * s, -sizeZ * 0.05);
+    group.add(beltMesh);
+
+    // Front Motor Housing
+    const motorH = 0.75 * s;
+    const motorGeo = new THREE.BoxGeometry(sizeX * 0.92, motorH, sizeZ * 0.22);
+    const motorMesh = new THREE.Mesh(motorGeo, steelMat);
+    motorMesh.position.set(0, -sizeY / 2 + motorH / 2, sizeZ * 0.38);
+    motorMesh.castShadow = true;
+    group.add(motorMesh);
+
+    // Side Handrail Uprights
+    const uprightGeo = new THREE.CylinderGeometry(0.04 * s, 0.04 * s, sizeY * 0.85, 8);
+    const leftUpright = new THREE.Mesh(uprightGeo, steelMat);
+    leftUpright.position.set(-sizeX * 0.42, 0, sizeZ * 0.28);
+    leftUpright.rotation.x = -0.15;
+    group.add(leftUpright);
+
+    const rightUpright = new THREE.Mesh(uprightGeo, steelMat);
+    rightUpright.position.set(sizeX * 0.42, 0, sizeZ * 0.28);
+    rightUpright.rotation.x = -0.15;
+    group.add(rightUpright);
+
+    // Console & Digital Display Screen
+    const consoleGeo = new THREE.BoxGeometry(sizeX * 0.85, 0.20 * s, 0.45 * s);
+    const consoleMesh = new THREE.Mesh(consoleGeo, steelMat);
+    consoleMesh.position.set(0, sizeY / 2 - 0.2 * s, sizeZ * 0.35);
+    consoleMesh.rotation.x = -0.35;
+    group.add(consoleMesh);
+
+    const screenGeo = new THREE.PlaneGeometry(sizeX * 0.5, 0.3 * s);
+    const screenMesh = new THREE.Mesh(screenGeo, screenMat);
+    screenMesh.position.set(0, sizeY / 2 - 0.16 * s, sizeZ * 0.36);
+    screenMesh.rotation.x = -0.35;
+    group.add(screenMesh);
+
+    return group;
+  }
+
+  createGymBench(item) {
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box.map(v => v * WORLD_SCALE);
+    const posX = (xmin + xmax) / 2;
+    const posY = (zmin + zmax) / 2;
+    const posZ = -((ymin + ymax) / 2);
+    const sizeX = xmax - xmin;
+    const sizeY = zmax - zmin;
+    const sizeZ = ymax - ymin;
+    const s = WORLD_SCALE;
+
+    const group = new THREE.Group();
+    group.name = `GymBench_${item.id}`;
+    group.position.set(posX, posY, posZ);
+    group.userData = item;
+
+    const steelMat = this.materials.get('M-STEEL-GREY');
+    const leatherMat = this.materials.get('M-GYM-RUBBER');
+
+    // Bench Steel Frame & Legs
+    const legGeo = new THREE.CylinderGeometry(0.04 * s, 0.04 * s, sizeY * 0.85, 8);
+    const leg1 = new THREE.Mesh(legGeo, steelMat);
+    leg1.position.set(0, -sizeY * 0.08, -sizeZ * 0.38);
+    group.add(leg1);
+
+    const leg2 = new THREE.Mesh(legGeo, steelMat);
+    leg2.position.set(0, -sizeY * 0.08, sizeZ * 0.38);
+    group.add(leg2);
+
+    const baseBarGeo = new THREE.BoxGeometry(sizeX * 0.7, 0.06 * s, 0.12 * s);
+    const baseBar1 = new THREE.Mesh(baseBarGeo, steelMat);
+    baseBar1.position.set(0, -sizeY / 2 + 0.03 * s, -sizeZ * 0.38);
+    group.add(baseBar1);
+
+    const baseBar2 = new THREE.Mesh(baseBarGeo, steelMat);
+    baseBar2.position.set(0, -sizeY / 2 + 0.03 * s, sizeZ * 0.38);
+    group.add(baseBar2);
+
+    const centerSpine = new THREE.Mesh(new THREE.BoxGeometry(0.10 * s, 0.08 * s, sizeZ * 0.85), steelMat);
+    centerSpine.position.set(0, sizeY / 2 - 0.22 * s, 0);
+    group.add(centerSpine);
+
+    // Padded Seat Cushion
+    const seatPad = new THREE.Mesh(new THREE.BoxGeometry(sizeX * 0.8, 0.12 * s, sizeZ * 0.32), leatherMat);
+    seatPad.position.set(0, sizeY / 2 - 0.08 * s, -sizeZ * 0.28);
+    seatPad.castShadow = true;
+    group.add(seatPad);
+
+    // Padded Backrest Cushion (slightly elevated angle)
+    const backPad = new THREE.Mesh(new THREE.BoxGeometry(sizeX * 0.8, 0.12 * s, sizeZ * 0.58), leatherMat);
+    backPad.position.set(0, sizeY / 2 - 0.04 * s, sizeZ * 0.18);
+    backPad.rotation.x = -0.12;
+    backPad.castShadow = true;
+    group.add(backPad);
+
+    return group;
+  }
+
+  createDumbbellRack(item) {
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box.map(v => v * WORLD_SCALE);
+    const posX = (xmin + xmax) / 2;
+    const posY = (zmin + zmax) / 2;
+    const posZ = -((ymin + ymax) / 2);
+    const sizeX = xmax - xmin;
+    const sizeY = zmax - zmin;
+    const sizeZ = ymax - ymin;
+    const s = WORLD_SCALE;
+
+    const group = new THREE.Group();
+    group.name = `DumbbellRack_${item.id}`;
+    group.position.set(posX, posY, posZ);
+    group.userData = item;
+
+    const steelMat = this.materials.get('M-STEEL-GREY');
+    const weightMat = this.materials.get('M-TYRE-BLACK');
+    const chromeMat = this.materials.get('M-CHROME');
+
+    // A-frame side supports
+    const supportGeo = new THREE.BoxGeometry(sizeX * 0.15, sizeY, 0.08 * s);
+    const supLeft = new THREE.Mesh(supportGeo, steelMat);
+    supLeft.position.set(0, 0, -sizeZ * 0.45);
+    group.add(supLeft);
+
+    const supRight = new THREE.Mesh(supportGeo, steelMat);
+    supRight.position.set(0, 0, sizeZ * 0.45);
+    group.add(supRight);
+
+    // Two tiers of angled shelves
+    for (let tier = 0; tier < 2; tier++) {
+      const tierY = -sizeY * 0.2 + tier * (sizeY * 0.45);
+      const shelfMesh = new THREE.Mesh(new THREE.BoxGeometry(sizeX * 0.85, 0.05 * s, sizeZ * 0.95), steelMat);
+      shelfMesh.position.set(0, tierY, 0);
+      shelfMesh.rotation.z = -0.15;
+      group.add(shelfMesh);
+
+      // Dumbbell pairs on this shelf
+      const numPairs = 4;
+      for (let p = 0; p < numPairs; p++) {
+        const dZ = -sizeZ * 0.35 + (p / (numPairs - 1)) * (sizeZ * 0.70);
+        const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.02 * s, 0.02 * s, sizeX * 0.5, 8), chromeMat);
+        handle.rotation.z = Math.PI / 2;
+        handle.position.set(0, tierY + 0.08 * s, dZ);
+        group.add(handle);
+
+        const wRadius = (0.09 + tier * 0.04 + p * 0.015) * s;
+        const wThick = 0.05 * s;
+        const plateGeo = new THREE.CylinderGeometry(wRadius, wRadius, wThick, 16);
+        plateGeo.rotateZ(Math.PI / 2);
+
+        const plateL = new THREE.Mesh(plateGeo, weightMat);
+        plateL.position.set(-sizeX * 0.22, tierY + 0.08 * s, dZ);
+        group.add(plateL);
+
+        const plateR = new THREE.Mesh(plateGeo, weightMat);
+        plateR.position.set(sizeX * 0.22, tierY + 0.08 * s, dZ);
+        group.add(plateR);
+      }
+    }
+
+    return group;
+  }
+
+  createYogaMat(item) {
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box.map(v => v * WORLD_SCALE);
+    const posX = (xmin + xmax) / 2;
+    const posY = (zmin + zmax) / 2;
+    const posZ = -((ymin + ymax) / 2);
+    const sizeX = xmax - xmin;
+    const sizeY = zmax - zmin;
+    const sizeZ = ymax - ymin;
+
+    const group = new THREE.Group();
+    group.name = `YogaMat_${item.id}`;
+    group.position.set(posX, posY, posZ);
+    group.userData = item;
+
+    const mat = this.materials.get(item.material) || new THREE.MeshStandardMaterial({
+      color: 0x5c3877,
+      roughness: 0.95
+    });
+
+    const matMesh = new THREE.Mesh(new THREE.BoxGeometry(sizeX, sizeY, sizeZ), mat);
+    matMesh.receiveShadow = true;
+    group.add(matMesh);
 
     return group;
   }

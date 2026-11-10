@@ -204,7 +204,48 @@ export const FIRST_FLOOR_DATA = {
     // Terrace Stair Guard Railing Walls (protects open stair well on terrace)
     { id: 'TER-STAIR-W', box: [26.000, 26.375,  4.000, 11.375, 22.500, 25.500], type: 'wall_int' },
     { id: 'TER-STAIR-N', box: [26.000, 30.000, 11.000, 11.375, 22.500, 25.500], type: 'wall_int' },
-    { id: 'TER-STAIR-E', box: [29.625, 30.000,  4.000, 11.375, 22.500, 25.500], type: 'wall_int' }
+    { id: 'TER-STAIR-E', box: [29.625, 30.000,  4.000, 11.375, 22.500, 25.500], type: 'wall_int' },
+
+    // ─────────────────────────────────────────────────────────────────────
+    // STEP 7 · Terrace Gym + Yoga Room (South Side: X = 1.5 to 13.5, Y = 5.0 to 19.0)
+    // Floor Z = 22.50 to 22.58, Walls Z = 22.50 to 31.50 (9ft ceiling)
+    // Door opening on North wall (Y = 18.50 to 19.00) between X = 6.00 and 9.50
+    // Roof slab Z = 31.50 to 32.00, Water Tank Pad Z = 32.00 to 32.50
+    // ─────────────────────────────────────────────────────────────────────
+    // Gym Flooring Mat/Floor Platform (dark acoustic gym rubber tile flooring)
+    { id: 'TER-GYM-FL',   box: [ 1.500, 13.500,  5.000, 19.000, 22.500, 22.580], type: 'fixture', material: 'M-GYM-RUBBER' },
+
+    // South Exterior Wall (full solid back wall with acoustic insulation, along Y = 5.0)
+    { id: 'TER-GYM-W-S',  box: [ 1.500, 13.500,  4.500,  5.000, 22.500, 31.500], type: 'wall_ext' },
+
+    // West Exterior Wall (along X = 1.50) with large scenic yoga window aperture (Y = 9.0 to 15.0)
+    { id: 'TER-GYM-W-W1', box: [ 1.000,  1.500,  4.500,  9.000, 22.500, 31.500], type: 'wall_ext' },
+    { id: 'TER-GYM-W-WS', box: [ 1.000,  1.500,  9.000, 15.000, 22.500, 25.500], type: 'wall_ext' }, // Window sill
+    { id: 'TER-GYM-W-WL', box: [ 1.000,  1.500,  9.000, 15.000, 29.500, 31.500], type: 'lintel' },   // Window lintel
+    { id: 'TER-GYM-W-W2', box: [ 1.000,  1.500, 15.000, 19.500, 22.500, 31.500], type: 'wall_ext' },
+
+    // East Exterior Wall (along X = 13.50) with ventilation window (Y = 9.5 to 14.5)
+    { id: 'TER-GYM-W-E1', box: [13.500, 14.000,  4.500,  9.500, 22.500, 31.500], type: 'wall_ext' },
+    { id: 'TER-GYM-W-ES', box: [13.500, 14.000,  9.500, 14.500, 22.500, 25.500], type: 'wall_ext' }, // Window sill
+    { id: 'TER-GYM-W-EL', box: [13.500, 14.000,  9.500, 14.500, 29.500, 31.500], type: 'lintel' },   // Window lintel
+    { id: 'TER-GYM-W-E2', box: [13.500, 14.000, 14.500, 19.500, 22.500, 31.500], type: 'wall_ext' },
+
+    // North Entrance Wall (along Y = 19.0) facing terrace, with modern wide sliding glass door opening (X = 6.0 to 9.5)
+    { id: 'TER-GYM-W-N1', box: [ 1.000,  6.000, 19.000, 19.500, 22.500, 31.500], type: 'wall_ext' },
+    { id: 'TER-GYM-W-NL', box: [ 6.000,  9.500, 19.000, 19.500, 29.500, 31.500], type: 'lintel' },   // Door lintel
+    { id: 'TER-GYM-W-N2', box: [ 9.500, 14.000, 19.000, 19.500, 22.500, 31.500], type: 'wall_ext' },
+
+    // Gym Room Roof Slab (Z = 31.50 to 32.00)
+    { id: 'TER-GYM-ROOF', box: [ 0.750, 14.250,  4.250, 19.750, 31.500, 32.000], type: 'slab' },
+
+    // Parapet around Gym Room Roof (1.5 ft raised lip)
+    { id: 'TER-GYM-PAR-S', box: [ 0.750, 14.250,  4.250,  4.750, 32.000, 33.500], type: 'wall_ext' },
+    { id: 'TER-GYM-PAR-N', box: [ 0.750, 14.250, 19.250, 19.750, 32.000, 33.500], type: 'wall_ext' },
+    { id: 'TER-GYM-PAR-W', box: [ 0.750,  1.250,  4.250, 19.750, 32.000, 33.500], type: 'wall_ext' },
+    { id: 'TER-GYM-PAR-E', box: [13.750, 14.250,  4.250, 19.750, 32.000, 33.500], type: 'wall_ext' },
+
+    // Concrete Pedestal Base Pad for Rooftop Water Tank (Z = 32.00 to 32.60)
+    { id: 'TER-TANK-PAD', box: [ 3.000,  8.000,  7.000, 12.000, 32.000, 32.600], type: 'plinth' }
   ],
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -224,7 +265,8 @@ export const FIRST_FLOOR_DATA = {
     { id: 'F11', name: 'Bathroom 2 (7\'0" × 4\'0")',          bounds: [32.875, 39.875, 19.250, 23.250] },
     { id: 'F12', name: 'Hallway (5\'7.5" × 18\'10.5")',       bounds: [34.250, 39.875,  0.000, 18.875] },
     { id: 'F13', name: 'Child Bedroom (9\'0" × 13\'10.5")',   bounds: [40.250, 49.250,  9.375, 23.250] },
-    { id: 'F14', name: 'Mandir (9\'0" × 9\'0")',              bounds: [40.250, 49.250,  0.000,  9.000] }
+    { id: 'F14', name: 'Mandir (9\'0" × 9\'0")',              bounds: [40.250, 49.250,  0.000,  9.000] },
+    { id: 'F15', name: 'Terrace Gym & Yoga Studio',           bounds: [ 1.500, 13.500,  5.000, 19.000] }
   ],
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -240,7 +282,8 @@ export const FIRST_FLOOR_DATA = {
     { text: 'HALLWAY',        sub: "5'7.5\" × 18'10.5\"",x:37.062, y_spec:  9.438, elev: 19.0 },
     { text: 'CHILD BEDROOM',  sub: "9'0\" × 13'10.5\"", x: 44.750, y_spec: 16.313, elev: 19.0 },
     { text: 'MANDIR',         sub: "9'0\" × 9'0\"",     x: 44.750, y_spec:  4.500, elev: 19.0 },
-    { text: 'STAIRS UP →',    sub: "To Terrace",        x: 28.000, y_spec:  9.000, elev: 19.0 }
+    { text: 'STAIRS UP →',    sub: "To Terrace",        x: 28.000, y_spec:  9.000, elev: 19.0 },
+    { text: 'GYM & YOGA STUDIO', sub: "Fitness & Wellness", x: 7.500, y_spec: 12.000, elev: 29.5 }
   ],
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -258,6 +301,7 @@ export const FIRST_FLOOR_DATA = {
     { label: '🛏️ 1F · Child Bedroom',         x: 44.5,  y_spec: 16.0,  elev: 12.0 },
     { label: '🕌 1F · Mandir',                x: 44.5,  y_spec:  4.5,  elev: 12.0 },
     { label: '🪜 1F · Upper Stair (foot)',    x: 28.0,  y_spec: 13.6,  elev: 12.0 },
-    { label: '🏔️ 1F · Terrace Level',         x: 28.0,  y_spec:  3.5,  elev: 22.5 }
+    { label: '🏔️ 1F · Terrace Level',         x: 28.0,  y_spec:  3.5,  elev: 22.5 },
+    { label: '🧘 1F · Terrace Gym & Yoga',    x:  7.5,  y_spec: 14.0,  elev: 22.5 }
   ]
 };

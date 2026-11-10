@@ -305,6 +305,31 @@ export const PALETTE = {
     roughness: 0.85,
     metalness: 0.0
   },
+  'M-GYM-RUBBER': {
+    color: '#1C1D1F',
+    roughness: 0.85,
+    metalness: 0.05
+  },
+  'M-YOGA-MAT-PURPLE': {
+    color: '#5C3877',
+    roughness: 0.90,
+    metalness: 0.0
+  },
+  'M-YOGA-MAT-TEAL': {
+    color: '#2A7B88',
+    roughness: 0.90,
+    metalness: 0.0
+  },
+  'M-WATER-TANK': {
+    color: '#1A1C1E',
+    roughness: 0.40,
+    metalness: 0.15
+  },
+  'M-PVC-PIPE': {
+    color: '#E0E2E5',
+    roughness: 0.35,
+    metalness: 0.05
+  },
 
   // --- Edge Outlines ---
   edge_outline: {
