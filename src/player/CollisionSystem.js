@@ -42,6 +42,9 @@ export class CollisionSystem {
       if (xs >= 26.375 && xs <= 29.625 && ys >= 4.0 && ys <= 11.0) {
         const k = Math.min(13, Math.max(1, Math.ceil((14.01 - ys) / 0.770)));
         baseElev = (12.00 + 0.75 * k) * s;
+      } else if (unscaledElev >= 30.0 && xs >= -0.75 && xs <= 14.75 && ys >= -0.75 && ys <= 24.0) {
+        // Top roof of the Gym & Yoga room (accessible via straight ladder)
+        baseElev = 32.00 * s;
       } else {
         baseElev = 22.50 * s;
       }

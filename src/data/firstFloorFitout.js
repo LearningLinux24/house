@@ -399,25 +399,84 @@ const ELECTRICAL = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SECTION 8.16 – TERRACE GYM & YOGA ROOM + ROOFTOP WATER TANK
+// SECTION 8.16 – TERRACE GYM & YOGA ROOM + ROOFTOP WATER TANK + LADDER
 // ─────────────────────────────────────────────────────────────────────────────
 
+function createGymRoofLadder() {
+  const items = [];
+  // Straight vertical ladder on the north exterior wall facing terrace (X = 14.50 to 14.85, Y = 17.5 to 19.0)
+  // Base at terrace floor Z = 22.50 to Gym roof Z = 32.50 (with 3.0ft safety extension to Z = 35.50)
+  const lx = 14.65;
+  const ly1 = 17.80;
+  const ly2 = 19.30;
+  const zBottom = 22.50;
+  const zTop = 35.50;
+  const railThick = 0.08;
+
+  // Left vertical rail
+  items.push({
+    id: 'TER-GYM-LADDER-RAIL-L',
+    name: 'Gym Roof Ladder Left Stringer',
+    category: 'furniture',
+    type: 'ladder',
+    box: [lx, lx + railThick, ly1, ly1 + railThick, zBottom, zTop],
+    material: 'M-STEEL-GREY'
+  });
+
+  // Right vertical rail
+  items.push({
+    id: 'TER-GYM-LADDER-RAIL-R',
+    name: 'Gym Roof Ladder Right Stringer',
+    category: 'furniture',
+    type: 'ladder',
+    box: [lx, lx + railThick, ly2 - railThick, ly2, zBottom, zTop],
+    material: 'M-STEEL-GREY'
+  });
+
+  // Wall stand-off brackets fixing ladder to gym exterior concrete wall
+  [24.0, 28.0, 31.8].forEach((bz, idx) => {
+    items.push({
+      id: `TER-GYM-LADDER-BRKT-${idx}`,
+      name: 'Gym Ladder Wall Stand-off',
+      category: 'furniture',
+      type: 'ladder',
+      box: [14.45, lx, (ly1 + ly2) / 2 - 0.45, (ly1 + ly2) / 2 + 0.45, bz - 0.04, bz + 0.04],
+      material: 'M-STEEL-GREY'
+    });
+  });
+
+  // Ladder rungs (spaced 1.0 ft apart from Z = 23.50 to 32.50)
+  let rungIdx = 1;
+  for (let rz = 23.50; rz <= 32.50; rz += 1.00) {
+    items.push({
+      id: `TER-GYM-LADDER-RUNG-${rungIdx++}`,
+      name: 'Gym Roof Ladder Rung',
+      category: 'furniture',
+      type: 'ladder_rung',
+      box: [lx, lx + railThick, ly1 + railThick, ly2 - railThick, rz - 0.04, rz + 0.04],
+      material: 'M-STEEL-SS'
+    });
+  }
+
+  return items;
+}
+
 const TERRACE_GYM_AND_TANK = [
-  // Gym Door: Glass Sliding Door on North Wall (Y = 19.0, X = 6.0 to 9.5, Z = 22.5 to 29.5)
+  // Gym Door: Glass Sliding Door on North Wall (X = 14.0 to 14.5, Y = 10.0 to 14.5, Z = 22.5 to 29.5)
   {
     id: 'TER-GYM-DR-FRM-L',
-    name: 'Gym Door Left Frame',
+    name: 'Gym Door North Jamb',
     category: 'doors',
     type: 'door_frame',
-    box: [6.000, 6.200, 19.000, 19.300, 22.500, 29.500],
+    box: [14.000, 14.500, 10.000, 10.200, 22.500, 29.500],
     material: 'M-ALU-FRAME'
   },
   {
     id: 'TER-GYM-DR-FRM-R',
-    name: 'Gym Door Right Frame',
+    name: 'Gym Door South Jamb',
     category: 'doors',
     type: 'door_frame',
-    box: [9.300, 9.500, 19.000, 19.300, 22.500, 29.500],
+    box: [14.000, 14.500, 14.300, 14.500, 22.500, 29.500],
     material: 'M-ALU-FRAME'
   },
   {
@@ -425,7 +484,7 @@ const TERRACE_GYM_AND_TANK = [
     name: 'Gym Door Top Rail',
     category: 'doors',
     type: 'door_frame',
-    box: [6.000, 9.500, 19.000, 19.300, 29.300, 29.500],
+    box: [14.000, 14.500, 10.000, 14.500, 29.300, 29.500],
     material: 'M-ALU-FRAME'
   },
   {
@@ -433,7 +492,7 @@ const TERRACE_GYM_AND_TANK = [
     name: 'Gym Fixed Glass Panel',
     category: 'doors',
     type: 'glazing',
-    box: [6.200, 7.750, 19.100, 19.180, 22.500, 29.300],
+    box: [14.200, 14.280, 10.200, 12.000, 22.500, 29.300],
     material: 'M-GLASS'
   },
   {
@@ -441,36 +500,18 @@ const TERRACE_GYM_AND_TANK = [
     name: 'Gym Sliding Glass Panel (Open Walkway)',
     category: 'doors',
     type: 'glazing',
-    // Leave X = 7.75 to 9.30 open as entrance doorway, parked panel behind fixed pane
-    box: [6.250, 7.750, 19.200, 19.280, 22.500, 29.300],
+    // Leave Y = 12.00 to 14.30 open as entrance doorway, parked panel behind fixed pane
+    box: [14.280, 14.360, 10.250, 12.000, 22.500, 29.300],
     material: 'M-GLASS'
   },
 
-  // West Scenic Yoga Window (X = 1.0 to 1.5, Y = 9.0 to 15.0, Z = 25.5 to 29.5)
-  {
-    id: 'TER-GYM-WIN-W-FRM',
-    name: 'Gym West Window Frame',
-    category: 'windows',
-    type: 'window_frame',
-    box: [1.200, 1.300, 9.000, 15.000, 25.500, 29.500],
-    material: 'M-ALU-FRAME'
-  },
-  {
-    id: 'TER-GYM-WIN-W-GLZ',
-    name: 'Gym West Window Glass',
-    category: 'windows',
-    type: 'glazing',
-    box: [1.240, 1.260, 9.100, 14.900, 25.600, 29.400],
-    material: 'M-GLASS'
-  },
-
-  // East Window (X = 13.5 to 14.0, Y = 9.5 to 14.5, Z = 25.5 to 29.5)
+  // East Panoramic Window (X = 3.5 to 10.5, Y = -0.75 to 0.00, Z = 25.5 to 29.5)
   {
     id: 'TER-GYM-WIN-E-FRM',
     name: 'Gym East Window Frame',
     category: 'windows',
     type: 'window_frame',
-    box: [13.700, 13.800, 9.500, 14.500, 25.500, 29.500],
+    box: [3.500, 10.500, -0.450, -0.350, 25.500, 29.500],
     material: 'M-ALU-FRAME'
   },
   {
@@ -478,27 +519,45 @@ const TERRACE_GYM_AND_TANK = [
     name: 'Gym East Window Glass',
     category: 'windows',
     type: 'glazing',
-    box: [13.740, 13.760, 9.600, 14.400, 25.600, 29.400],
+    box: [3.600, 10.400, -0.410, -0.390, 25.600, 29.400],
     material: 'M-GLASS'
   },
 
-  // Full-Length Workout Mirror along South Wall (X = 2.5 to 12.5, Y = 5.01 to 5.08, Z = 23.0 to 29.0)
+  // West Scenic Yoga Window (X = 3.5 to 10.5, Y = 23.25 to 24.00, Z = 25.5 to 29.5)
+  {
+    id: 'TER-GYM-WIN-W-FRM',
+    name: 'Gym West Window Frame',
+    category: 'windows',
+    type: 'window_frame',
+    box: [3.500, 10.500, 23.550, 23.650, 25.500, 29.500],
+    material: 'M-ALU-FRAME'
+  },
+  {
+    id: 'TER-GYM-WIN-W-GLZ',
+    name: 'Gym West Window Glass',
+    category: 'windows',
+    type: 'glazing',
+    box: [3.600, 10.400, 23.590, 23.610, 25.600, 29.400],
+    material: 'M-GLASS'
+  },
+
+  // Full-Length Workout Mirror along South Wall (X = 0.01 to 0.08, Y = 3.0 to 20.0, Z = 23.0 to 29.0)
   {
     id: 'TER-GYM-MIRROR',
     name: 'Gym Workout Mirror',
     category: 'furniture',
     type: 'mirror',
-    box: [2.500, 12.500, 5.010, 5.080, 23.000, 29.000],
+    box: [0.010, 0.080, 3.000, 20.000, 23.000, 29.000],
     material: 'M-MIRROR'
   },
 
-  // Yoga Mats (South side of room, facing south mirror & west window)
+  // Yoga Mats (placed on west side facing scenic yoga window and south mirror)
   {
     id: 'TER-YOGA-MAT-1',
     name: 'Terrace Yoga Mat 1 (Purple)',
     category: 'furniture',
     type: 'yoga_mat',
-    box: [2.800, 5.000, 6.200, 11.500, 22.580, 22.620],
+    box: [2.500, 5.000, 17.500, 22.800, 22.580, 22.620],
     material: 'M-YOGA-MAT-PURPLE'
   },
   {
@@ -506,47 +565,47 @@ const TERRACE_GYM_AND_TANK = [
     name: 'Terrace Yoga Mat 2 (Teal)',
     category: 'furniture',
     type: 'yoga_mat',
-    box: [5.600, 7.800, 6.200, 11.500, 22.580, 22.620],
+    box: [6.500, 9.000, 17.500, 22.800, 22.580, 22.620],
     material: 'M-YOGA-MAT-TEAL'
   },
 
-  // Multi-Tier Dumbbell Rack & Weights (East side of gym: X = 11.8 to 13.2, Y = 5.5 to 10.5, Z = 22.58 to 25.5)
+  // Multi-Tier Dumbbell Rack & Weights (along north interior wall: X = 12.0 to 13.5, Y = 1.5 to 6.5)
   {
     id: 'TER-GYM-DBRACK',
     name: 'Gym Dumbbell Rack Stand',
     category: 'furniture',
     type: 'gym_dumbbell_rack',
-    box: [11.800, 13.200, 5.500, 10.500, 22.580, 25.500],
+    box: [12.000, 13.500, 1.500, 6.500, 22.580, 25.500],
     material: 'M-STEEL-GREY'
   },
 
-  // Adjustable Workout Weight Bench (Central workout zone: X = 9.0 to 11.2, Y = 11.0 to 15.5)
+  // Adjustable Workout Weight Bench (East workout zone: X = 5.5 to 7.8, Y = 2.5 to 7.0)
   {
     id: 'TER-GYM-BENCH',
     name: 'Gym Weight Bench',
     category: 'furniture',
     type: 'gym_bench',
-    box: [9.200, 11.200, 11.000, 15.500, 22.580, 24.200],
+    box: [5.500, 7.800, 2.500, 7.000, 22.580, 24.200],
     material: 'M-GYM-RUBBER'
   },
 
-  // Modern Electric Treadmill (Near East Window: X = 11.2 to 13.2, Y = 12.0 to 17.5)
+  // Modern Electric Treadmill (Near East Window: X = 2.0 to 4.2, Y = 1.5 to 6.8)
   {
     id: 'TER-GYM-TREADMILL',
     name: 'Gym Electric Treadmill',
     category: 'furniture',
     type: 'gym_treadmill',
-    box: [11.200, 13.200, 12.200, 17.500, 22.580, 26.200],
+    box: [2.000, 4.200, 1.500, 6.800, 22.580, 26.200],
     material: 'M-STEEL-GREY'
   },
 
-  // Commercial Rooftop Water Tank (Sintex Style) on Top of Gym Roof (X = 3.5 to 7.5, Y = 7.5 to 11.5, Z = 32.60 to 37.60)
+  // Commercial Rooftop Water Tank (Sintex Style) on Top of Gym Roof (X = 4.5 to 9.0, Y = 8.5 to 13.0, Z = 32.60 to 37.60)
   {
     id: 'TER-WATER-TANK',
     name: 'Rooftop Water Storage Tank',
     category: 'furniture',
     type: 'water_tank',
-    box: [3.500, 7.500, 7.500, 11.500, 32.600, 37.600],
+    box: [4.500, 9.000, 8.500, 13.000, 32.600, 37.600],
     material: 'M-WATER-TANK'
   },
 
@@ -556,7 +615,7 @@ const TERRACE_GYM_AND_TANK = [
     name: 'Water Tank Vertical Supply Pipe',
     category: 'electrical',
     type: 'pipe',
-    box: [7.500, 7.700, 4.350, 4.550, 22.500, 36.500],
+    box: [14.550, 14.750, 8.500, 8.700, 22.500, 36.500],
     material: 'M-PVC-PIPE'
   },
   {
@@ -564,9 +623,12 @@ const TERRACE_GYM_AND_TANK = [
     name: 'Water Tank Inflow Pipe Horizontal',
     category: 'electrical',
     type: 'pipe',
-    box: [6.500, 7.500, 4.350, 4.550, 36.350, 36.550],
+    box: [9.000, 14.550, 8.500, 8.700, 36.350, 36.550],
     material: 'M-PVC-PIPE'
-  }
+  },
+
+  // Straight Ladder to access Roof & Water Tank
+  ...createGymRoofLadder()
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────

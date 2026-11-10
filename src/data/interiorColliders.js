@@ -641,14 +641,14 @@ export const INTERIOR_COLLIDERS = [
   },
 
   // =========================================================================
-  // 12. TERRACE · GYM & YOGA ROOM + WATER TANK
+  // 12. TERRACE · GYM & YOGA ROOM + WATER TANK + LADDER
   // =========================================================================
   {
     id: 'COL-TER-GYM-BENCH',
     fitoutId: 'TER-GYM-BENCH',
     name: 'Terrace Gym Weight Bench',
     floor: 'first_floor',
-    box: [9.200, 11.200, 11.000, 15.500, 22.580, 24.200],
+    box: [5.500, 7.800, 2.500, 7.000, 22.580, 24.200],
     type: 'interior_furniture',
     isStepable: true
   },
@@ -657,7 +657,7 @@ export const INTERIOR_COLLIDERS = [
     fitoutId: 'TER-GYM-TREADMILL',
     name: 'Terrace Gym Treadmill',
     floor: 'first_floor',
-    box: [11.200, 13.200, 12.200, 17.500, 22.580, 26.200],
+    box: [2.000, 4.200, 1.500, 6.800, 22.580, 26.200],
     type: 'interior_furniture',
     isStepable: true
   },
@@ -666,7 +666,7 @@ export const INTERIOR_COLLIDERS = [
     fitoutId: 'TER-GYM-DBRACK',
     name: 'Terrace Gym Dumbbell Rack',
     floor: 'first_floor',
-    box: [11.800, 13.200, 5.500, 10.500, 22.580, 25.500],
+    box: [12.000, 13.500, 1.500, 6.500, 22.580, 25.500],
     type: 'interior_furniture',
     isStepable: false
   },
@@ -675,7 +675,16 @@ export const INTERIOR_COLLIDERS = [
     fitoutId: 'TER-WATER-TANK',
     name: 'Terrace Rooftop Water Tank',
     floor: 'first_floor',
-    box: [3.500, 7.500, 7.500, 11.500, 32.600, 37.600],
+    box: [4.500, 9.000, 8.500, 13.000, 32.600, 37.600],
+    type: 'interior_furniture',
+    isStepable: true
+  },
+  {
+    id: 'COL-TER-GYM-LADDER',
+    fitoutId: 'TER-GYM-LADDER-RAIL-L',
+    name: 'Terrace Gym Roof Straight Ladder',
+    floor: 'first_floor',
+    box: [14.500, 15.200, 17.500, 19.500, 22.500, 35.500],
     type: 'interior_furniture',
     isStepable: true
   }

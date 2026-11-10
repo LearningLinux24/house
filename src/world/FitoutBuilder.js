@@ -2285,7 +2285,7 @@ export class FitoutBuilder {
   }
 
   createWaterTank(item) {
-    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box.map(v => v * WORLD_SCALE);
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
     const posX = (xmin + xmax) / 2;
     const posY = (zmin + zmax) / 2;
     const posZ = -((ymin + ymax) / 2);
@@ -2355,7 +2355,7 @@ export class FitoutBuilder {
   }
 
   createGymTreadmill(item) {
-    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box.map(v => v * WORLD_SCALE);
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
     const posX = (xmin + xmax) / 2;
     const posY = (zmin + zmax) / 2;
     const posZ = -((ymin + ymax) / 2);
@@ -2429,7 +2429,7 @@ export class FitoutBuilder {
   }
 
   createGymBench(item) {
-    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box.map(v => v * WORLD_SCALE);
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
     const posX = (xmin + xmax) / 2;
     const posY = (zmin + zmax) / 2;
     const posZ = -((ymin + ymax) / 2);
@@ -2486,7 +2486,7 @@ export class FitoutBuilder {
   }
 
   createDumbbellRack(item) {
-    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box.map(v => v * WORLD_SCALE);
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
     const posX = (xmin + xmax) / 2;
     const posY = (zmin + zmax) / 2;
     const posZ = -((ymin + ymax) / 2);
@@ -2550,7 +2550,7 @@ export class FitoutBuilder {
   }
 
   createYogaMat(item) {
-    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box.map(v => v * WORLD_SCALE);
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
     const posX = (xmin + xmax) / 2;
     const posY = (zmin + zmax) / 2;
     const posZ = -((ymin + ymax) / 2);
