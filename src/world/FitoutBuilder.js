@@ -266,6 +266,11 @@ export class FitoutBuilder {
       return this.createYogaMat(item);
     }
 
+    // Specialized Flower Pots & Planters
+    if (item.type === 'flower_pot') {
+      return this.createFlowerPot(item);
+    }
+
     // For windows/ventilators, center a realistic thin glazed pane within the wall depth
     if (item.type === 'window' || item.type === 'ventilator') {
       const dx = xmax - xmin;
@@ -2571,6 +2576,172 @@ export class FitoutBuilder {
     const matMesh = new THREE.Mesh(new THREE.BoxGeometry(sizeX, sizeY, sizeZ), mat);
     matMesh.receiveShadow = true;
     group.add(matMesh);
+
+    return group;
+  }
+
+  createFlowerPot(item) {
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
+    const posX = (xmin + xmax) / 2;
+    const posY = (zmin + zmax) / 2;
+    const posZ = -((ymin + ymax) / 2);
+    const sizeX = xmax - xmin;
+    const sizeY = zmax - zmin; // CAD Z -> Three Y (pot + plant height)
+    const sizeZ = ymax - ymin;
+    const s = WORLD_SCALE;
+
+    const group = new THREE.Group();
+    group.name = `FlowerPot_${item.id}`;
+    group.position.set(posX, posY, posZ);
+    group.userData = item;
+
+    const potStyle = item.potStyle || 'round_terracotta'; // 'round_terracotta', 'cylinder_ceramic', 'tall_fluted', 'square_stone', 'trough_planter'
+    const plantType = item.plantType || 'roses'; // 'roses', 'marigold', 'lavender', 'white_lilies', 'palm_greenery', 'flowering_bush'
+
+    const potMat = this.materials.get(item.material) || this.materials.get('M-POT-TERRACOTTA');
+    const soilMat = this.materials.get('M-POT-SOIL');
+    const leafMat = this.materials.get('M-PLANT-LUSH');
+    const flowerMat = this.materials.get(item.flowerMaterial) || this.materials.get('M-FLOWER-ROSE');
+
+    const potHeight = sizeY * 0.45;
+    const potBaseY = -sizeY / 2;
+
+    // 1. Pot Vessel Geometry based on style
+    if (potStyle === 'trough_planter') {
+      // Long rectangular trough planter box
+      const troughGeo = new THREE.BoxGeometry(sizeX, potHeight, sizeZ);
+      const troughMesh = new THREE.Mesh(troughGeo, potMat);
+      troughMesh.position.set(0, potBaseY + potHeight / 2, 0);
+      troughMesh.castShadow = true;
+      group.add(troughMesh);
+
+      const soilGeo = new THREE.BoxGeometry(sizeX * 0.92, 0.05 * s, sizeZ * 0.90);
+      const soilMesh = new THREE.Mesh(soilGeo, soilMat);
+      soilMesh.position.set(0, potBaseY + potHeight - 0.02 * s, 0);
+      group.add(soilMesh);
+    } else if (potStyle === 'square_stone') {
+      // Modern tapered square stone pot
+      const topW = Math.min(sizeX, sizeZ) * 0.9;
+      const btmW = topW * 0.72;
+      const sqGeo = new THREE.CylinderGeometry(topW * 0.65, btmW * 0.65, potHeight, 4);
+      sqGeo.rotateY(Math.PI / 4);
+      const sqMesh = new THREE.Mesh(sqGeo, potMat);
+      sqMesh.position.set(0, potBaseY + potHeight / 2, 0);
+      sqMesh.castShadow = true;
+      group.add(sqMesh);
+
+      const soilGeo = new THREE.CylinderGeometry(topW * 0.60, topW * 0.58, 0.05 * s, 4);
+      soilGeo.rotateY(Math.PI / 4);
+      const soilMesh = new THREE.Mesh(soilGeo, soilMat);
+      soilMesh.position.set(0, potBaseY + potHeight - 0.02 * s, 0);
+      group.add(soilMesh);
+    } else if (potStyle === 'tall_fluted') {
+      // Tall fluted urn pot
+      const rTop = Math.min(sizeX, sizeZ) * 0.45;
+      const rBtm = rTop * 0.65;
+      const urnGeo = new THREE.CylinderGeometry(rTop, rBtm, potHeight, 18);
+      const urnMesh = new THREE.Mesh(urnGeo, potMat);
+      urnMesh.position.set(0, potBaseY + potHeight / 2, 0);
+      urnMesh.castShadow = true;
+      group.add(urnMesh);
+
+      // Decorative rim
+      const rimGeo = new THREE.TorusGeometry(rTop * 1.02, 0.03 * s, 8, 18);
+      rimGeo.rotateX(Math.PI / 2);
+      const rimMesh = new THREE.Mesh(rimGeo, potMat);
+      rimMesh.position.set(0, potBaseY + potHeight, 0);
+      group.add(rimMesh);
+
+      const soilMesh = new THREE.Mesh(new THREE.CylinderGeometry(rTop * 0.92, rTop * 0.90, 0.05 * s, 16), soilMat);
+      soilMesh.position.set(0, potBaseY + potHeight - 0.02 * s, 0);
+      group.add(soilMesh);
+    } else {
+      // Classic round tapered terracotta or ceramic pot with rim
+      const rTop = Math.min(sizeX, sizeZ) * 0.45;
+      const rBtm = rTop * 0.68;
+      const potGeo = new THREE.CylinderGeometry(rTop, rBtm, potHeight, 20);
+      const potMesh = new THREE.Mesh(potGeo, potMat);
+      potMesh.position.set(0, potBaseY + potHeight / 2, 0);
+      potMesh.castShadow = true;
+      group.add(potMesh);
+
+      // Top outer rim collar
+      const rimHeight = potHeight * 0.18;
+      const rimGeo = new THREE.CylinderGeometry(rTop * 1.08, rTop * 1.04, rimHeight, 20);
+      const rimMesh = new THREE.Mesh(rimGeo, potMat);
+      rimMesh.position.set(0, potBaseY + potHeight - rimHeight / 2, 0);
+      group.add(rimMesh);
+
+      const soilMesh = new THREE.Mesh(new THREE.CylinderGeometry(rTop * 0.94, rTop * 0.92, 0.05 * s, 18), soilMat);
+      soilMesh.position.set(0, potBaseY + potHeight - 0.03 * s, 0);
+      group.add(soilMesh);
+    }
+
+    // 2. Lush Foliage Leaves / Bush
+    const plantBaseY = potBaseY + potHeight;
+    const plantHeight = sizeY - potHeight;
+
+    if (plantType === 'palm_greenery') {
+      // Fan palm fronds / tropical foliage
+      const stemGeo = new THREE.CylinderGeometry(0.02 * s, 0.03 * s, plantHeight * 0.7, 8);
+      const stem = new THREE.Mesh(stemGeo, leafMat);
+      stem.position.set(0, plantBaseY + plantHeight * 0.35, 0);
+      group.add(stem);
+
+      const numLeaves = 7;
+      for (let l = 0; l < numLeaves; l++) {
+        const ang = (l / numLeaves) * Math.PI * 2;
+        const leafMesh = new THREE.Mesh(new THREE.ConeGeometry(0.18 * s, plantHeight * 0.65, 5), leafMat);
+        leafMesh.position.set(Math.cos(ang) * 0.22 * s, plantBaseY + plantHeight * 0.65, Math.sin(ang) * 0.22 * s);
+        leafMesh.rotation.z = Math.cos(ang) * 0.55;
+        leafMesh.rotation.x = Math.sin(ang) * 0.55;
+        leafMesh.castShadow = true;
+        group.add(leafMesh);
+      }
+    } else {
+      // Flowering bush / bouquet
+      const foliageGeo = new THREE.DodecahedronGeometry(plantHeight * 0.42, 1);
+      const foliageMesh = new THREE.Mesh(foliageGeo, leafMat);
+      foliageMesh.scale.set(1.1, 0.95, 1.1);
+      foliageMesh.position.set(0, plantBaseY + plantHeight * 0.45, 0);
+      foliageMesh.castShadow = true;
+      group.add(foliageMesh);
+
+      // Multiple blooming flower blossom clusters
+      const numFlowers = (potStyle === 'trough_planter') ? 8 : 5;
+      for (let f = 0; f < numFlowers; f++) {
+        const theta = (f / numFlowers) * Math.PI * 2;
+        const rad = (potStyle === 'trough_planter')
+          ? (f - (numFlowers - 1) / 2) * (sizeX * 0.10)
+          : plantHeight * 0.35;
+
+        const blossomGroup = new THREE.Group();
+        if (potStyle === 'trough_planter') {
+          blossomGroup.position.set(rad, plantBaseY + plantHeight * 0.72 + (f % 2) * 0.08 * s, (f % 2 === 0 ? 0.08 : -0.08) * s);
+        } else {
+          blossomGroup.position.set(
+            Math.cos(theta) * rad * 0.85,
+            plantBaseY + plantHeight * 0.60 + Math.sin(f * 2) * 0.10 * s,
+            Math.sin(theta) * rad * 0.85
+          );
+        }
+
+        // Flower petals
+        const petalGeo = new THREE.SphereGeometry(0.08 * s, 6, 6);
+        petalGeo.scale(1.2, 0.4, 1.2);
+        const petalMesh = new THREE.Mesh(petalGeo, flowerMat);
+        petalMesh.castShadow = true;
+        blossomGroup.add(petalMesh);
+
+        // Flower golden core pistil
+        const coreGeo = new THREE.SphereGeometry(0.035 * s, 6, 6);
+        const coreMesh = new THREE.Mesh(coreGeo, this.materials.get('M-FLOWER-YELLOW'));
+        coreMesh.position.set(0, 0.03 * s, 0);
+        blossomGroup.add(coreMesh);
+
+        group.add(blossomGroup);
+      }
+    }
 
     return group;
   }

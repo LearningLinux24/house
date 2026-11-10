@@ -687,5 +687,43 @@ export const INTERIOR_COLLIDERS = [
     box: [14.500, 15.200, 17.500, 19.500, 22.500, 35.500],
     type: 'interior_furniture',
     isStepable: true
+  },
+
+  // North Terrace Planter Box Colliders
+  {
+    id: 'COL-TER-POT-TR-1',
+    fitoutId: 'TER-POT-TR-1',
+    name: 'North Terrace Planter Box 1',
+    floor: 'first_floor',
+    box: [47.600, 48.600, 2.500, 6.500, 22.500, 23.800],
+    type: 'interior_furniture',
+    isStepable: true
+  },
+  {
+    id: 'COL-TER-POT-TR-2',
+    fitoutId: 'TER-POT-TR-2',
+    name: 'North Terrace Planter Box 2',
+    floor: 'first_floor',
+    box: [47.600, 48.600, 7.500, 11.500, 22.500, 23.800],
+    type: 'interior_furniture',
+    isStepable: true
+  },
+  {
+    id: 'COL-TER-POT-TR-3',
+    fitoutId: 'TER-POT-TR-3',
+    name: 'North Terrace Planter Box 3',
+    floor: 'first_floor',
+    box: [47.600, 48.600, 12.500, 16.500, 22.500, 23.800],
+    type: 'interior_furniture',
+    isStepable: true
+  },
+  {
+    id: 'COL-TER-POT-TR-4',
+    fitoutId: 'TER-POT-TR-4',
+    name: 'North Terrace Planter Box 4',
+    floor: 'first_floor',
+    box: [47.600, 48.600, 17.500, 21.500, 22.500, 23.800],
+    type: 'interior_furniture',
+    isStepable: true
   }
 ];

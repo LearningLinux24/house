@@ -330,6 +330,66 @@ export const PALETTE = {
     roughness: 0.35,
     metalness: 0.05
   },
+  'M-POT-CERAMIC-WHITE': {
+    color: '#F8F9FA',
+    roughness: 0.25,
+    metalness: 0.0
+  },
+  'M-POT-TERRACOTTA': {
+    color: '#C86432',
+    roughness: 0.75,
+    metalness: 0.0
+  },
+  'M-POT-CERAMIC-TEAL': {
+    color: '#1D7874',
+    roughness: 0.20,
+    metalness: 0.05
+  },
+  'M-POT-GREY-STONE': {
+    color: '#5C5F64',
+    roughness: 0.85,
+    metalness: 0.0
+  },
+  'M-POT-GOLD-TRIM': {
+    color: '#D4AF37',
+    roughness: 0.30,
+    metalness: 0.85
+  },
+  'M-POT-SOIL': {
+    color: '#38281B',
+    roughness: 0.95,
+    metalness: 0.0
+  },
+  'M-PLANT-LUSH': {
+    color: '#2D6A28',
+    roughness: 0.65,
+    metalness: 0.0
+  },
+  'M-PLANT-OLIVE': {
+    color: '#4B5E2F',
+    roughness: 0.70,
+    metalness: 0.0
+  },
+  'M-FLOWER-ROSE': {
+    color: '#E63946',
+    roughness: 0.50,
+    metalness: 0.0
+  },
+  'M-FLOWER-YELLOW': {
+    color: '#FFB703',
+    roughness: 0.45,
+    metalness: 0.0
+  },
+  'M-FLOWER-VIOLET': {
+    color: '#8338EC',
+    roughness: 0.50,
+    metalness: 0.0
+  },
+  'M-FLOWER-WHITE': {
+    color: '#FDFBF7',
+    roughness: 0.40,
+    metalness: 0.0
+  },
 
   // --- Edge Outlines ---
   edge_outline: {

@@ -632,6 +632,198 @@ const TERRACE_GYM_AND_TANK = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// SECTION 8.17 – TERRACE NORTH SIDE FLOWER POTS & PLANTERS
+// ─────────────────────────────────────────────────────────────────────────────
+
+function createTerraceNorthFlowerPots() {
+  const pots = [];
+  const zFloor = 22.50; // Terrace slab surface
+
+  // 1. Trough Planters along North Parapet Edge (X = 47.8 to 48.8, along Y = 4.0 to 20.0)
+  pots.push(
+    {
+      id: 'TER-POT-TR-1',
+      name: 'North Parapet Trough Planter 1',
+      category: 'garden',
+      type: 'flower_pot',
+      potStyle: 'trough_planter',
+      plantType: 'roses',
+      box: [47.600, 48.600, 2.500, 6.500, zFloor, zFloor + 2.400],
+      material: 'M-POT-CERAMIC-WHITE',
+      flowerMaterial: 'M-FLOWER-ROSE'
+    },
+    {
+      id: 'TER-POT-TR-2',
+      name: 'North Parapet Trough Planter 2',
+      category: 'garden',
+      type: 'flower_pot',
+      potStyle: 'trough_planter',
+      plantType: 'marigold',
+      box: [47.600, 48.600, 7.500, 11.500, zFloor, zFloor + 2.400],
+      material: 'M-POT-CERAMIC-TEAL',
+      flowerMaterial: 'M-FLOWER-YELLOW'
+    },
+    {
+      id: 'TER-POT-TR-3',
+      name: 'North Parapet Trough Planter 3',
+      category: 'garden',
+      type: 'flower_pot',
+      potStyle: 'trough_planter',
+      plantType: 'lavender',
+      box: [47.600, 48.600, 12.500, 16.500, zFloor, zFloor + 2.400],
+      material: 'M-POT-CERAMIC-WHITE',
+      flowerMaterial: 'M-FLOWER-VIOLET'
+    },
+    {
+      id: 'TER-POT-TR-4',
+      name: 'North Parapet Trough Planter 4',
+      category: 'garden',
+      type: 'flower_pot',
+      potStyle: 'trough_planter',
+      plantType: 'white_lilies',
+      box: [47.600, 48.600, 17.500, 21.500, zFloor, zFloor + 2.400],
+      material: 'M-POT-GREY-STONE',
+      flowerMaterial: 'M-FLOWER-WHITE'
+    }
+  );
+
+  // 2. Tall Fluted Urns & Ceramic Vases flanking the corners & walkways
+  pots.push(
+    {
+      id: 'TER-POT-URN-1',
+      name: 'Terrace North-West Corner Tall Urn',
+      category: 'garden',
+      type: 'flower_pot',
+      potStyle: 'tall_fluted',
+      plantType: 'roses',
+      box: [46.500, 48.500, 22.000, 23.500, zFloor, zFloor + 3.200],
+      material: 'M-POT-CERAMIC-WHITE',
+      flowerMaterial: 'M-FLOWER-ROSE'
+    },
+    {
+      id: 'TER-POT-URN-2',
+      name: 'Terrace North-East Corner Tall Urn',
+      category: 'garden',
+      type: 'flower_pot',
+      potStyle: 'tall_fluted',
+      plantType: 'lavender',
+      box: [46.500, 48.500, 0.200, 1.800, zFloor, zFloor + 3.200],
+      material: 'M-POT-CERAMIC-TEAL',
+      flowerMaterial: 'M-FLOWER-VIOLET'
+    }
+  );
+
+  // 3. Modern Square Stone Planters along the middle North terrace zone (X = 42.0 to 45.0)
+  pots.push(
+    {
+      id: 'TER-POT-SQ-1',
+      name: 'Modern Square Stone Planter 1',
+      category: 'garden',
+      type: 'flower_pot',
+      potStyle: 'square_stone',
+      plantType: 'palm_greenery',
+      box: [43.500, 45.200, 4.000, 5.700, zFloor, zFloor + 3.600],
+      material: 'M-POT-GREY-STONE'
+    },
+    {
+      id: 'TER-POT-SQ-2',
+      name: 'Modern Square Stone Planter 2',
+      category: 'garden',
+      type: 'flower_pot',
+      potStyle: 'square_stone',
+      plantType: 'white_lilies',
+      box: [43.500, 45.200, 8.500, 10.200, zFloor, zFloor + 2.800],
+      material: 'M-POT-CERAMIC-WHITE',
+      flowerMaterial: 'M-FLOWER-WHITE'
+    },
+    {
+      id: 'TER-POT-SQ-3',
+      name: 'Modern Square Stone Planter 3',
+      category: 'garden',
+      type: 'flower_pot',
+      potStyle: 'square_stone',
+      plantType: 'roses',
+      box: [43.500, 45.200, 13.500, 15.200, zFloor, zFloor + 2.800],
+      material: 'M-POT-GREY-STONE',
+      flowerMaterial: 'M-FLOWER-ROSE'
+    },
+    {
+      id: 'TER-POT-SQ-4',
+      name: 'Modern Square Stone Planter 4',
+      category: 'garden',
+      type: 'flower_pot',
+      potStyle: 'square_stone',
+      plantType: 'palm_greenery',
+      box: [43.500, 45.200, 18.000, 19.700, zFloor, zFloor + 3.600],
+      material: 'M-POT-GREY-STONE'
+    }
+  );
+
+  // 4. Classic Round Terracotta Pots in clusters (X = 39.0 to 41.5)
+  pots.push(
+    {
+      id: 'TER-POT-RD-1',
+      name: 'Terracotta Round Pot 1 (Marigolds)',
+      category: 'garden',
+      type: 'flower_pot',
+      potStyle: 'round_terracotta',
+      plantType: 'marigold',
+      box: [39.500, 41.000, 3.000, 4.500, zFloor, zFloor + 2.200],
+      material: 'M-POT-TERRACOTTA',
+      flowerMaterial: 'M-FLOWER-YELLOW'
+    },
+    {
+      id: 'TER-POT-RD-2',
+      name: 'Terracotta Round Pot 2 (Roses)',
+      category: 'garden',
+      type: 'flower_pot',
+      potStyle: 'round_terracotta',
+      plantType: 'roses',
+      box: [39.500, 41.000, 6.000, 7.500, zFloor, zFloor + 2.200],
+      material: 'M-POT-TERRACOTTA',
+      flowerMaterial: 'M-FLOWER-ROSE'
+    },
+    {
+      id: 'TER-POT-RD-3',
+      name: 'Terracotta Round Pot 3 (Violets)',
+      category: 'garden',
+      type: 'flower_pot',
+      potStyle: 'round_terracotta',
+      plantType: 'lavender',
+      box: [39.500, 41.000, 11.000, 12.500, zFloor, zFloor + 2.200],
+      material: 'M-POT-TERRACOTTA',
+      flowerMaterial: 'M-FLOWER-VIOLET'
+    },
+    {
+      id: 'TER-POT-RD-4',
+      name: 'Terracotta Round Pot 4 (White Lilies)',
+      category: 'garden',
+      type: 'flower_pot',
+      potStyle: 'round_terracotta',
+      plantType: 'white_lilies',
+      box: [39.500, 41.000, 16.500, 18.000, zFloor, zFloor + 2.200],
+      material: 'M-POT-TERRACOTTA',
+      flowerMaterial: 'M-FLOWER-WHITE'
+    },
+    {
+      id: 'TER-POT-RD-5',
+      name: 'Terracotta Round Pot 5 (Marigolds)',
+      category: 'garden',
+      type: 'flower_pot',
+      potStyle: 'round_terracotta',
+      plantType: 'marigold',
+      box: [39.500, 41.000, 19.500, 21.000, zFloor, zFloor + 2.200],
+      material: 'M-POT-TERRACOTTA',
+      flowerMaterial: 'M-FLOWER-YELLOW'
+    }
+  );
+
+  return pots;
+}
+
+const TERRACE_FLOWER_POTS = createTerraceNorthFlowerPots();
+
+// ─────────────────────────────────────────────────────────────────────────────
 // MASTER EXPORT
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -652,6 +844,7 @@ export const FIRST_FLOOR_FITOUT = [
   ...BALCONIES,
   ...ELECTRICAL,
   ...TERRACE_GYM_AND_TANK,
+  ...TERRACE_FLOWER_POTS,
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
