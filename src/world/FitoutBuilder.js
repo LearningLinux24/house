@@ -271,6 +271,16 @@ export class FitoutBuilder {
       return this.createFlowerPot(item);
     }
 
+    // Specialized Gym High-Visibility Ventilator & Exhaust Unit
+    if (item.type === 'gym_exhaust_unit') {
+      return this.createGymVentilator(item);
+    }
+
+    // Specialized Rooftop Wind Turbine / Mushroom Vent Cowl
+    if (item.type === 'roof_turbine_vent') {
+      return this.createRoofTurbineVent(item);
+    }
+
     // For windows/ventilators, center a realistic thin glazed pane within the wall depth
     if (item.type === 'window' || item.type === 'ventilator') {
       const dx = xmax - xmin;
@@ -328,7 +338,8 @@ export class FitoutBuilder {
     }
 
     // Cast shadows for opaque furniture (exclude glass & lights & tiny items)
-    if (item.material !== 'M-GLASS' && item.category !== 'lighting' && item.category !== 'electrical') {
+    const isGlass = item.material && item.material.includes('GLASS');
+    if (!isGlass && item.category !== 'lighting' && item.category !== 'electrical') {
       mesh.receiveShadow = true;
       if (item.category === 'furniture' || item.category === 'doors' || item.category === 'vehicles') {
         const isTiny = (sizeX < 0.08 && sizeZ < 0.08) || (sizeX < 0.08 && sizeY < 0.08) || (sizeY < 0.08 && sizeZ < 0.08);
@@ -2742,6 +2753,164 @@ export class FitoutBuilder {
         group.add(blossomGroup);
       }
     }
+
+    return group;
+  }
+
+  createGymVentilator(item) {
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
+    const posX = (xmin + xmax) / 2;
+    const posY = (zmin + zmax) / 2;
+    const posZ = -((ymin + ymax) / 2);
+    const sizeX = xmax - xmin;
+    const sizeY = zmax - zmin;
+    const sizeZ = ymax - ymin;
+    const s = WORLD_SCALE;
+
+    const group = new THREE.Group();
+    group.name = `GymVentilator_${item.id}`;
+    group.position.set(posX, posY, posZ);
+    group.userData = item;
+
+    const housingMat = this.materials.get('M-STEEL-GREY') || this.materials.get('M-STEEL-SS');
+    const cowlMat = this.materials.get('M-STEEL-SS');
+    const bladeMat = this.materials.get('M-ALU-FRAME');
+
+    // Outer mounting collar / sleeve
+    const frameGeo = new THREE.BoxGeometry(sizeX, sizeY, sizeZ);
+    const frameMesh = new THREE.Mesh(frameGeo, housingMat);
+    frameMesh.castShadow = true;
+    frameMesh.receiveShadow = true;
+    group.add(frameMesh);
+
+    // Weather louvers / slats across the vent opening
+    const louverCount = 5;
+    const isXAligned = sizeX > sizeZ; // Wall runs along X vs along Y
+    const louverLen = (isXAligned ? sizeX : sizeZ) * 0.92;
+    const louverThick = 0.05 * s;
+    const louverWidth = 0.28 * s;
+
+    for (let i = 0; i < louverCount; i++) {
+      const ly = -sizeY / 2 + (sizeY / (louverCount + 1)) * (i + 1);
+      const louverGeo = isXAligned
+        ? new THREE.BoxGeometry(louverLen, louverThick, louverWidth)
+        : new THREE.BoxGeometry(louverWidth, louverThick, louverLen);
+      const louverMesh = new THREE.Mesh(louverGeo, cowlMat);
+      louverMesh.position.set(0, ly, 0);
+      louverMesh.rotation.x = isXAligned ? 0.35 : 0;
+      louverMesh.rotation.z = isXAligned ? 0 : 0.35;
+      louverMesh.castShadow = true;
+      group.add(louverMesh);
+    }
+
+    // Circular Exhaust Fan Cowling with spinning blades
+    const fanRadius = Math.min(sizeX, sizeY, sizeZ) * 0.42;
+    const cowlDepth = (isXAligned ? sizeZ : sizeX) * 1.15;
+    const cowlGeo = new THREE.CylinderGeometry(fanRadius, fanRadius, cowlDepth, 24);
+    if (isXAligned) {
+      cowlGeo.rotateX(Math.PI / 2);
+    } else {
+      cowlGeo.rotateZ(Math.PI / 2);
+    }
+    const cowlMesh = new THREE.Mesh(cowlGeo, housingMat);
+    group.add(cowlMesh);
+
+    // Fan Hub and 4 aerodynamic blades
+    const fanBladesGroup = new THREE.Group();
+    fanBladesGroup.name = 'GymFanBlades';
+    const hubGeo = new THREE.CylinderGeometry(fanRadius * 0.28, fanRadius * 0.28, 0.12 * s, 16);
+    if (isXAligned) hubGeo.rotateX(Math.PI / 2);
+    else hubGeo.rotateZ(Math.PI / 2);
+    const hubMesh = new THREE.Mesh(hubGeo, bladeMat);
+    fanBladesGroup.add(hubMesh);
+
+    const bladeLen = fanRadius * 0.72;
+    for (let b = 0; b < 4; b++) {
+      const angle = (b * Math.PI) / 2;
+      const bGeo = new THREE.BoxGeometry(
+        isXAligned ? bladeLen : 0.04 * s,
+        bladeLen,
+        isXAligned ? 0.04 * s : bladeLen
+      );
+      const bMesh = new THREE.Mesh(bGeo, bladeMat);
+      if (isXAligned) {
+        bMesh.position.set(Math.cos(angle) * (bladeLen / 2), Math.sin(angle) * (bladeLen / 2), 0);
+        bMesh.rotation.z = angle + 0.25;
+      } else {
+        bMesh.position.set(0, Math.sin(angle) * (bladeLen / 2), Math.cos(angle) * (bladeLen / 2));
+        bMesh.rotation.x = angle + 0.25;
+      }
+      fanBladesGroup.add(bMesh);
+    }
+    group.add(fanBladesGroup);
+
+    // Architectural edge accent for crisp definition
+    const edgeGeo = new THREE.EdgesGeometry(frameGeo);
+    const edgeMat = this.materials.getEdgeMaterial();
+    const edgeMesh = new THREE.LineSegments(edgeGeo, edgeMat);
+    group.add(edgeMesh);
+
+    return group;
+  }
+
+  createRoofTurbineVent(item) {
+    const [xmin, xmax, ymin, ymax, zmin, zmax] = item.box;
+    const posX = (xmin + xmax) / 2;
+    const posY = (zmin + zmax) / 2;
+    const posZ = -((ymin + ymax) / 2);
+    const height = zmax - zmin;
+    const radius = Math.min(xmax - xmin, ymax - ymin) / 2;
+    const s = WORLD_SCALE;
+
+    const group = new THREE.Group();
+    group.name = `RoofTurbine_${item.id}`;
+    group.position.set(posX, posY, posZ);
+    group.userData = item;
+
+    const ssMat = this.materials.get('M-STEEL-SS');
+    const baseMat = this.materials.get('M-STEEL-GREY');
+
+    // 1. Flanged Base Throat / Duct Pipe
+    const pipeHeight = height * 0.38;
+    const pipeGeo = new THREE.CylinderGeometry(radius * 0.60, radius * 0.72, pipeHeight, 20);
+    const pipeMesh = new THREE.Mesh(pipeGeo, baseMat);
+    pipeMesh.position.set(0, -height / 2 + pipeHeight / 2, 0);
+    pipeMesh.castShadow = true;
+    group.add(pipeMesh);
+
+    // Base flashing plate
+    const basePlateGeo = new THREE.BoxGeometry(radius * 1.8, 0.06 * s, radius * 1.8);
+    const basePlateMesh = new THREE.Mesh(basePlateGeo, baseMat);
+    basePlateMesh.position.set(0, -height / 2 + 0.03 * s, 0);
+    group.add(basePlateMesh);
+
+    // 2. Rotary Spherical / Bulbous Turbine Head (ribbed fins)
+    const turbineY = -height / 2 + pipeHeight + (height - pipeHeight) * 0.45;
+    const bulbGeo = new THREE.SphereGeometry(radius * 0.88, 16, 12);
+    bulbGeo.scale(1.0, 0.78, 1.0);
+    const bulbMesh = new THREE.Mesh(bulbGeo, ssMat);
+    bulbMesh.position.set(0, turbineY, 0);
+    bulbMesh.castShadow = true;
+    group.add(bulbMesh);
+
+    // Turbine curved vanes
+    const vaneCount = 12;
+    for (let v = 0; v < vaneCount; v++) {
+      const angle = (v * 2 * Math.PI) / vaneCount;
+      const vaneGeo = new THREE.BoxGeometry(0.04 * s, (height - pipeHeight) * 0.65, radius * 0.35);
+      const vaneMesh = new THREE.Mesh(vaneGeo, ssMat);
+      vaneMesh.position.set(Math.cos(angle) * radius * 0.75, turbineY, Math.sin(angle) * radius * 0.75);
+      vaneMesh.rotation.y = -angle + 0.45;
+      vaneMesh.castShadow = true;
+      group.add(vaneMesh);
+    }
+
+    // Top Aerodynamic Cap
+    const capGeo = new THREE.ConeGeometry(radius * 0.50, height * 0.16, 16);
+    const capMesh = new THREE.Mesh(capGeo, ssMat);
+    capMesh.position.set(0, -height / 2 + height - height * 0.08, 0);
+    capMesh.castShadow = true;
+    group.add(capMesh);
 
     return group;
   }

@@ -506,57 +506,82 @@ const TERRACE_GYM_AND_TANK = [
   },
 
   // East Panoramic Window (X = 3.5 to 10.5, Y = -0.75 to 0.00, Z = 25.5 to 29.5)
-  {
-    id: 'TER-GYM-WIN-E-FRM',
-    name: 'Gym East Window Frame',
-    category: 'windows',
-    type: 'window_frame',
-    box: [3.500, 10.500, -0.450, -0.350, 25.500, 29.500],
-    material: 'M-ALU-FRAME'
-  },
+  // 4-sided outer perimeter aluminum frame
+  { id: 'TER-GYM-WIN-E-FRM-B', name: 'Gym East Window Frame Bottom', category: 'windows', type: 'furniture', box: [3.500, 10.500, -0.450, -0.350, 25.500, 25.620], material: 'M-ALU-FRAME' },
+  { id: 'TER-GYM-WIN-E-FRM-T', name: 'Gym East Window Frame Top',    category: 'windows', type: 'furniture', box: [3.500, 10.500, -0.450, -0.350, 29.380, 29.500], material: 'M-ALU-FRAME' },
+  { id: 'TER-GYM-WIN-E-FRM-L', name: 'Gym East Window Frame Left',   category: 'windows', type: 'furniture', box: [3.500,  3.620, -0.450, -0.350, 25.620, 29.380], material: 'M-ALU-FRAME' },
+  { id: 'TER-GYM-WIN-E-FRM-R', name: 'Gym East Window Frame Right',  category: 'windows', type: 'furniture', box: [10.380, 10.500, -0.450, -0.350, 25.620, 29.380], material: 'M-ALU-FRAME' },
+  { id: 'TER-GYM-WIN-E-FRM-M', name: 'Gym East Window Center Mullion', category: 'windows', type: 'furniture', box: [6.950, 7.050, -0.450, -0.350, 25.620, 29.380], material: 'M-ALU-FRAME' },
+  // Transparent Glass Panes
   {
     id: 'TER-GYM-WIN-E-GLZ',
     name: 'Gym East Window Glass',
     category: 'windows',
-    type: 'glazing',
-    box: [3.600, 10.400, -0.410, -0.390, 25.600, 29.400],
-    material: 'M-GLASS-CLEAR'
+    type: 'window',
+    box: [3.500, 10.500, -0.750, 0.000, 25.500, 29.500],
+    material: 'M-GLASS'
   },
 
   // West Scenic Yoga Window (X = 3.5 to 10.5, Y = 23.25 to 24.00, Z = 25.5 to 29.5)
-  {
-    id: 'TER-GYM-WIN-W-FRM',
-    name: 'Gym West Window Frame',
-    category: 'windows',
-    type: 'window_frame',
-    box: [3.500, 10.500, 23.550, 23.650, 25.500, 29.500],
-    material: 'M-ALU-FRAME'
-  },
+  // 4-sided outer perimeter aluminum frame
+  { id: 'TER-GYM-WIN-W-FRM-B', name: 'Gym West Window Frame Bottom', category: 'windows', type: 'furniture', box: [3.500, 10.500, 23.550, 23.650, 25.500, 25.620], material: 'M-ALU-FRAME' },
+  { id: 'TER-GYM-WIN-W-FRM-T', name: 'Gym West Window Frame Top',    category: 'windows', type: 'furniture', box: [3.500, 10.500, 23.550, 23.650, 29.380, 29.500], material: 'M-ALU-FRAME' },
+  { id: 'TER-GYM-WIN-W-FRM-L', name: 'Gym West Window Frame Left',   category: 'windows', type: 'furniture', box: [3.500,  3.620, 23.550, 23.650, 25.620, 29.380], material: 'M-ALU-FRAME' },
+  { id: 'TER-GYM-WIN-W-FRM-R', name: 'Gym West Window Frame Right',  category: 'windows', type: 'furniture', box: [10.380, 10.500, 23.550, 23.650, 25.620, 29.380], material: 'M-ALU-FRAME' },
+  { id: 'TER-GYM-WIN-W-FRM-M', name: 'Gym West Window Center Mullion', category: 'windows', type: 'furniture', box: [6.950, 7.050, 23.550, 23.650, 25.620, 29.380], material: 'M-ALU-FRAME' },
+  // Transparent Glass Panes
   {
     id: 'TER-GYM-WIN-W-GLZ',
     name: 'Gym West Window Glass',
     category: 'windows',
-    type: 'glazing',
-    box: [3.600, 10.400, 23.590, 23.610, 25.600, 29.400],
-    material: 'M-GLASS-CLEAR'
+    type: 'window',
+    box: [3.500, 10.500, 23.250, 24.000, 25.500, 29.500],
+    material: 'M-GLASS'
   },
 
-  // ── VENTILATION FITOUT ──────────────────────────────────────────────────
-  // Heavy-duty Dual Wall Exhaust Fans with louvered vent cowls
+  // ── HIGH-VISIBILITY VENTILATION FIXTURES ────────────────────────────────
+  // East wall high-level industrial exhaust fan & louver unit (in aperture X = 11.25..13.75, Z = 29.5..31.5)
   {
-    id: 'TER-GYM-EXHAUST-W-LOUVER',
-    name: 'Gym West High-level Exhaust Louver Cowl',
+    id: 'TER-GYM-EXHAUST-E',
+    name: 'Gym East Wall Exhaust Fan Unit',
     category: 'windows',
-    type: 'ventilator',
-    box: [12.000, 13.500, 23.500, 23.850, 29.800, 31.200],
+    type: 'gym_exhaust_unit',
+    box: [11.250, 13.750, -0.750, 0.000, 29.500, 31.500],
+    material: 'M-STEEL-SS'
+  },
+  // West wall high-level industrial exhaust fan & louver unit (in aperture X = 11.25..13.75, Z = 29.5..31.5)
+  {
+    id: 'TER-GYM-EXHAUST-W',
+    name: 'Gym West Wall Exhaust Fan Unit',
+    category: 'windows',
+    type: 'gym_exhaust_unit',
+    box: [11.250, 13.750, 23.250, 24.000, 29.500, 31.500],
+    material: 'M-STEEL-SS'
+  },
+  // North Wall (facing open terrace) prominent fresh-air ventilation grille above door lintel (X = 14.0..14.5, Y = 11.0..13.5, Z = 29.8..31.2)
+  {
+    id: 'TER-GYM-VENT-NORTH',
+    name: 'Gym Terrace Intake Ventilator Grille',
+    category: 'windows',
+    type: 'gym_exhaust_unit',
+    box: [13.950, 14.550, 11.000, 13.500, 29.800, 31.200],
+    material: 'M-STEEL-SS'
+  },
+  // Dual Rooftop Wind Turbine / Mushroom Vent Cowls on gym roof (Z = 32.0 to 34.2)
+  {
+    id: 'TER-GYM-ROOF-VENT-1',
+    name: 'Gym Rooftop Turbine Ventilator 1',
+    category: 'furniture',
+    type: 'roof_turbine_vent',
+    box: [2.500, 4.500, 3.500, 5.500, 32.000, 34.200],
     material: 'M-STEEL-SS'
   },
   {
-    id: 'TER-GYM-EXHAUST-E-LOUVER',
-    name: 'Gym East High-level Exhaust Louver Cowl',
-    category: 'windows',
-    type: 'ventilator',
-    box: [12.000, 13.500, -0.650, -0.300, 29.800, 31.200],
+    id: 'TER-GYM-ROOF-VENT-2',
+    name: 'Gym Rooftop Turbine Ventilator 2',
+    category: 'furniture',
+    type: 'roof_turbine_vent',
+    box: [2.500, 4.500, 17.500, 19.500, 32.000, 34.200],
     material: 'M-STEEL-SS'
   },
 

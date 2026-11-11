@@ -193,13 +193,15 @@ export const FIRST_FLOOR_DATA = {
     { id: 'RF2-E', box: [32.375, 50.000, -0.750, 24.000, 22.000, 22.500], type: 'slab' },
 
     // ─────────────────────────────────────────────────────────────────────
-    // STEP 6 · Terrace Parapet Walls (3.25 ft raised walls on all sides)
+    // STEP 6 · Terrace Parapet Walls (3.25 ft raised walls on perimeter)
     // Floor Z = 22.50 to 25.75
+    // Note: West (X = -0.75..0.0) and South (Y = -0.75..0.0) around Gym (X <= 14.50)
+    // are enclosed by the full-height Gym/Yoga room walls (Z = 22.50..31.50).
+    // The parapets start at X = 14.50 on the South, and Y = 0.0..24.0 on West is gym wall.
     // ─────────────────────────────────────────────────────────────────────
-    { id: 'TER-PAR-W', box: [-0.750,  0.000, -0.750, 24.000, 22.500, 25.750], type: 'wall_ext' },
     { id: 'TER-PAR-N', box: [ 0.000, 49.250, 23.250, 24.000, 22.500, 25.750], type: 'wall_ext' },
     { id: 'TER-PAR-E', box: [49.250, 50.000, -0.750, 24.000, 22.500, 25.750], type: 'wall_ext' },
-    { id: 'TER-PAR-S', box: [ 0.000, 49.250, -0.750,  0.000, 22.500, 25.750], type: 'wall_ext' },
+    { id: 'TER-PAR-S', box: [14.500, 49.250, -0.750,  0.000, 22.500, 25.750], type: 'wall_ext' },
 
     // Terrace Stair Guard Railing Walls (protects open stair well on terrace)
     { id: 'TER-STAIR-W', box: [26.000, 26.375,  4.000, 11.375, 22.500, 25.500], type: 'wall_int' },
@@ -221,16 +223,22 @@ export const FIRST_FLOOR_DATA = {
     { id: 'TER-GYM-W-S', box: [-0.750, 0.000, -0.750, 24.000, 22.500, 31.500], type: 'wall_ext' },
 
     // East Exterior Wall (along Y = -0.75 to 0.00) with scenic panoramic window (X = 3.5 to 10.5)
+    // and dedicated high-level ventilator aperture (X = 11.25 to 13.75, Z = 29.50 to 31.50)
     { id: 'TER-GYM-W-E1', box: [ 0.000,  3.500, -0.750,  0.000, 22.500, 31.500], type: 'wall_ext' },
     { id: 'TER-GYM-W-ES', box: [ 3.500, 10.500, -0.750,  0.000, 22.500, 25.500], type: 'wall_ext' }, // Window sill
     { id: 'TER-GYM-W-EL', box: [ 3.500, 10.500, -0.750,  0.000, 29.500, 31.500], type: 'lintel' },   // Window lintel
-    { id: 'TER-GYM-W-E2', box: [10.500, 14.500, -0.750,  0.000, 22.500, 31.500], type: 'wall_ext' },
+    { id: 'TER-GYM-W-E2A', box: [10.500, 11.250, -0.750,  0.000, 22.500, 31.500], type: 'wall_ext' },
+    { id: 'TER-GYM-W-E2S', box: [11.250, 13.750, -0.750,  0.000, 22.500, 29.500], type: 'wall_ext' }, // Vent sill
+    { id: 'TER-GYM-W-E2B', box: [13.750, 14.500, -0.750,  0.000, 22.500, 31.500], type: 'wall_ext' },
 
     // West Exterior Wall (along Y = 23.25 to 24.00) with scenic yoga window (X = 3.5 to 10.5)
+    // and dedicated high-level ventilator aperture (X = 11.25 to 13.75, Z = 29.50 to 31.50)
     { id: 'TER-GYM-W-W1', box: [ 0.000,  3.500, 23.250, 24.000, 22.500, 31.500], type: 'wall_ext' },
     { id: 'TER-GYM-W-WS', box: [ 3.500, 10.500, 23.250, 24.000, 22.500, 25.500], type: 'wall_ext' }, // Window sill
     { id: 'TER-GYM-W-WL', box: [ 3.500, 10.500, 23.250, 24.000, 29.500, 31.500], type: 'lintel' },   // Window lintel
-    { id: 'TER-GYM-W-W2', box: [10.500, 14.500, 23.250, 24.000, 22.500, 31.500], type: 'wall_ext' },
+    { id: 'TER-GYM-W-W2A', box: [10.500, 11.250, 23.250, 24.000, 22.500, 31.500], type: 'wall_ext' },
+    { id: 'TER-GYM-W-W2S', box: [11.250, 13.750, 23.250, 24.000, 22.500, 29.500], type: 'wall_ext' }, // Vent sill
+    { id: 'TER-GYM-W-W2B', box: [13.750, 14.500, 23.250, 24.000, 22.500, 31.500], type: 'wall_ext' },
 
     // North Interior Dividing Wall facing terrace (along X = 14.00 to 14.50) with sliding glass door (Y = 10.0 to 14.5)
     { id: 'TER-GYM-W-N1', box: [14.000, 14.500, -0.750, 10.000, 22.500, 31.500], type: 'wall_ext' },
