@@ -19,6 +19,7 @@ import { Player } from '../player/Player.js';
 import { PlayerAvatar } from '../player/PlayerAvatar.js';
 import { CameraController } from '../camera/CameraController.js';
 import { UIManager } from '../ui/UIManager.js';
+import { TouchControls, checkIsTouchDevice } from '../controls/TouchControls.js';
 
 import {
   FLOORS,
@@ -126,6 +127,10 @@ export class Engine {
     // 10. Input Manager
     this.input = new InputManager();
 
+    // 10b. Mobile & Tablet Touch Controls
+    this.isTouchDevice = checkIsTouchDevice();
+    this.touchControls = new TouchControls(this);
+
     // 11. UI State
     this.roofVisible = true;
     this.labelsVisible = false;
@@ -136,7 +141,7 @@ export class Engine {
     this.ui = new UIManager({
       zones: allZones,
       onStart: () => {
-        if (!this.cameraCtrl.isOrbitMode) {
+        if (!this.cameraCtrl.isOrbitMode && !this.isTouchDevice) {
           this.cameraCtrl.fpControls.lock();
         }
       },
@@ -174,7 +179,7 @@ export class Engine {
     });
 
     this.cameraCtrl.fpControls.addEventListener('unlock', () => {
-      if (!this.cameraCtrl.isOrbitMode) {
+      if (!this.cameraCtrl.isOrbitMode && !this.isTouchDevice) {
         this.ui.showBlocker();
       }
     });
@@ -392,7 +397,7 @@ export class Engine {
     this.fitoutBuilder.update(delta, this.sceneManager.camera.position);
 
     // Update interactive doors (hinge swing lerping + reticle proximity targeting)
-    const isFPActive = !this.cameraCtrl.isOrbitMode && this.cameraCtrl.fpControls.isLocked;
+    const isFPActive = !this.cameraCtrl.isOrbitMode && (this.cameraCtrl.fpControls.isLocked || this.isTouchDevice);
     // Update interactive subsystems (pass showPrompt = false so Engine arbitrates the single winning prompt)
     if (this.doorManager) {
       this.doorManager.update(delta, this.sceneManager.camera, this.player.position, isFPActive, this.ui, false);
@@ -505,6 +510,10 @@ export class Engine {
     const winner = candidates.length > 0 ? candidates[0] : null;
     this.activeInteractSystem = winner ? winner.system : null;
 
+    if (this.touchControls) {
+      this.touchControls.update(delta, winner);
+    }
+
     if (this.ui) {
       if (winner && winner.prompt && this.promptsVisible) {
         this.ui.showInteractionPrompt(winner.prompt);
@@ -524,7 +533,7 @@ export class Engine {
       }
     }
 
-    if (!this.cameraCtrl.isOrbitMode && this.cameraCtrl.fpControls.isLocked) {
+    if (!this.cameraCtrl.isOrbitMode && (this.cameraCtrl.fpControls.isLocked || this.isTouchDevice)) {
       if (!this.vehicleManager || !this.vehicleManager.isDriving) {
         // Player movement — pass the actual camera as source of look direction
         this.player.update(delta, this.input, this.sceneManager.camera);

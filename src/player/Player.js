@@ -21,7 +21,8 @@ export class Player {
 
   update(delta, input, camera) {
     const dt = Math.min(delta, 0.05);
-    const isMoving = input.keys.forward || input.keys.backward || input.keys.left || input.keys.right;
+    const hasMoveVector = input.moveVector && (Math.abs(input.moveVector.x) > 0.05 || Math.abs(input.moveVector.y) > 0.05);
+    const isMoving = hasMoveVector || input.keys.forward || input.keys.backward || input.keys.left || input.keys.right;
     const speed = input.keys.sprint ? this.config.speed * this.config.sprintMultiplier : this.config.speed;
 
     // 1. Jump initiation (only when grounded on solid floor)
@@ -41,25 +42,33 @@ export class Player {
       let moveX = 0;
       let moveZ = 0;
 
-      if (input.keys.forward) moveZ -= 1;
-      if (input.keys.backward) moveZ += 1;
-      if (input.keys.left) moveX -= 1;
-      if (input.keys.right) moveX += 1;
+      if (hasMoveVector) {
+        moveX = input.moveVector.x;
+        moveZ = input.moveVector.y;
+      } else {
+        if (input.keys.forward) moveZ -= 1;
+        if (input.keys.backward) moveZ += 1;
+        if (input.keys.left) moveX -= 1;
+        if (input.keys.right) moveX += 1;
+      }
 
       const len = Math.hypot(moveX, moveZ);
-      moveX /= len;
-      moveZ /= len;
+      if (len > 0.001) {
+        const factor = hasMoveVector ? Math.min(1.0, len) / len : 1.0 / len;
+        moveX *= factor;
+        moveZ *= factor;
 
-      // Extract horizontal camera yaw direction
-      this._euler.setFromQuaternion(camera.quaternion);
+        // Extract horizontal camera yaw direction
+        this._euler.setFromQuaternion(camera.quaternion);
 
-      this._forward.set(0, 0, -1).applyAxisAngle(this._up, this._euler.y);
-      this._right.set(1, 0, 0).applyAxisAngle(this._up, this._euler.y);
+        this._forward.set(0, 0, -1).applyAxisAngle(this._up, this._euler.y);
+        this._right.set(1, 0, 0).applyAxisAngle(this._up, this._euler.y);
 
-      this._moveDir.set(0, 0, 0)
-        .addScaledVector(this._forward, -moveZ)
-        .addScaledVector(this._right, moveX)
-        .normalize();
+        this._moveDir.set(0, 0, 0)
+          .addScaledVector(this._forward, -moveZ)
+          .addScaledVector(this._right, moveX)
+          .normalize();
+      }
 
       const totalDist = speed * dt;
       // Substepping: ensure each step moves less than player radius * 0.4 (~0.20 ft)

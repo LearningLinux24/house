@@ -25,7 +25,6 @@ dist-ssr
 
 # Images & Floor Plan Scans
 *.png
-*.jpg
 *.jpeg
 *.webp
 *.gif
@@ -36,7 +35,6 @@ dist-ssr
 !public/images/*
 
 # Editor & System Files
-*.mp4
 .DS_Store
 Thumbs.db
 .vscode/*
@@ -48,3 +46,7 @@ Thumbs.db
 *.sln
 *.sw?
 .vercel
+
+dahan.mp4
+sundar.mp4
+mahbharat.mp4

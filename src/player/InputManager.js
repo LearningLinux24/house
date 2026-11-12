@@ -9,6 +9,9 @@ export class InputManager {
       jump: false
     };
 
+    // Smooth analog movement vector for mobile touch joystick
+    this.moveVector = { x: 0, y: 0 };
+
     this.actionListeners = new Map();
     this.init();
   }

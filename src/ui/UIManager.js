@@ -1,8 +1,10 @@
 import { WORLD_SCALE } from '../config/constants.js';
+import { checkIsTouchDevice } from '../controls/TouchControls.js';
 
 export class UIManager {
   constructor(options = {}) {
     this.options = options;
+    this.isTouchDevice = checkIsTouchDevice();
 
     // DOM Elements
     this.elements = {
@@ -84,10 +86,13 @@ export class UIManager {
   initEvents() {
     // Start button
     if (this.elements.btnStart) {
-      this.elements.btnStart.addEventListener('click', () => {
+      const handleStart = (e) => {
+        if (e) e.preventDefault();
         this.hideBlocker();
         this.onStart();
-      });
+      };
+      this.elements.btnStart.addEventListener('click', handleStart);
+      this.elements.btnStart.addEventListener('touchend', handleStart);
     }
 
     // Sidebar collapse/expand toggle
@@ -470,7 +475,7 @@ export class UIManager {
   }
 
   showBlocker() {
-    if (this.elements.blocker && !this.isOrbitMode) {
+    if (this.elements.blocker && !this.isOrbitMode && !this.isTouchDevice) {
       this.elements.blocker.style.display = 'flex';
     }
   }

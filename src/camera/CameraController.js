@@ -16,6 +16,7 @@ import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { WORLD_SCALE } from '../config/constants.js';
+import { checkIsTouchDevice } from '../controls/TouchControls.js';
 
 export const POV_MODES = {
   FIRST_PERSON:       'first_person',
@@ -51,6 +52,7 @@ export class CameraController {
       POV_MODES.THIRD_PERSON_FRONT,
     ];
     this.currentPOVIndex = 0;
+    this.isTouchDevice = checkIsTouchDevice();
 
     // ── PointerLockControls on the actual camera ──────────────────────────
     const lockDom = typeof document !== 'undefined' ? document.body : domElement;
@@ -105,6 +107,21 @@ export class CameraController {
   onPOVChange(cb)   { this.povChangeListeners.push(cb); }
   onModeChange(cb)  { this.modeChangeListeners.push(cb); }
 
+  /**
+   * Rotate camera from touch swipe input on mobile
+   */
+  rotate(deltaYaw, deltaPitch) {
+    if (this.isOrbitMode) return;
+    const euler = new THREE.Euler(0, 0, 0, 'YXZ');
+    euler.setFromQuaternion(this.camera.quaternion);
+    euler.y -= deltaYaw;
+    euler.x -= deltaPitch;
+    const maxPolar = Math.PI / 2 - 0.05;
+    const minPolar = -Math.PI / 2 + 0.05;
+    euler.x = Math.max(minPolar, Math.min(maxPolar, euler.x));
+    this.camera.quaternion.setFromEuler(euler);
+  }
+
   // ── Mode switching ────────────────────────────────────────────────────────
   toggleMode(player) { this.setMode(!this.isOrbitMode, player); }
 
@@ -113,7 +130,9 @@ export class CameraController {
     const s = WORLD_SCALE;
 
     if (this.isOrbitMode) {
-      this.fpControls.unlock();
+      if (!this.isTouchDevice) {
+        this.fpControls.unlock();
+      }
       this.orbitControls.enabled = true;
       this.camera.position.set(25 * s, 60 * s, 24 * s);
       this.orbitControls.target.set(25 * s, 10 * s, -12 * s);
@@ -123,7 +142,9 @@ export class CameraController {
       if (player) {
         this.camera.position.copy(player.position);
       }
-      this.fpControls.lock();
+      if (!this.isTouchDevice) {
+        this.fpControls.lock();
+      }
     }
     this.modeChangeListeners.forEach(cb => cb(this.isOrbitMode));
   }
