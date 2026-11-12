@@ -946,12 +946,12 @@ html, body {
 /* Action Buttons Bar */
 .mobile-action-bar {
   position: absolute;
-  right: 14px;
-  bottom: 14px;
+  right: clamp(24px, 4vw, 44px);
+  bottom: clamp(20px, 4vh, 38px);
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 10px;
+  gap: 12px;
   pointer-events: none;
   z-index: 25;
 }
@@ -962,9 +962,15 @@ html, body {
   align-items: center;
 }
 
+.mobile-interact-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 20px; /* Ergonomic inward shift: moves interact button left and above corner */
+}
+
 .mobile-main-group {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
 }
 

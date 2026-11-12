@@ -33,7 +33,7 @@ export class TouchControls {
     this.lookTouchId = null;
     this.lastLookX = 0;
     this.lastLookY = 0;
-    this.lookSensitivity = 0.0038;
+    this.lookSensitivity = 0.0078; // Increased sensitivity for fast, snappy mobile camera rotation
     this.touchStartTime = 0;
     this.touchStartPos = { x: 0, y: 0 };
 
@@ -105,7 +105,15 @@ export class TouchControls {
           </button>
         </div>
 
-        <!-- Primary Thumb Action Controls -->
+        <!-- Primary Interact Button (Shifted above and left for ergonomic thumb reach) -->
+        <div class="mobile-interact-row">
+          <button id="btn-touch-interact" class="mobile-btn action-primary" title="Interact" aria-label="Interact">
+            <span class="btn-icon">✋</span>
+            <span class="btn-txt" id="btn-interact-label">INTERACT</span>
+          </button>
+        </div>
+
+        <!-- Secondary Movement Action Controls (Bottom Row) -->
         <div class="mobile-main-group">
           <button id="btn-touch-sprint" class="mobile-btn action-pill" title="Toggle Run" aria-label="Toggle Run">
             <span class="btn-icon">⚡</span>
@@ -114,10 +122,6 @@ export class TouchControls {
           <button id="btn-touch-jump" class="mobile-btn action-circle" title="Jump" aria-label="Jump">
             <span class="btn-icon">⬆️</span>
             <span class="btn-txt">JUMP</span>
-          </button>
-          <button id="btn-touch-interact" class="mobile-btn action-primary" title="Interact" aria-label="Interact">
-            <span class="btn-icon">✋</span>
-            <span class="btn-txt" id="btn-interact-label">INTERACT</span>
           </button>
         </div>
       </div>
