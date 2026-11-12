@@ -1,0 +1,26 @@
+{
+  "gf": {
+    "hasVideo": true,
+    "floor": "gf",
+    "folder": "public/videos/gf-tv",
+    "count": 3,
+    "latest": {
+      "filename": "intro_r.mp4",
+      "url": "/videos/gf-tv/intro_r.mp4",
+      "mtimeMs": 1794488641188.1702,
+      "size": 23177288
+    }
+  },
+  "1f": {
+    "hasVideo": true,
+    "floor": "1f",
+    "folder": "public/videos/1f-tv",
+    "count": 2,
+    "latest": {
+      "filename": "intro_m.mp4",
+      "url": "/videos/1f-tv/intro_m.mp4",
+      "mtimeMs": 1794488544364.3167,
+      "size": 34213065
+    }
+  }
+}

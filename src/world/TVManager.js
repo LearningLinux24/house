@@ -121,67 +121,99 @@ export class TVManager {
   }
 
   async scanTVFolder(tv) {
+    let data = null;
+
+    // 1. Try dynamic Vite dev server API
     try {
       const res = await fetch(`/api/tv-videos?floor=${tv.floorKey}&t=${Date.now()}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-
-      if (data && data.hasVideo && data.latest) {
-        tv.hasVideo = true;
-        tv.videoUrl = data.latest.url;
-        tv.videoFilename = data.latest.filename;
-        tv.videoMtime = data.latest.mtimeMs;
-
-        // Initialize or update HTML5 video element
-        if (!tv.video) {
-          tv.video = document.createElement('video');
-          tv.video.crossOrigin = 'anonymous';
-          tv.video.loop = true;
-          tv.video.playsInline = true;
-          tv.video.preload = 'auto';
-        }
-
-        const fullSrc = window.location.origin + tv.videoUrl;
-        if (tv.video.src !== fullSrc && tv.video.src !== tv.videoUrl) {
-          tv.video.src = tv.videoUrl;
-          tv.video.load();
-        }
-
-        if (!tv.videoTexture) {
-          tv.videoTexture = new THREE.VideoTexture(tv.video);
-          tv.videoTexture.colorSpace = THREE.SRGBColorSpace;
-          tv.videoTexture.minFilter = THREE.LinearFilter;
-          tv.videoTexture.magFilter = THREE.LinearFilter;
-          tv.videoMaterial = new THREE.MeshBasicMaterial({ map: tv.videoTexture });
-        }
-
-        // Initialize 3D positional audio node
-        if (!tv.sound && this.audioListener && tv.soundbarMesh) {
-          try {
-            tv.sound = new THREE.PositionalAudio(this.audioListener);
-            tv.sound.setMediaElementSource(tv.video);
-            tv.sound.setRefDistance(5.0 * WORLD_SCALE);
-            tv.sound.setMaxDistance(35.0 * WORLD_SCALE);
-            tv.sound.setRolloffFactor(1.2);
-            tv.sound.setDistanceModel('inverse');
-            // Sound projects primarily West (-X) into the room
-            tv.sound.setDirectionalCone(130, 240, 0.15);
-            tv.sound.rotation.y = -Math.PI / 2;
-            tv.soundbarMesh.add(tv.sound);
-          } catch (audioErr) {
-            console.warn('[TVManager] Positional audio setup note:', audioErr.message);
-          }
-        }
-      } else {
-        tv.hasVideo = false;
-        tv.videoUrl = null;
-        tv.videoFilename = null;
+      if (res.ok) {
+        data = await res.json();
       }
     } catch {
-      // Offline fallback: keep existing or empty
-      if (!tv.videoUrl) {
-        tv.hasVideo = false;
+      // Dynamic dev server not available (e.g. static production deployment on Vercel)
+    }
+
+    // 2. Fallback to static manifest.json (auto-generated during build)
+    if (!data || !data.hasVideo) {
+      try {
+        const manifestRes = await fetch(`/videos/manifest.json?t=${Date.now()}`);
+        if (manifestRes.ok) {
+          const manifest = await manifestRes.json();
+          if (manifest && manifest[tv.floorKey]) {
+            data = manifest[tv.floorKey];
+          }
+        }
+      } catch {
+        // Manifest fetch failed or network offline
       }
+    }
+
+    // 3. Fallback to direct known video paths for production safety
+    if (!data) {
+      const defaultFilename = (tv.floorKey === '1f') ? 'intro_m.mp4' : 'intro_r.mp4';
+      data = {
+        hasVideo: true,
+        floor: tv.floorKey,
+        folder: `public/videos/${tv.floorKey}-tv`,
+        count: 1,
+        latest: {
+          filename: defaultFilename,
+          url: `/videos/${tv.floorKey}-tv/${defaultFilename}`,
+          mtimeMs: 0
+        }
+      };
+    }
+
+    if (data && data.hasVideo && data.latest) {
+      tv.hasVideo = true;
+      tv.videoUrl = data.latest.url;
+      tv.videoFilename = data.latest.filename;
+      tv.videoMtime = data.latest.mtimeMs;
+
+      // Initialize or update HTML5 video element
+      if (!tv.video) {
+        tv.video = document.createElement('video');
+        tv.video.crossOrigin = 'anonymous';
+        tv.video.loop = true;
+        tv.video.playsInline = true;
+        tv.video.preload = 'auto';
+      }
+
+      const fullSrc = window.location.origin + tv.videoUrl;
+      if (tv.video.src !== fullSrc && tv.video.src !== tv.videoUrl) {
+        tv.video.src = tv.videoUrl;
+        tv.video.load();
+      }
+
+      if (!tv.videoTexture) {
+        tv.videoTexture = new THREE.VideoTexture(tv.video);
+        tv.videoTexture.colorSpace = THREE.SRGBColorSpace;
+        tv.videoTexture.minFilter = THREE.LinearFilter;
+        tv.videoTexture.magFilter = THREE.LinearFilter;
+        tv.videoMaterial = new THREE.MeshBasicMaterial({ map: tv.videoTexture });
+      }
+
+      // Initialize 3D positional audio node
+      if (!tv.sound && this.audioListener && tv.soundbarMesh) {
+        try {
+          tv.sound = new THREE.PositionalAudio(this.audioListener);
+          tv.sound.setMediaElementSource(tv.video);
+          tv.sound.setRefDistance(5.0 * WORLD_SCALE);
+          tv.sound.setMaxDistance(35.0 * WORLD_SCALE);
+          tv.sound.setRolloffFactor(1.2);
+          tv.sound.setDistanceModel('inverse');
+          // Sound projects primarily West (-X) into the room
+          tv.sound.setDirectionalCone(130, 240, 0.15);
+          tv.sound.rotation.y = -Math.PI / 2;
+          tv.soundbarMesh.add(tv.sound);
+        } catch (audioErr) {
+          console.warn('[TVManager] Positional audio setup note:', audioErr.message);
+        }
+      }
+    } else {
+      tv.hasVideo = false;
+      tv.videoUrl = null;
+      tv.videoFilename = null;
     }
   }
 
@@ -282,6 +314,13 @@ export class TVManager {
           await tv.video.play();
         } catch (playErr) {
           console.warn('[TVManager] Video play exception:', playErr.message);
+          // If browser policy blocked unmuted playback (common on mobile / unprimed audio), mute and retry
+          try {
+            tv.video.muted = true;
+            await tv.video.play();
+          } catch (retryErr) {
+            console.warn('[TVManager] Video playback completely blocked:', retryErr.message);
+          }
         }
 
         if (ui) {
