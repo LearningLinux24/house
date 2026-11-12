@@ -32,8 +32,10 @@ export class CollisionSystem {
     // Base floor elevation across grounds, plinth, and stairs
     let baseElev = 0.00;
 
-    // 0. Outside plot boundary — street level
-    if (xs < -0.75 || xs > 50.0 || ys < -0.75 || ys > 24.0) {
+    // 0. Outside plot boundary — street level (exempt exterior entrance stairs at D7)
+    const isEastEntranceStairs = (xs >= 27.00 && xs <= 33.25 && ys >= -3.10 && ys < -0.75);
+
+    if ((xs < -0.75 || xs > 50.0 || ys < -0.75 || ys > 24.0) && !isEastEntranceStairs) {
       baseElev = 0.00;
     } else if (unscaledElev >= 18.0) {
       // ═════════════════════════════════════════════════════════════════════
@@ -77,10 +79,19 @@ export class CollisionSystem {
       // ═════════════════════════════════════════════════════════════════════
       // TIER 3 · GROUND FLOOR  (unscaledElev < 6.5)
       // ═════════════════════════════════════════════════════════════════════
-      if (xs >= 30.125 && xs <= 33.875) {
-        if (ys >= 13.24 && ys <= 15.0) {
+      if (isEastEntranceStairs) {
+        // D7 East Entrance Stairs (3 tiered steps from street 0.0 to plinth 1.50)
+        if (ys >= -1.50) {
+          baseElev = 1.50 * s; // Top step / landing flush with plinth
+        } else if (ys >= -2.25) {
+          baseElev = 1.00 * s; // Middle step
+        } else {
+          baseElev = 0.50 * s; // Bottom step
+        }
+      } else if (xs >= 30.125 && xs <= 33.875 && ys >= 0.0 && ys <= 15.0) {
+        if (ys >= 13.24) {
           baseElev = 1.50 * s;
-        } else if (ys >= 4.0 && ys < 13.24) {
+        } else if (ys >= 4.0) {
           const treadIndex = Math.min(12, Math.max(1, Math.floor((ys - 4.0) / 0.770) + 1));
           baseElev = (1.50 + 0.8077 * treadIndex) * s;
         } else {
@@ -96,9 +107,6 @@ export class CollisionSystem {
       } else if (xs >= 28.5 && xs <= 31.75 && ys >= -0.75 && ys < 0.0) {
         // D7 Door Threshold
         baseElev = 1.50 * s;
-      } else if (xs >= 28.0 && xs <= 32.25 && ys >= -2.5 && ys < -0.75) {
-        // D7 Exterior Landing Step
-        baseElev = 0.75 * s;
       } else if (xs >= 6.15 && xs <= 13.625 && ys >= 0.0 && ys <= 7.5) {
         // P3 Plinth (Entrance Porch)
         baseElev = 1.50 * s;

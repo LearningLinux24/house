@@ -64,7 +64,10 @@ export const GROUND_FLOOR_DATA = {
     { id: 'W-EXT-S-THR-D7', box: [28.500, 31.750, -0.750, 0.000, 0.000, 1.500], type: 'plinth' }, // Plinth threshold under D7
     { id: 'W-EXT-S-LIN-D7', box: [28.500, 31.750, -0.750, 0.000, 8.500, 11.500], type: 'lintel' }, // Lintel above D7
     { id: 'W-EXT-S-P2b', box: [31.750, 36.500, -0.750, 0.000, 0.000, 11.500], type: 'wall_ext' }, // Wall east of South Entrance Door D7
-    { id: 'ST-EXT-S', box: [28.000, 32.250, -2.500, -0.750, 0.000, 0.750], type: 'step' },        // Exterior landing step in front of D7
+    // D7 East Entrance Steps (S1 - S3) - Black Granite
+    { id: 'ST-EXT-S1', box: [27.250, 33.000, -3.000, -2.250, 0.000, 0.500], type: 'step' },        // Bottom entrance step (Rise: 0.50 ft / 6 in)
+    { id: 'ST-EXT-S2', box: [27.625, 32.625, -2.250, -1.500, 0.000, 1.000], type: 'step' },        // Middle entrance step (Rise: 1.00 ft / 12 in)
+    { id: 'ST-EXT-S3', box: [28.000, 32.250, -1.500, -0.750, 0.000, 1.500], type: 'step' },        // Top entrance step / landing (Rise: 1.50 ft / 18 in, flush with plinth)
 
     // O3: Solid band above garage gate and south-east missing corner
     { id: 'GB', box: [36.500, 50.000, -0.750, 0.000, 8.000, 11.500], type: 'wall_ext' },
