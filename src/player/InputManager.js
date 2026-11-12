@@ -22,6 +22,17 @@ export class InputManager {
   }
 
   onKeyDown(e) {
+    // Keybinds help screen hotkey: '/' or '?'
+    if (e.key === '?' || e.key === '/' || e.code === 'Slash') {
+      if (e.target && ['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+      e.preventDefault();
+      this.emit('toggleKeybinds');
+      return;
+    }
+    if (e.code === 'Escape') {
+      this.emit('closeKeybinds');
+    }
+
     // Prevent default scroll on arrow keys / space
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) {
       e.preventDefault();

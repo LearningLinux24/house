@@ -290,199 +290,338 @@ html, body {
 }
 
 /* ==========================================================================
-   Collapsible Right Sidebar
+   Desktop Keybinds Corner Hint Badge
    ========================================================================== */
-#sidebar {
+.keybinds-corner-badge {
   position: absolute;
-  top: 170px;
-  right: -320px;
-  width: 320px;
-  bottom: 60px;
+  bottom: 18px;
+  right: 18px;
   z-index: 25;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  display: flex;
-}
-
-#sidebar.open {
-  transform: translateX(-320px);
-}
-
-/* Sidebar Toggle Button on Edge */
-.sidebar-tab-btn {
-  position: absolute;
-  top: 16px;
-  left: -44px;
-  width: 44px;
-  height: 44px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  border-right: none;
-  border-radius: 12px 0 0 12px;
-  color: var(--text-primary);
-  font-size: 18px;
-  cursor: pointer;
+  background: rgba(10, 13, 20, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 6px 14px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  box-shadow: -8px 8px 24px rgba(0, 0, 0, 0.4);
-  transition: all 0.2s ease;
-}
-
-.sidebar-tab-btn:hover {
-  background: var(--glass-bg-hover);
-  color: var(--accent);
-}
-
-.sidebar-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.sidebar-content::-webkit-scrollbar {
-  width: 5px;
-}
-.sidebar-content::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 4px;
-}
-
-.sidebar-header {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding-bottom: 10px;
-}
-
-.sidebar-title {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.6px;
-  color: #ffffff;
-  text-transform: uppercase;
-}
-
-.sidebar-section {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.section-title {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.8px;
-  color: var(--accent);
-  text-transform: uppercase;
-}
-
-.button-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-/* Interactive Buttons */
-.btn {
-  font-family: var(--font-sans);
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 9px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.2s ease;
-}
-
-.btn-control {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--text-primary);
-  text-align: left;
-  justify-content: flex-start;
-}
-
-.btn-control:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.25);
-  transform: translateY(-1px);
-}
-
-.btn-control.active {
-  background: rgba(245, 158, 11, 0.15);
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.btn-control.primary {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.35), rgba(37, 99, 235, 0.45));
-  border-color: rgba(96, 165, 250, 0.5);
-  color: #ffffff;
-}
-
-/* Teleport Buttons Grid */
-.teleport-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 5px;
-  max-height: 180px;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-.teleport-btn {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: var(--radius-sm);
+  gap: 7px;
   color: var(--text-secondary);
   font-size: 11px;
   font-weight: 500;
-  padding: 7px 10px;
-  text-align: left;
   cursor: pointer;
-  transition: all 0.15s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
 }
 
-.teleport-btn:hover {
-  background: rgba(245, 158, 11, 0.15);
-  border-color: rgba(245, 158, 11, 0.4);
+.keybinds-corner-badge:hover {
+  background: rgba(20, 26, 38, 0.92);
+  border-color: rgba(245, 158, 11, 0.45);
   color: #ffffff;
-  transform: translateX(3px);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.2);
 }
 
-/* Controls Legend */
-.controls-legend {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  background: rgba(0, 0, 0, 0.25);
-  border-radius: var(--radius-sm);
-  padding: 8px 10px;
+.keybinds-corner-badge .badge-icon {
+  font-size: 13px;
 }
 
-.legend-row {
+.keybinds-corner-badge kbd {
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  color: #fbbf24;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Hide corner badge on touch devices and small mobile screens */
+@media (hover: none) and (pointer: coarse), (max-width: 600px) {
+  .keybinds-corner-badge {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   Keybindings Help Modal Overlay
+   ========================================================================== */
+.keybinds-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 7, 12, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 10000;
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 11px;
+  justify-content: center;
+  padding: 20px;
+  animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.keybinds-dialog {
+  max-width: 860px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 26px 28px;
+  border-radius: var(--radius-xl);
+  background: rgba(11, 15, 23, 0.94);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.85), 0 0 30px rgba(245, 158, 11, 0.12);
+}
+
+.keybinds-dialog::-webkit-scrollbar {
+  width: 6px;
+}
+.keybinds-dialog::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.keybinds-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 16px;
+}
+
+.keybinds-title-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.keybinds-icon-header {
+  font-size: 28px;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.keybinds-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+  margin-bottom: 3px;
+}
+
+.keybinds-subtitle {
+  font-size: 12px;
   color: var(--text-muted);
 }
 
-.legend-row kbd {
+.keybinds-subtitle kbd {
   background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 3px;
   padding: 1px 5px;
-  font-size: 10px;
-  font-family: var(--font-mono);
   color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.keybinds-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-secondary);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.keybinds-close-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: #ef4444;
+  color: #ffffff;
+  transform: rotate(90deg);
+}
+
+.keybinds-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.keybinds-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-title {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.keybind-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.keybind-row .keys {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.keybind-row kbd {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: #f8fafc;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.keybind-row .desc {
+  color: var(--text-secondary);
+  font-size: 11px;
+  text-align: right;
+}
+
+/* ==========================================================================
+   Strict Landscape Mode Enforcer (Mobile Phones)
+   ========================================================================== */
+.landscape-enforce-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: #07090e;
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 28px;
+  touch-action: none;
+}
+
+.rotate-phone-anim {
+  width: 76px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 22px;
+}
+
+.phone-icon-device {
+  width: 36px;
+  height: 64px;
+  border: 3.5px solid #f59e0b;
+  border-radius: 9px;
+  position: relative;
+  animation: rotatePhoneAnim 2.2s infinite ease-in-out;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.45);
+}
+
+.phone-icon-device::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 2.5px;
+  background: #f59e0b;
+  border-radius: 2px;
+}
+
+.phone-icon-device::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f59e0b;
+}
+
+@keyframes rotatePhoneAnim {
+  0%, 15% {
+    transform: rotate(0deg);
+  }
+  50%, 85% {
+    transform: rotate(90deg);
+  }
+  100% {
+    transform: rotate(90deg);
+  }
+}
+
+.rotate-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 8px;
+  letter-spacing: 0.4px;
+}
+
+.rotate-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  max-width: 290px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.rotate-desc strong {
+  color: var(--accent);
+}
+
+.rotate-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 6px 14px;
+  border-radius: 16px;
 }
 
 /* ==========================================================================
@@ -1085,12 +1224,6 @@ html, body {
   .btn-enter {
     padding: 12px 20px;
     font-size: 14px;
-  }
-
-  /* Sidebar drawer */
-  #sidebar {
-    width: 82vw;
-    max-width: 320px;
   }
 }
 

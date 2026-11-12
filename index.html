@@ -53,76 +53,88 @@
     <canvas id="minimap-canvas" width="150" height="120"></canvas>
   </div>
 
-  <!-- Collapsible Right Sidebar -->
-  <aside id="sidebar" class="glass-panel">
-    <!-- Collapsible Toggle Tab on Edge -->
-    <button id="sidebar-toggle" class="sidebar-tab-btn" title="Toggle Controls Sidebar">☰</button>
+  <!-- Keybinds Corner Hint (Desktop / Laptop) -->
+  <div id="keybinds-badge" class="keybinds-corner-badge" title="Click or press ? for keyboard shortcuts">
+    <span class="badge-icon">⌨️</span>
+    <span class="badge-text">Press <kbd>?</kbd> for keybinds</span>
+  </div>
 
-    <div class="sidebar-content">
-      <div class="sidebar-header">
-        <span class="sidebar-title">House Controls</span>
-      </div>
-
-      <!-- Section: Layers -->
-      <div class="sidebar-section">
-        <div class="section-title">🏠 LAYERS</div>
-        <div class="button-grid">
-          <button class="btn btn-control active" id="btn-toggle-roof">🏠 Roof: Visible (C)</button>
-          <button class="btn btn-control" id="btn-toggle-labels">🏷️ Labels: OFF (L)</button>
-          <button class="btn btn-control" id="btn-toggle-prompts">💬 Prompts: OFF (H)</button>
-          <button class="btn btn-control active" id="btn-toggle-furniture">🛋️ Furniture: ON (F)</button>
+  <!-- Keybindings Help Modal (Laptop / Desktop) -->
+  <div id="keybinds-modal" class="keybinds-modal-overlay" style="display: none;">
+    <div class="keybinds-dialog glass-panel">
+      <div class="keybinds-header">
+        <div class="keybinds-title-group">
+          <span class="keybinds-icon-header">⌨️</span>
+          <div>
+            <h2 class="keybinds-title">Keyboard Controls & Shortcuts</h2>
+            <p class="keybinds-subtitle">Press <kbd>?</kbd> or <kbd>/</kbd> anytime to toggle this screen</p>
+          </div>
         </div>
+        <button id="btn-close-keybinds" class="keybinds-close-btn" title="Close (Esc)">✕</button>
       </div>
 
-      <!-- Section: Floor View (Dollhouse/Overview) -->
-      <div class="sidebar-section">
-        <div class="section-title">🏢 FLOOR LEVEL VIEW</div>
-        <div class="button-grid">
-          <button class="btn btn-control active" id="btn-floor-all">🏢 Both Floors (3)</button>
-          <button class="btn btn-control" id="btn-floor-gf">🏠 Ground Floor (1)</button>
-          <button class="btn btn-control" id="btn-floor-ff">🏢 First Floor (2)</button>
+      <div class="keybinds-grid">
+        <!-- Section: Movement -->
+        <div class="keybinds-card">
+          <div class="card-title">🏃 MOVEMENT</div>
+          <div class="keybind-row"><span class="keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><span class="desc">Walk / Strafe</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>Shift</kbd></span><span class="desc">Sprint / Fast Run</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>Space</kbd></span><span class="desc">Jump</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>Mouse</kbd></span><span class="desc">Look Around (Pitch & Yaw)</span></div>
         </div>
-      </div>
 
-      <!-- Section: Navigation -->
-      <div class="sidebar-section">
-        <div class="section-title">🧭 NAVIGATION</div>
-        <div class="button-grid">
-          <button class="btn btn-control primary" id="btn-toggle-view">🔄 Dollhouse Orbit (V)</button>
-          <button class="btn btn-control" id="btn-reset">↺ Reset Position (R)</button>
+        <!-- Section: Interaction -->
+        <div class="keybinds-card">
+          <div class="card-title">✋ INTERACTION</div>
+          <div class="keybind-row"><span class="keys"><kbd>E</kbd> / <kbd>Click</kbd></span><span class="desc">Open / Close Doors</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>E</kbd> / <kbd>Click</kbd></span><span class="desc">Turn Sinks & Taps On / Off</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>E</kbd> / <kbd>Click</kbd></span><span class="desc">Sit on Sofa / Lie on Bed</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>E</kbd> / <kbd>Click</kbd></span><span class="desc">Drive Luxury SUV / Exit</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>E</kbd> / <kbd>Click</kbd></span><span class="desc">Play TV Videos / Standby</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>E</kbd> / <kbd>Click</kbd></span><span class="desc">Open Cupboards & Drawers</span></div>
         </div>
-      </div>
 
-      <!-- Section: Quick Teleport Buttons -->
-      <div class="sidebar-section">
-        <div class="section-title">🚪 ROOM TELEPORT</div>
-        <div id="teleport-buttons" class="teleport-grid">
-          <!-- Populated dynamically via JS -->
+        <!-- Section: View & Perspective -->
+        <div class="keybinds-card">
+          <div class="card-title">🎥 CAMERA & VIEW</div>
+          <div class="keybind-row"><span class="keys"><kbd>V</kbd></span><span class="desc">Toggle Dollhouse Orbit / Walk</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>P</kbd> or <kbd>5</kbd></span><span class="desc">Cycle POV (1st, 3rd Back, Selfie)</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>R</kbd></span><span class="desc">Reset Spawn to Entrance Gate</span></div>
         </div>
-      </div>
 
-      <!-- Section: Controls Reference -->
-      <div class="sidebar-section">
-        <div class="section-title">⌨️ KEYBOARD SHORTCUTS</div>
-        <div class="controls-legend">
-          <div class="legend-row"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><span>Move / Strafe</span></div>
-          <div class="legend-row"><kbd>Shift</kbd><span>Sprint</span></div>
-          <div class="legend-row"><kbd>Space</kbd><span>Jump</span></div>
-          <div class="legend-row"><kbd>E</kbd><span>Open / Close Door (or Click)</span></div>
-          <div class="legend-row"><kbd>Mouse</kbd><span>Look Around</span></div>
-          <div class="legend-row"><kbd>V</kbd><span>Toggle Orbit / FP</span></div>
-          <div class="legend-row"><kbd>1</kbd><span>Isolate Ground Floor (Dollhouse)</span></div>
-          <div class="legend-row"><kbd>2</kbd><span>Isolate First Floor (Dollhouse)</span></div>
-          <div class="legend-row"><kbd>3</kbd><span>Show Both Floors (Dollhouse)</span></div>
-          <div class="legend-row"><kbd>C</kbd><span>Toggle Roof</span></div>
-          <div class="legend-row"><kbd>L</kbd><span>Toggle Labels</span></div>
-          <div class="legend-row"><kbd>H</kbd><span>Toggle Interaction Prompts</span></div>
-          <div class="legend-row"><kbd>F</kbd><span>Toggle Furniture</span></div>
-          <div class="legend-row"><kbd>R</kbd><span>Reset Spawn</span></div>
+        <!-- Section: Building Layers -->
+        <div class="keybinds-card">
+          <div class="card-title">🏠 LAYERS & DOLLHOUSE</div>
+          <div class="keybind-row"><span class="keys"><kbd>C</kbd></span><span class="desc">Toggle Roof Visibility</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>F</kbd></span><span class="desc">Toggle Furniture & Fitout</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>L</kbd></span><span class="desc">Toggle 3D Floating Labels</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>H</kbd></span><span class="desc">Toggle Interaction Prompts</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>1</kbd></span><span class="desc">Dollhouse: Ground Floor</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>2</kbd></span><span class="desc">Dollhouse: First Floor</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>3</kbd></span><span class="desc">Dollhouse: Both Floors</span></div>
+        </div>
+
+        <!-- Section: Vehicle Controls -->
+        <div class="keybinds-card">
+          <div class="card-title">🚗 VEHICLE DRIVING</div>
+          <div class="keybind-row"><span class="keys"><kbd>W</kbd> / <kbd>S</kbd></span><span class="desc">Accelerate / Reverse</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>A</kbd> / <kbd>D</kbd></span><span class="desc">Steer Left / Right</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>Space</kbd></span><span class="desc">Brake / Stop</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>C</kbd></span><span class="desc">Cockpit / Chase Camera</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>L</kbd></span><span class="desc">Toggle Headlights</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>H</kbd></span><span class="desc">Honk Horn</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>G</kbd></span><span class="desc">Open / Close Garage Shutter</span></div>
+        </div>
+
+        <!-- Section: Help Shortcuts -->
+        <div class="keybinds-card">
+          <div class="card-title">ℹ️ SHORTCUTS</div>
+          <div class="keybind-row"><span class="keys"><kbd>?</kbd> / <kbd>/</kbd></span><span class="desc">Toggle Keybinds Screen</span></div>
+          <div class="keybind-row"><span class="keys"><kbd>Esc</kbd></span><span class="desc">Close Screen / Release Mouse</span></div>
         </div>
       </div>
     </div>
-  </aside>
+  </div>
 
   <!-- Bottom Status Bar -->
   <footer id="bottom-status-bar" class="glass-panel">

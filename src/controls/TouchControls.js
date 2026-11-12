@@ -122,11 +122,14 @@ export class TouchControls {
         </div>
       </div>
 
-      <!-- Subtle Landscape Recommendation Hint -->
-      <div id="mobile-rotate-hint" class="mobile-rotate-hint" style="display: none;">
-        <span class="rotate-icon">📱 ↷</span>
-        <span>Rotate phone to landscape for best 3D view</span>
-        <button id="btn-dismiss-rotate" class="btn-dismiss" title="Dismiss">✕</button>
+      <!-- Strictly Enforced Landscape Overlay for Mobile Phones -->
+      <div id="landscape-enforce-overlay" class="landscape-enforce-overlay" style="display: none;">
+        <div class="rotate-phone-anim">
+          <div class="phone-icon-device"></div>
+        </div>
+        <h2 class="rotate-title">Rotate to Landscape</h2>
+        <p class="rotate-desc">This 3D architectural simulation requires <strong>Landscape Mode</strong>.</p>
+        <div class="rotate-sub">Turn your phone horizontally & tap to enter fullscreen</div>
       </div>
     `;
 
@@ -143,13 +146,15 @@ export class TouchControls {
     this.btnView = document.getElementById('btn-touch-view');
     this.btnPOV = document.getElementById('btn-touch-pov');
     this.btnMap = document.getElementById('btn-touch-map');
-    this.rotateHint = document.getElementById('mobile-rotate-hint');
+    this.landscapeOverlay = document.getElementById('landscape-enforce-overlay');
 
     // Adapt Start Screen copy for mobile touch
     const startBtn = document.getElementById('btn-start');
     if (startBtn) {
       const textSpan = startBtn.querySelector('.btn-text');
       if (textSpan) textSpan.textContent = 'TAP TO EXPLORE';
+      startBtn.addEventListener('click', () => this.requestFullscreenMode());
+      startBtn.addEventListener('touchend', () => this.requestFullscreenMode());
     }
     const controlsHint = document.querySelector('.controls-hint');
     if (controlsHint) {
@@ -312,15 +317,18 @@ export class TouchControls {
       }
     });
 
-    // Dismiss Rotate Hint Button
-    const btnDismiss = document.getElementById('btn-dismiss-rotate');
-    if (btnDismiss) {
-      btnDismiss.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.rotateHintDismissed = true;
-        if (this.rotateHint) this.rotateHint.style.display = 'none';
-      });
+    // Tap on landscape overlay or touch screen to enter fullscreen
+    if (this.landscapeOverlay) {
+      this.landscapeOverlay.addEventListener('click', () => this.requestFullscreenMode());
+      this.landscapeOverlay.addEventListener('touchend', () => this.requestFullscreenMode());
     }
+
+    window.addEventListener('touchend', () => {
+      const isLandscape = window.innerWidth > window.innerHeight;
+      if (isLandscape) {
+        this.requestFullscreenMode();
+      }
+    }, { passive: true });
   }
 
   updateJoystick(clientX, clientY) {
@@ -391,14 +399,63 @@ export class TouchControls {
   }
 
   checkOrientation() {
-    if (!this.rotateHint || this.rotateHintDismissed) return;
+    if (!this.isTouchDevice) return;
     const isPortrait = window.innerHeight > window.innerWidth;
-    const isMobileSize = Math.min(window.innerWidth, window.innerHeight) < 600;
 
-    if (isPortrait && isMobileSize) {
-      this.rotateHint.style.display = 'flex';
-    } else {
-      this.rotateHint.style.display = 'none';
+    if (this.landscapeOverlay) {
+      if (isPortrait) {
+        // Enforce landscape: display blocker overlay, hide controls
+        this.landscapeOverlay.style.display = 'flex';
+        if (this.joystickZone) this.joystickZone.style.display = 'none';
+        if (this.lookZone) this.lookZone.style.display = 'none';
+        const actionBar = document.getElementById('mobile-action-bar');
+        if (actionBar) actionBar.style.display = 'none';
+      } else {
+        // Device is in landscape: hide blocker overlay, restore controls
+        this.landscapeOverlay.style.display = 'none';
+        if (this.joystickZone) this.joystickZone.style.display = 'block';
+        if (this.lookZone) this.lookZone.style.display = 'block';
+        const actionBar = document.getElementById('mobile-action-bar');
+        if (actionBar) actionBar.style.display = 'flex';
+
+        // Automatically switch to fullscreen mode when in landscape
+        this.requestFullscreenMode();
+      }
+    }
+  }
+
+  requestFullscreenMode() {
+    if (!this.isTouchDevice) return;
+    const docEl = document.documentElement;
+    const isFullscreen = !!(
+      document.fullscreenElement ||
+      document.webkitFullscreenElement ||
+      document.mozFullScreenElement ||
+      document.msFullscreenElement
+    );
+
+    if (!isFullscreen) {
+      const enter = docEl.requestFullscreen ||
+                    docEl.webkitRequestFullscreen ||
+                    docEl.mozRequestFullScreen ||
+                    docEl.msRequestFullscreen;
+      if (enter) {
+        try {
+          const promise = enter.call(docEl);
+          if (promise && promise.catch) {
+            promise.catch(() => {
+              // Browser may require an explicit touch gesture
+            });
+          }
+        } catch (_) {}
+      }
+    }
+
+    // Attempt to lock screen orientation to landscape via Screen Orientation API
+    if (screen.orientation && screen.orientation.lock) {
+      try {
+        screen.orientation.lock('landscape').catch(() => {});
+      } catch (_) {}
     }
   }
 

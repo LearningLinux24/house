@@ -27,11 +27,12 @@ export class UIManager {
       // Top-Right Minimap
       minimapCanvas: document.getElementById('minimap-canvas'),
 
-      // Collapsible Sidebar
-      sidebar: document.getElementById('sidebar'),
-      sidebarToggle: document.getElementById('sidebar-toggle'),
+      // Keybinds Modal & Badge (Desktop)
+      keybindsModal: document.getElementById('keybinds-modal'),
+      keybindsBadge: document.getElementById('keybinds-badge'),
+      btnCloseKeybinds: document.getElementById('btn-close-keybinds'),
 
-      // Layer Controls
+      // Layer Controls (referenced for state synchronization)
       btnToggleRoof: document.getElementById('btn-toggle-roof'),
       btnToggleLabels: document.getElementById('btn-toggle-labels'),
       btnTogglePrompts: document.getElementById('btn-toggle-prompts'),
@@ -63,11 +64,11 @@ export class UIManager {
     this.zones = options.zones || [];
 
     // State tracking
-    this.sidebarOpen = false;
     this.roofVisible = true;
     this.labelsVisible = false;
     this.furnitureVisible = true;
     this.isOrbitMode = false;
+    this.isKeybindsModalOpen = false;
 
     // Callbacks
     this.onStart = options.onStart || (() => {});
@@ -78,6 +79,7 @@ export class UIManager {
     this.onFloorFilter = options.onFloorFilter || (() => {});
     this.onReset = options.onReset || (() => {});
     this.onTeleport = options.onTeleport || (() => {});
+    this.onToggleKeybinds = options.onToggleKeybinds || (() => {});
 
     this.initEvents();
     this.initLoadingSequence();
@@ -95,10 +97,28 @@ export class UIManager {
       this.elements.btnStart.addEventListener('touchend', handleStart);
     }
 
-    // Sidebar collapse/expand toggle
-    if (this.elements.sidebarToggle) {
-      this.elements.sidebarToggle.addEventListener('click', () => {
-        this.toggleSidebar();
+    // Keybinds Badge click
+    if (this.elements.keybindsBadge) {
+      this.elements.keybindsBadge.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.toggleKeybinds();
+      });
+    }
+
+    // Keybinds Close button
+    if (this.elements.btnCloseKeybinds) {
+      this.elements.btnCloseKeybinds.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.closeKeybinds();
+      });
+    }
+
+    // Click backdrop to close Keybinds
+    if (this.elements.keybindsModal) {
+      this.elements.keybindsModal.addEventListener('click', (e) => {
+        if (e.target === this.elements.keybindsModal) {
+          this.closeKeybinds();
+        }
       });
     }
 
@@ -192,17 +212,26 @@ export class UIManager {
     });
   }
 
-  toggleSidebar() {
-    this.sidebarOpen = !this.sidebarOpen;
-    if (this.elements.sidebar) {
-      if (this.sidebarOpen) {
-        this.elements.sidebar.classList.add('open');
-        this.elements.sidebarToggle.innerHTML = '✕';
-      } else {
-        this.elements.sidebar.classList.remove('open');
-        this.elements.sidebarToggle.innerHTML = '☰';
-      }
+  toggleKeybinds() {
+    if (this.isKeybindsModalOpen) {
+      this.closeKeybinds();
+    } else {
+      this.openKeybinds();
     }
+  }
+
+  openKeybinds() {
+    if (!this.elements.keybindsModal) return;
+    this.isKeybindsModalOpen = true;
+    this.elements.keybindsModal.style.display = 'flex';
+    this.onToggleKeybinds(true);
+  }
+
+  closeKeybinds() {
+    if (!this.elements.keybindsModal) return;
+    this.isKeybindsModalOpen = false;
+    this.elements.keybindsModal.style.display = 'none';
+    this.onToggleKeybinds(false);
   }
 
   updateHUD(roomName, x, y_spec, elev, fps = 60, cameraYaw = 0) {

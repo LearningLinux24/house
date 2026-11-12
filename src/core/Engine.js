@@ -168,6 +168,17 @@ export class Engine {
       },
       onTeleport: (x, y_spec, elev) => {
         this.teleport(x, y_spec, elev);
+      },
+      onToggleKeybinds: (isOpen) => {
+        if (isOpen) {
+          if (!this.cameraCtrl.isOrbitMode) {
+            this.cameraCtrl.fpControls.unlock();
+          }
+        } else {
+          if (!this.cameraCtrl.isOrbitMode && !this.isTouchDevice) {
+            this.cameraCtrl.fpControls.lock();
+          }
+        }
       }
     });
 
@@ -179,7 +190,7 @@ export class Engine {
     });
 
     this.cameraCtrl.fpControls.addEventListener('unlock', () => {
-      if (!this.cameraCtrl.isOrbitMode && !this.isTouchDevice) {
+      if (!this.cameraCtrl.isOrbitMode && !this.isTouchDevice && !this.ui.isKeybindsModalOpen) {
         this.ui.showBlocker();
       }
     });
@@ -235,6 +246,12 @@ export class Engine {
     this.input.on('interact', () => this.handleInteraction());
     this.input.on('resetPlayer', () => this.resetPlayer());
     this.input.on('filterFloor', (filter) => this.setFloorFilter(filter));
+    this.input.on('toggleKeybinds', () => this.ui.toggleKeybinds());
+    this.input.on('closeKeybinds', () => {
+      if (this.ui.isKeybindsModalOpen) {
+        this.ui.closeKeybinds();
+      }
+    });
 
     // Mouse click interaction (FP click + Orbit raycast click)
     let pointerDownPos = { x: 0, y: 0 };
